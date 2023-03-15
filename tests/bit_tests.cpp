@@ -1,5 +1,5 @@
 #include <doctest/doctest.h>
-#include "easy/bit.hpp"
+#include "easy/bit.h"
 
 namespace
 {
