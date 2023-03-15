@@ -6,6 +6,7 @@ target_sources(easy
         FILE_SET HEADERS
         FILES
             easy/bit.h
+            easy/functional.h
 )
 
 target_compile_features(easy INTERFACE cxx_std_23)

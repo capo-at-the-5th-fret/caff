@@ -27,6 +27,7 @@ include(doctest)
 add_executable(testrunner
 
     bit_tests.cpp
+    functional_tests.cpp
 
 )
 
