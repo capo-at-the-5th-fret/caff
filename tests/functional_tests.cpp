@@ -1,5 +1,6 @@
 #include <doctest/doctest.h>
 #include "easy/functional.h"
+#include <utility>
 #include <unordered_set>
 
 namespace
