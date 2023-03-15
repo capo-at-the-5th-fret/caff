@@ -1,1 +1,3 @@
 No readme yet...
+
+[![Continuous Integration](https://github.com/capo-at-the-5th-fret/easy/actions/workflows/ci.yml/badge.svg)](https://github.com/capo-at-the-5th-fret/easy/actions/workflows/ci.yml)
