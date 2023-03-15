@@ -14,28 +14,24 @@ namespace
 
     constexpr options operator~(options rhs) noexcept
     {
-        using ut = std::underlying_type_t<options>;
-        return static_cast<options>(~static_cast<ut>(rhs));
+        return static_cast<options>(~std::to_underlying(rhs));
     }
     
     constexpr options& operator&=(options& lhs, options rhs) noexcept
     {
-        using ut = std::underlying_type_t<options>;
-        lhs = static_cast<options>(static_cast<ut>(lhs) & static_cast<ut>(rhs));
+        lhs = static_cast<options>(std::to_underlying(lhs) & std::to_underlying(rhs));
         return lhs;
     }
     
     constexpr options& operator|=(options& lhs, options rhs) noexcept
     {
-        using ut = std::underlying_type_t<options>;
-        lhs = static_cast<options>(static_cast<ut>(lhs) | static_cast<ut>(rhs));
+        lhs = static_cast<options>(std::to_underlying(lhs) | std::to_underlying(rhs));
         return lhs;
     }
     
     constexpr options& operator^=(options& lhs, options rhs) noexcept
     {
-        using ut = std::underlying_type_t<options>;
-        lhs = static_cast<options>(static_cast<ut>(lhs) ^ static_cast<ut>(rhs));
+        lhs = static_cast<options>(std::to_underlying(lhs) ^ std::to_underlying(rhs));
         return lhs;
     }
     
@@ -61,136 +57,137 @@ namespace
 TEST_CASE("enum bitmask")
 {
     using namespace easy;
-    
-    options o = options::none;
+    using enum options;
+
+    options o{ none };
 
     SUBCASE("set single bit at a time")
     {
-        set(o, options::write);
-        REQUIRE(test(o, options::write));
-        REQUIRE_FALSE(test(o, options::read));
-        REQUIRE_FALSE(test(o, options::append));
-        REQUIRE_FALSE(test(o, options::trunc));
+        set(o, write);
+        REQUIRE(test(o, write));
+        REQUIRE_FALSE(test(o, read));
+        REQUIRE_FALSE(test(o, append));
+        REQUIRE_FALSE(test(o, trunc));
 
-        set(o, options::append);
-        REQUIRE(test(o, options::write));
-        REQUIRE_FALSE(test(o, options::read));
-        REQUIRE(test(o, options::append));
-        REQUIRE_FALSE(test(o, options::trunc));
+        set(o, append);
+        REQUIRE(test(o, write));
+        REQUIRE_FALSE(test(o, read));
+        REQUIRE(test(o, append));
+        REQUIRE_FALSE(test(o, trunc));
     }
 
     SUBCASE("set multiple bits at a time")
     {
-        set(o, options::write, options::append);
-        REQUIRE(test(o, options::write));
-        REQUIRE_FALSE(test(o, options::read));
-        REQUIRE(test(o, options::append));
-        REQUIRE_FALSE(test(o, options::trunc));
+        set(o, write, append);
+        REQUIRE(test(o, write));
+        REQUIRE_FALSE(test(o, read));
+        REQUIRE(test(o, append));
+        REQUIRE_FALSE(test(o, trunc));
     }
 
     SUBCASE("reset single bit at a time")
     {
-        set(o, options::write, options::append);
-        reset(o, options::write);
-        REQUIRE_FALSE(test(o, options::write));
-        REQUIRE_FALSE(test(o, options::read));
-        REQUIRE(test(o, options::append));
-        REQUIRE_FALSE(test(o, options::trunc));
+        set(o, write, append);
+        reset(o, write);
+        REQUIRE_FALSE(test(o, write));
+        REQUIRE_FALSE(test(o, read));
+        REQUIRE(test(o, append));
+        REQUIRE_FALSE(test(o, trunc));
 
-        reset(o, options::append);
-        REQUIRE(o == options::none);
+        reset(o, append);
+        REQUIRE(o == none);
     }
 
     SUBCASE("reset multiple bits at a time")
     {
-        set(o, options::write, options::append);
-        reset(o, options::write, options::append);
-        REQUIRE(o == options::none);
+        set(o, write, append);
+        reset(o, write, append);
+        REQUIRE(o == none);
     }
 
     SUBCASE("reset all bits")
     {
-        set(o, options::write, options::append);
+        set(o, write, append);
         reset(o);
-        REQUIRE(o == options::none);
+        REQUIRE(o == none);
     }
 
     SUBCASE("test single bit at a time")
     {
-        set(o, options::write, options::append);
-        REQUIRE(test(o, options::write));
-        REQUIRE_FALSE(test(o, options::read));
-        REQUIRE(test(o, options::append));
-        REQUIRE_FALSE(test(o, options::trunc));
+        set(o, write, append);
+        REQUIRE(test(o, write));
+        REQUIRE_FALSE(test(o, read));
+        REQUIRE(test(o, append));
+        REQUIRE_FALSE(test(o, trunc));
     }
 
     SUBCASE("test multiple bits at a time")
     {
-        set(o, options::write, options::append);
-        REQUIRE(test(o, options::write, options::append));
-        REQUIRE_FALSE(test(o, options::write, options::read));
-        REQUIRE_FALSE(test(o, options::write, options::trunc));
-        REQUIRE_FALSE(test(o, options::read, options::write));
-        REQUIRE_FALSE(test(o, options::trunc, options::write));
-        REQUIRE_FALSE(test(o, options::append, options::read));
-        REQUIRE_FALSE(test(o, options::append, options::trunc));
-        REQUIRE_FALSE(test(o, options::read, options::append));
-        REQUIRE_FALSE(test(o, options::trunc, options::append));
-        REQUIRE_FALSE(test(o, options::read, options::trunc));
+        set(o, write, append);
+        REQUIRE(test(o, write, append));
+        REQUIRE_FALSE(test(o, write, read));
+        REQUIRE_FALSE(test(o, write, trunc));
+        REQUIRE_FALSE(test(o, read, write));
+        REQUIRE_FALSE(test(o, trunc, write));
+        REQUIRE_FALSE(test(o, append, read));
+        REQUIRE_FALSE(test(o, append, trunc));
+        REQUIRE_FALSE(test(o, read, append));
+        REQUIRE_FALSE(test(o, trunc, append));
+        REQUIRE_FALSE(test(o, read, trunc));
     }
 
     SUBCASE("flip single bit at a time")
     {
-        flip(o, options::write);
-        REQUIRE(test(o, options::write));
-        REQUIRE_FALSE(test(o, options::read));
-        REQUIRE_FALSE(test(o, options::append));
-        REQUIRE_FALSE(test(o, options::trunc));
+        flip(o, write);
+        REQUIRE(test(o, write));
+        REQUIRE_FALSE(test(o, read));
+        REQUIRE_FALSE(test(o, append));
+        REQUIRE_FALSE(test(o, trunc));
 
-        flip(o, options::append);
-        REQUIRE(test(o, options::write));
-        REQUIRE_FALSE(test(o, options::read));
-        REQUIRE(test(o, options::append));
-        REQUIRE_FALSE(test(o, options::trunc));
+        flip(o, append);
+        REQUIRE(test(o, write));
+        REQUIRE_FALSE(test(o, read));
+        REQUIRE(test(o, append));
+        REQUIRE_FALSE(test(o, trunc));
 
-        flip(o, options::write);
-        REQUIRE_FALSE(test(o, options::write));
-        REQUIRE_FALSE(test(o, options::read));
-        REQUIRE(test(o, options::append));
-        REQUIRE_FALSE(test(o, options::trunc));
+        flip(o, write);
+        REQUIRE_FALSE(test(o, write));
+        REQUIRE_FALSE(test(o, read));
+        REQUIRE(test(o, append));
+        REQUIRE_FALSE(test(o, trunc));
 
-        flip(o, options::append);
-        REQUIRE(o == options::none);
+        flip(o, append);
+        REQUIRE(o == none);
     }
 
     SUBCASE("flip multiple bits at a time")
     {
-        flip(o, options::write, options::append);
-        REQUIRE(test(o, options::write));
-        REQUIRE_FALSE(test(o, options::read));
-        REQUIRE(test(o, options::append));
-        REQUIRE_FALSE(test(o, options::trunc));
+        flip(o, write, append);
+        REQUIRE(test(o, write));
+        REQUIRE_FALSE(test(o, read));
+        REQUIRE(test(o, append));
+        REQUIRE_FALSE(test(o, trunc));
 
-        flip(o, options::write, options::append);
-        REQUIRE(o == options::none);
+        flip(o, write, append);
+        REQUIRE(o == none);
     }
 
     SUBCASE("test_xxx")
     {
-        set(o, options::write, options::append);
+        set(o, write, append);
 
-        REQUIRE(test_all_of(o, options::write));
-        REQUIRE(test_all_of(o, options::append));
-        REQUIRE(test_all_of(o, options::write, options::append));
+        REQUIRE(test_all_of(o, write));
+        REQUIRE(test_all_of(o, append));
+        REQUIRE(test_all_of(o, write, append));
         REQUIRE_FALSE(
-            test_all_of(o, options::write, options::append, options::read));
+            test_all_of(o, write, append, read));
 
-        REQUIRE(test_any_of(o, options::write));
-        REQUIRE(test_any_of(o, options::append));
-        REQUIRE_FALSE(test_any_of(o, options::read));
+        REQUIRE(test_any_of(o, write));
+        REQUIRE(test_any_of(o, append));
+        REQUIRE_FALSE(test_any_of(o, read));
 
-        REQUIRE(test_none_of(o, options::read));
-        REQUIRE_FALSE(test_none_of(o, options::write));
-        REQUIRE_FALSE(test_none_of(o, options::append));
+        REQUIRE(test_none_of(o, read));
+        REQUIRE_FALSE(test_none_of(o, write));
+        REQUIRE_FALSE(test_none_of(o, append));
     }
 }
