@@ -75,5 +75,3 @@ namespace easy
         return ((b & (bit | ... | bits)) == static_cast<B>(0));
     }
 }
-
-namespace ez = easy;

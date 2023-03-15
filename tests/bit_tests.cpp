@@ -60,7 +60,7 @@ namespace
 
 TEST_CASE("enum bitmask")
 {
-    using namespace ez;
+    using namespace easy;
     
     options o = options::none;
 
