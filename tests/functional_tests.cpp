@@ -32,7 +32,9 @@ namespace
                 return U"c_str";
             }
 
+        #ifdef __cpp_lib_unreachable
             std::unreachable();
+        #endif
         }();
 
         const std::basic_string<CharT> str = []()
@@ -58,7 +60,9 @@ namespace
                 return U"str";
             }
 
+        #ifdef __cpp_lib_unreachable
             std::unreachable();
+        #endif
         }();
 
         const std::basic_string_view<CharT> sv = []()
@@ -84,7 +88,9 @@ namespace
                 return U"sv";
             }
 
+        #ifdef __cpp_lib_unreachable
             std::unreachable();
+        #endif
         }();
     };
 
