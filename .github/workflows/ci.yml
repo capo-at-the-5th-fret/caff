@@ -62,8 +62,6 @@ jobs:
         run: sudo apt-get install -y ninja-build lcov
 
       - name: Generate
-        env:
-          CXX: g++-12
         run: cmake -B build -S . -G Ninja -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
 
       - name: Build
