@@ -19,14 +19,14 @@ if (NOT doctest_FOUND)
     # include the doctest module that contains doctest_discover_tests
     list(APPEND CMAKE_MODULE_PATH ${doctest_SOURCE_DIR}/scripts/cmake)
 
-    target_compile_features(doctest INTERFACE cxx_std_23)
-
 endif()
 
 # this needs to be called for the doctest_discover_tests function to work
 include(doctest)
 
 add_executable(testrunner
+
+    main.cpp
 
     bit_tests.cpp
     functional_tests.cpp
@@ -36,7 +36,7 @@ add_executable(testrunner
 
 target_link_libraries(testrunner
     PRIVATE
-        doctest::doctest_with_main
+        doctest::doctest
         easy::easy
 )
 
