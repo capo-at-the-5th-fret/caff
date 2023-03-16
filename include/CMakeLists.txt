@@ -7,6 +7,7 @@ target_sources(easy
         FILES
             easy/bit.h
             easy/functional.h
+            easy/type_traits.h
 )
 
 target_compile_features(easy INTERFACE cxx_std_23)
