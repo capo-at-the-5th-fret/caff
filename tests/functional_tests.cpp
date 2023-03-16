@@ -3,6 +3,7 @@
 #include <utility>
 #include <unordered_set>
 #include "easy/type_traits.h"
+#include "easy/type_list.h"
 
 namespace
 {
@@ -100,8 +101,7 @@ namespace
 
 }
 
-TEST_CASE_TEMPLATE("basic_string_hash", CharT, char, wchar_t, char8_t, char16_t,
-    char32_t)
+TEST_CASE_TEMPLATE_DEFINE("basic_string_hash", CharT, basic_string_hash_test_id)
 {
     using namespace std::string_literals;
     using namespace std::string_view_literals;
@@ -165,3 +165,6 @@ TEST_CASE_TEMPLATE("basic_string_hash", CharT, char, wchar_t, char8_t, char16_t,
         }
     }
 }
+
+TEST_CASE_TEMPLATE_APPLY(basic_string_hash_test_id,
+    easy::standard_character_types);

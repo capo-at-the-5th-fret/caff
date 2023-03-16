@@ -30,6 +30,7 @@ add_executable(testrunner
 
     bit_tests.cpp
     functional_tests.cpp
+    type_list_tests.cpp
     type_traits_tests.cpp
 
 )
