@@ -2,6 +2,7 @@
 #include "easy/functional.h"
 #include <utility>
 #include <unordered_set>
+#include "easy/type_traits.h"
 
 namespace
 {
@@ -31,10 +32,11 @@ namespace
             {
                 return U"c_str";
             }
-
-        #ifdef __cpp_lib_unreachable
-            std::unreachable();
-        #endif
+            else
+            {
+                static_assert(easy::always_false_v<CharT>,
+                    "The type used for template parameter CharT is unsupported");
+            }
         }();
 
         const std::basic_string<CharT> str = []()
@@ -59,10 +61,11 @@ namespace
             {
                 return U"str";
             }
-
-        #ifdef __cpp_lib_unreachable
-            std::unreachable();
-        #endif
+            else
+            {
+                static_assert(easy::always_false_v<CharT>,
+                    "The type used for template parameter CharT is unsupported");
+            }
         }();
 
         const std::basic_string_view<CharT> sv = []()
@@ -87,10 +90,11 @@ namespace
             {
                 return U"sv";
             }
-
-        #ifdef __cpp_lib_unreachable
-            std::unreachable();
-        #endif
+            else
+            {
+                static_assert(easy::always_false_v<CharT>,
+                    "The type used for template parameter CharT is unsupported");
+            }
         }();
     };
 
