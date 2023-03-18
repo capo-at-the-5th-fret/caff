@@ -165,6 +165,5 @@ TEST_CASE_TEMPLATE_DEFINE("basic_string_hash", CharT, basic_string_hash_test_id)
         }
     }
 }
-
 TEST_CASE_TEMPLATE_APPLY(basic_string_hash_test_id,
     easy::standard_character_types);
