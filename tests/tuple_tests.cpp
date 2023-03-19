@@ -241,12 +241,49 @@ TEST_CASE_TEMPLATE_APPLY(is_cv_qualified_type_set_test_id,
 TEST_CASE_TEMPLATE_DEFINE("cv_qualified_type_set", T,
     cv_qualified_type_set_test_id)
 {
-    using qts_t = easy::make_cv_qualified_type_set<T>;
-    static_assert(std::is_same_v<easy::non_qualified_type<qts_t>, T>);
-    static_assert(std::is_same_v<easy::const_type<qts_t>, std::add_const_t<T>>);
-    static_assert(std::is_same_v<easy::volatile_type<qts_t>,
-        std::add_volatile_t<T>>);
-    static_assert(std::is_same_v<easy::cv_type<qts_t>, std::add_cv_t<T>>);
+    SUBCASE("make using non-qualified type")
+    {
+        using qts_t = easy::make_cv_qualified_type_set<T>;
+        static_assert(std::is_same_v<easy::non_qualified_type<qts_t>, T>);
+        static_assert(std::is_same_v<easy::const_type<qts_t>,
+            std::add_const_t<T>>);
+        static_assert(std::is_same_v<easy::volatile_type<qts_t>,
+            std::add_volatile_t<T>>);
+        static_assert(std::is_same_v<easy::cv_type<qts_t>, std::add_cv_t<T>>);
+    }
+
+    SUBCASE("make using const type")
+    {
+        using qts_t = easy::make_cv_qualified_type_set<std::add_const_t<T>>;
+        static_assert(std::is_same_v<easy::non_qualified_type<qts_t>, T>);
+        static_assert(std::is_same_v<easy::const_type<qts_t>,
+            std::add_const_t<T>>);
+        static_assert(std::is_same_v<easy::volatile_type<qts_t>,
+            std::add_volatile_t<T>>);
+        static_assert(std::is_same_v<easy::cv_type<qts_t>, std::add_cv_t<T>>);
+    }
+
+    SUBCASE("make using volatile type")
+    {
+        using qts_t = easy::make_cv_qualified_type_set<std::add_volatile_t<T>>;
+        static_assert(std::is_same_v<easy::non_qualified_type<qts_t>, T>);
+        static_assert(std::is_same_v<easy::const_type<qts_t>,
+            std::add_const_t<T>>);
+        static_assert(std::is_same_v<easy::volatile_type<qts_t>,
+            std::add_volatile_t<T>>);
+        static_assert(std::is_same_v<easy::cv_type<qts_t>, std::add_cv_t<T>>);
+    }
+
+    SUBCASE("make using const volatile type")
+    {
+        using qts_t = easy::make_cv_qualified_type_set<std::add_cv_t<T>>;
+        static_assert(std::is_same_v<easy::non_qualified_type<qts_t>, T>);
+        static_assert(std::is_same_v<easy::const_type<qts_t>,
+            std::add_const_t<T>>);
+        static_assert(std::is_same_v<easy::volatile_type<qts_t>,
+            std::add_volatile_t<T>>);
+        static_assert(std::is_same_v<easy::cv_type<qts_t>, std::add_cv_t<T>>);
+    }
 }
 TEST_CASE_TEMPLATE_APPLY(cv_qualified_type_set_test_id,
     easy::test::cv_qualifiable_types);

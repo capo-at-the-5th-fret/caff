@@ -91,8 +91,10 @@ namespace easy
     using tuple_prepend_t = tuple_cat_t<std::tuple<Types...>, Tuple>;
 
 // special types
+
     // Reference:
     // https://en.cppreference.com/w/cpp/language/cv
+
     template <typename T>
     struct is_cv_qualifiable_type : std::bool_constant<
         !std::is_reference_v<T> &&
@@ -109,6 +111,7 @@ namespace easy
     // A cv qualified type set is a tuple where:
     // element 0 = T, element 1 = const T, element 2 = volatile T,
     // element 3 = const volatile T
+
     template <typename T>
     struct is_cv_qualified_type_set : std::false_type {};
 
@@ -152,10 +155,8 @@ namespace easy
     requires cv_qualified_type_set<T>
     using cv_type = std::tuple_element_t<3,T>;
 
-
-
-
 // iteration functions
+
     template <typename Tuple, typename F>
     requires tuple_like<std::remove_cvref_t<Tuple>>
     constexpr void tuple_for_each_index(F&& f)
@@ -215,46 +216,3 @@ namespace easy
 
     // clang-format on
 }
-
-#if 0
-// special types
-
-    // A qualified type set is a tuple where:
-    // element 0 = T, element 1 = const T, element 2 = volatile T,
-    // element 3 = const volatile T
-    template <typename T>
-    struct is_qualified_type_set : std::false_type {};
-
-    template <typename T, typename CT, typename VT, typename CVT>
-    requires (!std::is_const_v<T> && !std::is_volatile_v<T> &&
-        std::is_same_v<CT, std::add_const_t<T>> &&
-        std::is_same_v<VT, std::add_volatile_t<T>> &&
-        std::is_same_v<CVT, std::add_cv_t<T>>)
-    struct is_qualified_type_set<std::tuple<T,CT,VT,CVT>> : std::true_type {};
-
-    template <typename T>
-    inline constexpr bool is_qualified_type_set_v =
-        is_qualified_type_set<T>::value;
-
-    template <typename T>
-    concept qualified_type_set = is_qualified_type_set_v<T>;
-
-    template <typename T>
-    using to_qualified_type_set = qualified_type_list<std::remove_cv_t<T>>;
-
-    template <typename T, typename CT, typename VT, typename CVT>
-struct std::tuple_size<easy::qualifier_type_list<T,CT,VT,CVT>> :
-    std::integral_constant<std::size_t, 4> {};
-
-template <std::size_t I, typename T, typename CT, typename VT, typename CVT>
-requires (I < std::tuple_size_v<easy::qualifier_type_list<T,CT,VT,CVT>>)
-struct std::tuple_element<I, easy::qualifier_type_list<T,CT,VT,CVT>>
-{
-    using type =
-        std::conditional_t<I == 0, T,
-        std::conditional_t<I == 1, CT,
-        std::conditional_t<I == 2, VT, CVT>
-        >>;
-};
-
-#endif
