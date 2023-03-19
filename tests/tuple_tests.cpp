@@ -163,6 +163,7 @@ TEST_CASE("is_cv_qualifiable_type")
             !std::is_function_v<T>);
         static_assert(easy::is_cv_qualifiable_type<T>::value == expected_value);
         static_assert(easy::is_cv_qualifiable_type_v<T> == expected_value);
+        static_assert(easy::cv_qualifiable_type<T> == expected_value);
 
         if constexpr (expected_value)
         {
@@ -173,6 +174,82 @@ TEST_CASE("is_cv_qualifiable_type")
         }
     });
 }
+
+namespace
+{
+    template <typename T>
+    using valid_qst = std::tuple<T, const T, volatile T, const volatile T>;
+
+    template<typename T>
+    using invalid_qsts = std::tuple
+    <
+        // wrong type
+        T,
+        const T,
+        volatile T,
+        const volatile T,
+
+        // proper type, wrong size
+        std::tuple<T>,
+        std::tuple<T, const T>,
+        std::tuple<T, const T, volatile T>,
+        std::tuple<T, const T, volatile T, const volatile T, T>,
+
+        // proper type and size, wrong qualifier order
+        std::tuple<T, const T, volatile T, T>,
+        std::tuple<T, const T, volatile T, const T>,
+        std::tuple<T, const T, volatile T, volatile T>,
+
+        std::tuple<T, const T, T, const volatile T>,
+        std::tuple<T, const T, const T, const volatile T>,
+        std::tuple<T, const T, const volatile T, const volatile T>,
+
+        std::tuple<T, T, volatile T, const volatile T>,
+        std::tuple<T, volatile T, volatile T, const volatile T>,
+        std::tuple<T, const volatile T, volatile T, const volatile T>,
+
+        std::tuple<const T, const T, volatile T, const volatile T>,
+        std::tuple<volatile T, const T, volatile T, const volatile T>,
+        std::tuple<const volatile T, const T, volatile T, const volatile T>
+    >;
+}
+
+TEST_CASE_TEMPLATE_DEFINE("is_cv_qualified_type_set", T,
+    is_cv_qualified_type_set_test_id)
+{
+    SUBCASE("successes")
+    {
+        using qst = valid_qst<T>;
+        static_assert(easy::is_cv_qualified_type_set<qst>::value);
+        static_assert(easy::is_cv_qualified_type_set_v<qst>);
+    }
+
+    SUBCASE("failures")
+    {
+        using testTypes = invalid_qsts<T>;
+
+        easy::tuple_for_each_type<testTypes>([]<typename U>
+        {
+            static_assert(!easy::is_cv_qualified_type_set<U>::value);
+            static_assert(!easy::is_cv_qualified_type_set_v<U>);
+        });
+   }
+}
+TEST_CASE_TEMPLATE_APPLY(is_cv_qualified_type_set_test_id,
+    easy::test::cv_qualifiable_types);
+
+TEST_CASE_TEMPLATE_DEFINE("cv_qualified_type_set", T,
+    cv_qualified_type_set_test_id)
+{
+    using qts_t = easy::make_cv_qualified_type_set<T>;
+    static_assert(std::is_same_v<easy::non_qualified_type<qts_t>, T>);
+    static_assert(std::is_same_v<easy::const_type<qts_t>, std::add_const_t<T>>);
+    static_assert(std::is_same_v<easy::volatile_type<qts_t>,
+        std::add_volatile_t<T>>);
+    static_assert(std::is_same_v<easy::cv_type<qts_t>, std::add_cv_t<T>>);
+}
+TEST_CASE_TEMPLATE_APPLY(cv_qualified_type_set_test_id,
+    easy::test::cv_qualifiable_types);
 
 #if 0
 TEST_CASE_TEMPLATE_DEFINE("tuple_has_element_type", TestType,
