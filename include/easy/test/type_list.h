@@ -28,4 +28,25 @@ namespace easy::test
             decltype(&test::dummy_class::member_function)
         >
     >;
+
+    using cv_qualifiable_types = easy::tuple_cat_t
+    <
+        std::tuple<void, std::nullptr_t>,
+        integral_types,
+        standard_floating_point_types,
+        std::tuple
+        <
+            int[],
+            test::dummy_enum,
+            test::dummy_union,
+            test::dummy_class,
+            //decltype(test::dummy_function),
+            int*,
+            //int&,
+            //int&&,
+            decltype(&test::dummy_class::member_variable),
+            decltype(&test::dummy_class::member_function)
+        >
+    >;
+    //static_assert(is_qualifiable_type<qualifiable_types>)
 }
