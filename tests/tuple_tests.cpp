@@ -10,6 +10,7 @@
 
 namespace
 {
+#ifdef __cpp_lib_ranges
     using tuple_like_types = std::tuple
     <
         std::tuple<>,
@@ -17,14 +18,22 @@ namespace
         std::array<int, 1>,
         std::tuple<int, float>,
         std::pair<int, float>,
-#ifdef __cpp_lib_ranges
         std::tuple<int, float, bool>,
         std::ranges::subrange<int*, int*>
-#else
-        std::tuple<int, float, bool>
-#endif
     >;
     static_assert(std::tuple_size_v<tuple_like_types> == 7);
+#else
+    using tuple_like_types = std::tuple
+    <
+        std::tuple<>,
+        std::tuple<int>,
+        std::array<int, 1>,
+        std::tuple<int, float>,
+        std::pair<int, float>,
+        std::tuple<int, float, bool>
+    >;
+    static_assert(std::tuple_size_v<tuple_like_types> == 6);
+#endif    
 
     inline constexpr std::array tuple_like_type_sizes
     {
@@ -33,13 +42,15 @@ namespace
         std::tuple_size_v<std::tuple_element_t<2, tuple_like_types>>,
         std::tuple_size_v<std::tuple_element_t<3, tuple_like_types>>,
         std::tuple_size_v<std::tuple_element_t<4, tuple_like_types>>,
+#ifdef __cpp_lib_ranges
         std::tuple_size_v<std::tuple_element_t<5, tuple_like_types>>,
         std::tuple_size_v<std::tuple_element_t<6, tuple_like_types>>
+#else
+        std::tuple_size_v<std::tuple_element_t<5, tuple_like_types>>
+#endif
     };
     static_assert(tuple_like_type_sizes.size() == std::tuple_size_v<tuple_like_types>);
 }
-
-
 
 namespace
 {
