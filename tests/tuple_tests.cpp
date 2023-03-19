@@ -6,6 +6,7 @@
 #include <list>
 #include <iterator>
 #include <array>
+#include <utility>
 #include "easy/type_traits.h"
 #include "easy/test/type_list.h"
 
