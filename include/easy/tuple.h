@@ -48,33 +48,20 @@ namespace easy
     { 
         return (has_tuple_element<T,I> && ...); 
     }(std::make_index_sequence<std::tuple_size_v<T>>());*/
-    // clang-format on
 
     // Reference:
     // https://stackoverflow.com/questions/25958259/how-do-i-find-out-if-a-tuple-contains-a-type
 
-    namespace detail
-    {
-        template<typename T, typename Tuple, typename Sequence>
-        struct tuple_has_element_type_impl;
-
-        template <typename T, tuple_like Tuple, std::size_t... Is>
-        struct tuple_has_element_type_impl<T, Tuple, std::index_sequence<Is...>> :
-            std::disjunction<std::is_same<std::tuple_element_t<Is,Tuple>,T>...>
+    template <typename T, tuple_like Tuple>
+    constexpr inline bool tuple_contains_type_v =
+        []<auto... Is>(std::index_sequence<Is...>)
         {
-        };
-    }
+            return (... || std::is_same_v<std::tuple_element_t<Is,Tuple>,T>);
+        }(std::make_index_sequence<std::tuple_size_v<Tuple>>());
 
     template <typename T, tuple_like Tuple>
-    struct tuple_has_element_type : std::bool_constant<
-        detail::tuple_has_element_type_impl<T, Tuple,
-        std::make_index_sequence<std::tuple_size_v<Tuple>>>::value>
-    {
-    };
-
-    template <typename T, tuple_like Tuple>
-    inline constexpr bool tuple_has_element_type_v =
-        tuple_has_element_type<T, Tuple>::value;
+    struct tuple_contains_type :
+        std::bool_constant<tuple_contains_type_v<T, Tuple>> {};
 
 // operations
 

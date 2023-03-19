@@ -53,6 +53,89 @@ namespace
     static_assert(tuple_like_type_sizes.size() == std::tuple_size_v<tuple_like_types>);
 }
 
+TEST_CASE_TEMPLATE_DEFINE("has_tuple_element", TupleLike,
+    has_tuple_element_test_id)
+{
+    std::size_t i{ 0 };
+    easy::tuple_for_each_index<TupleLike>([&i]<std::size_t I>
+    {
+        CAPTURE(I);
+        CAPTURE(i);
+        REQUIRE(I == i);
+        static_assert(easy::detail::has_tuple_element<TupleLike, I>);
+        ++i;
+    });
+
+    // Non tuple-like types
+    static_assert(!easy::detail::has_tuple_element<int, 0>);
+
+    // NOTE: Won't compile
+    // Out of range index
+    //static_assert(!easy::has_tuple_element<TestType,
+      //  std::tuple_size_v<TestType>>);
+}
+TEST_CASE_TEMPLATE_APPLY(has_tuple_element_test_id, tuple_like_types);
+
+TEST_CASE_TEMPLATE_DEFINE("tuple_like std types", TestType,
+    tuple_like_std_types_test_id)
+{
+    // NOTE: std::tuple doesn't work with volatile qualifiers; volatile
+    // specializations for tuple_element and tuple_size have been deprecated in
+    // C++20
+    // Reference:
+    // https://stackoverflow.com/questions/26854320/volatile-and-const-volatile-stdtuple-and-stdget
+
+    using qts_t = easy::make_cv_qualified_type_set<TestType>;
+
+    easy::tuple_for_each_type<qts_t>([]<typename T>
+    {
+        static_assert(easy::tuple_like<T>);
+        static_assert(!easy::tuple_like<T&>);
+    });
+}
+TEST_CASE_TEMPLATE_APPLY(tuple_like_std_types_test_id, tuple_like_types);
+
+TEST_CASE_TEMPLATE_DEFINE("tuple_like other types", TestType,
+    tuple_like_other_types_test_id)
+{
+    using qts_t = easy::make_cv_qualified_type_set<TestType>;
+
+    easy::tuple_for_each_type<qts_t>([]<typename T>
+    {
+        static_assert(!easy::tuple_like<T>);
+    });
+}
+TEST_CASE_TEMPLATE_APPLY(tuple_like_other_types_test_id,
+    easy::test::cv_qualifiable_types);
+
+TEST_CASE_TEMPLATE_DEFINE("tuple_contains_type", TestType,
+    tuple_contains_type_test_id)
+{
+    using tuple_t = TestType;
+    using success_list = tuple_t;
+    using failure_list = easy::tuple_append_t<
+        easy::make_cv_qualified_type_set<void>, void*>;
+
+    SUBCASE("successes")
+    {
+        easy::tuple_for_each_type<success_list>([]<typename T>
+        {
+            static_assert(easy::tuple_contains_type<T, tuple_t>::value);
+            static_assert(easy::tuple_contains_type_v<T, tuple_t>);
+        });
+    }
+
+    SUBCASE("failures")
+    {
+        easy::tuple_for_each_type<failure_list>([]<typename T>
+        {
+            static_assert(!easy::tuple_contains_type<T, tuple_t>::value);
+            static_assert(!easy::tuple_contains_type_v<T, tuple_t>);
+        });
+    }
+}
+TEST_CASE_TEMPLATE_APPLY(tuple_contains_type_test_id, tuple_like_types);
+
 namespace
 {
     using tuple_cat_t_test_types = std::tuple
@@ -288,88 +371,23 @@ TEST_CASE_TEMPLATE_DEFINE("cv_qualified_type_set", T,
 TEST_CASE_TEMPLATE_APPLY(cv_qualified_type_set_test_id,
     easy::test::cv_qualifiable_types);
 
-#if 0
-TEST_CASE_TEMPLATE_DEFINE("tuple_has_element_type", TestType,
-    tuple_has_element_type_test_id)
+TEST_CASE_TEMPLATE_DEFINE("tuple_for_each_index", TupleLike,
+    tuple_for_each_index_test_id)
 {
-    using tuple_t = TestType;
-    using success_list = tuple_t;
-    using failure_list = easy::tuple_cat_t<
-        easy::qualifier_type_list<void>, std::tuple<void*>>;
+    constexpr std::size_t expected_size = std::tuple_size_v<TupleLike>;
 
-    SECTION("failures")
-    {
-        easy::for_each<failure_list>([]<typename T>
-        {
-            STATIC_REQUIRE_FALSE(easy::tuple_has_type<T, tuple_t>::value);
-            STATIC_REQUIRE_FALSE(easy::tuple_has_type_v<T, tuple_t>);
-        });
-    }
-
-    SECTION("successes")
-    {
-        easy::for_each<success_list>([]<typename T>()
-        {
-            STATIC_REQUIRE(easy::tuple_has_type<T, tuple_t>::value);
-            STATIC_REQUIRE(easy::tuple_has_type_v<T, tuple_t>);
-        });
-    }
-    
-}
-
-TEST_CASE_TEMPLATE_APPLY(tuple_has_element_type_test_id, tuple_like_types);
-
-
-TEMPLATE_LIST_TEST_CASE("tuple_has_type", "[tuple][has_type]",
-    tuple_like_type_list)
-{
-    using tuple_t = TestType;
-    using success_list = easy::to_type_list<tuple_t>;
-    using failure_list = easy::append_type<
-        easy::qualifier_type_list<void>, void*>;
-
-    SECTION("failures")
-    {
-        easy::for_each<failure_list>([]<typename T>
-        {
-            STATIC_REQUIRE_FALSE(easy::tuple_has_type<T, tuple_t>::value);
-            STATIC_REQUIRE_FALSE(easy::tuple_has_type_v<T, tuple_t>);
-        });
-    }
-
-    SECTION("successes")
-    {
-        easy::for_each<success_list>([]<typename T>()
-        {
-            STATIC_REQUIRE(easy::tuple_has_type<T, tuple_t>::value);
-            STATIC_REQUIRE(easy::tuple_has_type_v<T, tuple_t>);
-        });
-    }
-}
-
-TEST_CASE_TEMPLATE_DEFINE("has_tuple_element", TupleLike,
-    has_tuple_element_test_id)
-{
     std::size_t i{ 0 };
     easy::tuple_for_each_index<TupleLike>([&i]<std::size_t I>
     {
-        CAPTURE(I);
-        CAPTURE(i);
         REQUIRE(I == i);
-        static_assert(easy::detail::has_tuple_element<TupleLike, I>);
+        static_assert(I < expected_size);
         ++i;
     });
 
-    // Non tuple-like types
-    static_assert(!easy::detail::has_tuple_element<int, 0>);
-
-    // NOTE: Won't compile
-    // Out of range index
-    //static_assert(!easy::has_tuple_element<TestType,
-      //  std::tuple_size_v<TestType>>);
+    REQUIRE(i == expected_size);
+    
 }
-
-TEST_CASE_TEMPLATE_APPLY(has_tuple_element_test_id, tuple_like_types);
+TEST_CASE_TEMPLATE_APPLY(tuple_for_each_index_test_id, tuple_like_types);
 
 TEST_CASE("tuple_for_each_type")
 {
@@ -377,7 +395,11 @@ TEST_CASE("tuple_for_each_type")
     // std::tuple_element_t requires a compile time index which isn't available
     // in for_each_type
 
+#ifdef __cpp_lib_ranges
     static_assert(std::tuple_size_v<tuple_like_types> == 7);
+#else
+    static_assert(std::tuple_size_v<tuple_like_types> == 6);
+#endif
 
     easy::tuple_enumerate_types<tuple_like_types>(
         []<std::size_t I, typename TupleLike>()
@@ -435,147 +457,7 @@ TEST_CASE_TEMPLATE_DEFINE("tuple_enumerate_types", TupleLike,
 
     REQUIRE(i == std::tuple_size_v<TupleLike>);
 }
-
 TEST_CASE_TEMPLATE_APPLY(tuple_enumerate_types_test_id, tuple_like_types);
-#endif
-
-#if 0
-TEST_CASE("enumerate_types", "[type_list][enumerate_types]")
-{
-    SECTION("no types")
-    {
-        std::size_t i{ 0 };
-        easy::enumerate_types<>([&i]<auto I, typename T>
-        {
-            ++i;
-        });
-
-        REQUIRE(i == 0);
-    }
-
-    SECTION("one type")
-    {
-        std::size_t i{ 0 };
-        easy::enumerate_types<int>([&i]<auto I, typename T>
-        {
-            REQUIRE(I == i);
-            if (i == 0)
-            {
-                REQUIRE(std::is_same_v<T,int>);
-            }
-            ++i;
-        });
-
-        REQUIRE(i == 1);
-    }
-
-    SECTION("multiple types")
-    {
-        std::size_t i{ 0 };
-        easy::enumerate_types<int,float,bool>([&i]<auto I, typename T>
-        {
-            REQUIRE(I == i);
-
-            if (i == 0)
-            {
-                REQUIRE(std::is_same_v<T,int>);
-            }
-            else if (i == 1)
-            {
-                REQUIRE(std::is_same_v<T,float>);
-            }
-            else if (i == 2)
-            {
-                REQUIRE(std::is_same_v<T,bool>);
-            }
-            ++i;
-        });
-
-        REQUIRE(i == 3);
-    }
-}
-#endif
-
-#if 0
-TEMPLATE_LIST_TEST_CASE("tuple_like - std tuple-likes",
-    "[tuple][tuple_like][concepts]", tuple_like_type_list)
-{
-    // NOTE: std::tuple doesn't work with volatile qualifiers; volatile
-    // specializations for tuple_element and tuple_size have been deprecated in
-    // C++20
-    // Reference:
-    // https://stackoverflow.com/questions/26854320/volatile-and-const-volatile-stdtuple-and-stdget
-
-    using qtl_t = easy::make_const_qualifier_type_list<TestType>;
-
-    easy::enumerate<qtl_t>([]<auto I, typename T>
-    {
-        CAPTURE(I);
-        STATIC_REQUIRE(easy::tuple_like<T>);
-        STATIC_REQUIRE_FALSE(easy::tuple_like<T&>);
-    });
-}
-
-TEMPLATE_LIST_TEST_CASE("tuple_like - other types",
-    "[tuple][tuple_like][concepts]",
-    easy::primary_type_list)
-{
-    using qtl_t = easy::make_qualifier_type_list<TestType>;
-
-    easy::enumerate<qtl_t>([]<auto I, typename T>
-    {
-        CAPTURE(I);
-        STATIC_REQUIRE_FALSE(easy::tuple_like<T>);
-    });
-}
-
-TEMPLATE_LIST_TEST_CASE("tuple_has_type", "[tuple][has_type]",
-    tuple_like_type_list)
-{
-    using tuple_t = TestType;
-    using success_list = easy::to_type_list<tuple_t>;
-    using failure_list = easy::append_type<
-        easy::qualifier_type_list<void>, void*>;
-
-    SECTION("failures")
-    {
-        easy::for_each<failure_list>([]<typename T>
-        {
-            STATIC_REQUIRE_FALSE(easy::tuple_has_type<T, tuple_t>::value);
-            STATIC_REQUIRE_FALSE(easy::tuple_has_type_v<T, tuple_t>);
-        });
-    }
-
-    SECTION("successes")
-    {
-        easy::for_each<success_list>([]<typename T>()
-        {
-            STATIC_REQUIRE(easy::tuple_has_type<T, tuple_t>::value);
-            STATIC_REQUIRE(easy::tuple_has_type_v<T, tuple_t>);
-        });
-    }
-}
-
-TEMPLATE_PRODUCT_TEST_CASE("tuple_cat_t", "[tuple][tuple_cat][tuple_cat_type]",
-    std::tuple,
-    (
-        (std::tuple<>, std::tuple<>, std::tuple<>, std::tuple<>),
-        (std::tuple<int>, std::tuple<>, std::tuple<int>, std::tuple<int>),
-        (std::tuple<int>, std::tuple<double>, std::tuple<int,double>, std::tuple<double,int>),
-        (std::tuple<int,double>, std::tuple<char,float>, (std::tuple<int,double,char,float>), (std::tuple<char,float,int,double>))
-    )
-)
-{
-    using tuple1_type = std::tuple_element_t<0, TestType>;
-    using tuple2_type = std::tuple_element_t<1, TestType>;
-    using expected_type_1 = std::tuple_element_t<2, TestType>;
-    using expected_type_2 = std::tuple_element_t<3, TestType>;
-
-    STATIC_REQUIRE(std::is_same_v<easy::tuple_cat_t<tuple1_type, tuple2_type>,
-        expected_type_1>);
-    STATIC_REQUIRE(std::is_same_v<easy::tuple_cat_t<tuple2_type, tuple1_type>,
-        expected_type_2>);
-}
 
 namespace
 {
@@ -657,19 +539,21 @@ namespace
     };
 }
 
-TEMPLATE_TEST_CASE_METHOD(tuple_fixture, "tuple_for_each",
-    "[tuple][for_each]", tuple_test_type, pair_test_type, array_test_type)
+TEST_CASE_TEMPLATE("tuple_for_each", TestType, tuple_test_type, pair_test_type,
+    array_test_type)
 {
     using fixture_t = tuple_fixture<TestType>;
     using tuple_t = typename fixture_t::tuple_type;
 
-    tuple_t t{ fixture_t::test_value };
-    auto ct = std::as_const(fixture_t::test_value);
+    fixture_t fixture;
 
-    SECTION("verify the element types")
+    tuple_t t{ fixture.test_value };
+    auto ct = std::as_const(fixture.test_value);
+
+    SUBCASE("verify the element types")
     {
         int i = 0;
-        easy::for_each(t, [&]<typename T>(T element)
+        easy::tuple_for_each(t, [&]<typename T>(T element)
         {
             CAPTURE(i);
             tuple_for_each_validator v;
@@ -678,20 +562,20 @@ TEMPLATE_TEST_CASE_METHOD(tuple_fixture, "tuple_for_each",
         });
     }
 
-    SECTION("modify the elements")
+    SUBCASE("modify the elements")
     {
-        easy::for_each(t, [](auto& element)
+        easy::tuple_for_each(t, [](auto& element)
         {
             ++element;
         });
 
-        REQUIRE(t == fixture_t::modified_expected);
+        REQUIRE(t == fixture.modified_expected);
     }
 
-    SECTION("verify const correctness")
+    SUBCASE("verify const correctness")
     {
         int i = 0;
-        easy::for_each(std::as_const(t), [&](const auto& element)
+        easy::tuple_for_each(std::as_const(t), [&](const auto& element)
         {
             CAPTURE(i);
             tuple_for_each_validator v;
@@ -701,205 +585,44 @@ TEMPLATE_TEST_CASE_METHOD(tuple_fixture, "tuple_for_each",
     }
 }
 
-TEMPLATE_TEST_CASE_METHOD(tuple_fixture, "tuple_enumerate",
-    "[tuple][enumerate]", tuple_test_type, pair_test_type, array_test_type)
+TEST_CASE_TEMPLATE("tuple_enumerate", TestType, tuple_test_type, pair_test_type,
+    array_test_type)
 {
     using fixture_t = tuple_fixture<TestType>;
     using tuple_t = typename fixture_t::tuple_type;
 
-    tuple_t t{ fixture_t::test_value };
+    fixture_t fixture;
 
-    SECTION("verify the indices and element types")
+    tuple_t t{ fixture.test_value };
+
+    SUBCASE("verify the indices and element types")
     {
-        easy::enumerate(t, [&t = t]<auto I>(auto element)
+        easy::tuple_enumerate(t, [&t = t]<auto I>(auto element)
         {
-            DYNAMIC_SECTION("verifying index and type for element " << I)
-            {
-                STATIC_REQUIRE(std::is_same_v<std::tuple_element_t<I, tuple_t>,
-                    decltype(element)>);
-                REQUIRE(std::get<I>(t) == element);
-            }
+            CAPTURE(I);
+            static_assert(std::is_same_v<std::tuple_element_t<I, tuple_t>,
+                decltype(element)>);
+            REQUIRE(std::get<I>(t) == element);
         });
     }
 
-    SECTION("modify the elements")
+    SUBCASE("modify the elements")
     {
-        easy::enumerate(t, []<auto I>(auto& element)
+        easy::tuple_enumerate(t, []<auto I>(auto& element)
         {
             ++element;
         });
 
-        REQUIRE(t == fixture_t::modified_expected );
+        REQUIRE(t == fixture.modified_expected );
     }
 
-    SECTION("verify const correctness")
+    SUBCASE("verify const correctness")
     {
-        easy::enumerate(std::as_const(t), []<auto I>(const auto& element)
+        easy::tuple_enumerate(std::as_const(t), []<auto I>(const auto& element)
         {
-            DYNAMIC_SECTION("verifying constness for element " << I)
-            {
-                STATIC_REQUIRE(
-                    std::is_const_v<std::remove_reference_t<decltype(element)>>
-                );
-            }
+            CAPTURE(I);
+            static_assert(
+                std::is_const_v<std::remove_reference_t<decltype(element)>>);
         });
     }
 }
-#endif
-
-
-#if 0
-TEST_CASE("append_type")
-{
-    SUBCASE("append to empty list")
-    {
-        // append single type
-        using t1 = std::tuple<>;
-        using t2 = easy::tuple_append_type_t<t1, int>;
-
-        static_assert(std::tuple_size_v<t2> == 1);
-        static_assert(std::is_same_v<std::tuple_element_t<0, t2>, int>);
-
-        // append multiple types
-        using t3 = easy::tuple_append_type_t<t1, int, float, bool>;
-        static_assert(std::tuple_size_v<t3> == 3);
-        static_assert(std::is_same_v<
-            std::tuple_element_t<0, t3>, int>);
-        static_assert(std::is_same_v<
-            std::tuple_element_t<1, t3>, float>);
-        static_assert(std::is_same_v<
-            std::tuple_element_t<2, t3>, bool>);
-    }
-
-    SECTION("append to list with 1 type")
-    {
-        // append single type
-        using type_list_1 = easy::type_list<int>;
-        using type_list_2 = easy::append_type<type_list_1, float>;
-
-        STATIC_REQUIRE(easy::type_list_size_v<type_list_2> == 2);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<0, type_list_2>, int>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<1, type_list_2>, float>);
-
-        // append multiple types
-        using type_list_3 = easy::append_type<type_list_1, float,
-            bool>;
-        STATIC_REQUIRE(easy::type_list_size_v<type_list_3> == 3);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<0, type_list_3>, int>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<1, type_list_3>, float>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<2, type_list_3>, bool>);
-    }
-
-    SECTION("append to list with multiple types")
-    {
-        // append single type
-        using type_list_1 = easy::type_list<int, float>;
-        using type_list_2 = easy::append_type<type_list_1, bool>;
-
-        STATIC_REQUIRE(easy::type_list_size_v<type_list_2> == 3);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<0, type_list_2>, int>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<1, type_list_2>, float>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<2, type_list_2>, bool>);
-
-        // append multiple types
-        using type_list_3 = easy::append_type<type_list_1, bool,
-            char>;
-        STATIC_REQUIRE(easy::type_list_size_v<type_list_3> == 4);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<0, type_list_3>, int>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<1, type_list_3>, float>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<2, type_list_3>, bool>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<3, type_list_3>, char>);
-    }
-}
-#endif
-
-#if 0
-TEST_CASE("prepend_type", "[type_list][prepend_type]")
-{
-    SECTION("prepend to empty list")
-    {
-        // prepend single type
-        using type_list_1 = easy::type_list<>;
-        using type_list_2 = easy::prepend_type<type_list_1, int>;
-
-        STATIC_REQUIRE(easy::type_list_size_v<type_list_2> == 1);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<0, type_list_2>, int>);
-
-        // prepend multiple types
-        using type_list_3 = easy::prepend_type<type_list_1, int, float,
-            bool>;
-        STATIC_REQUIRE(easy::type_list_size_v<type_list_3> == 3);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<0, type_list_3>, int>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<1, type_list_3>, float>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<2, type_list_3>, bool>);
-    }
-
-    SECTION("prepend to list with 1 type")
-    {
-        // prepend single type
-        using type_list_1 = easy::type_list<int>;
-        using type_list_2 = easy::prepend_type<type_list_1, float>;
-
-        STATIC_REQUIRE(easy::type_list_size_v<type_list_2> == 2);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<0, type_list_2>, float>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<1, type_list_2>, int>);
-
-        // prepend multiple types
-        using type_list_3 = easy::prepend_type<type_list_1, bool, float>;
-
-        STATIC_REQUIRE(easy::type_list_size_v<type_list_3> == 3);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<0, type_list_3>, bool>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<1, type_list_3>, float>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<2, type_list_3>, int>);
-    }
-
-    SECTION("prepend to list with multiple types")
-    {
-        // prepend single type
-        using type_list_1 = easy::type_list<float, int>;
-        using type_list_2 = easy::prepend_type<type_list_1, bool>;
-
-        STATIC_REQUIRE(easy::type_list_size_v<type_list_2> == 3);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<0, type_list_2>, bool>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<1, type_list_2>, float>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<2, type_list_2>, int>);
-
-        // prepend multiple types
-        using type_list_3 = easy::prepend_type<type_list_1, char, bool>;
-        
-        STATIC_REQUIRE(easy::type_list_size_v<type_list_3> == 4);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<0, type_list_3>, char>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<1, type_list_3>, bool>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<2, type_list_3>, float>);
-        STATIC_REQUIRE(std::is_same_v<
-            easy::type_list_element_t<3, type_list_3>, int>);
-    }
-}
-#endif
