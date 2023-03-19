@@ -17,8 +17,12 @@ namespace
         std::array<int, 1>,
         std::tuple<int, float>,
         std::pair<int, float>,
+#ifdef __cpp_lib_ranges
         std::tuple<int, float, bool>,
         std::ranges::subrange<int*, int*>
+#else
+        std::tuple<int, float, bool>
+#endif
     >;
     static_assert(std::tuple_size_v<tuple_like_types> == 7);
 
