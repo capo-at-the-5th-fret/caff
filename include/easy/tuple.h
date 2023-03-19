@@ -10,15 +10,18 @@ namespace easy
     // https://stackoverflow.com/questions/68443804/c20-concept-to-check-tuple-like-types
     // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2165r2.pdf
 
+    // clang-format off
     namespace detail
     {
-        // clang-format off
         template<typename T, std::size_t I>
         concept has_tuple_element =
         requires(T t)
         {
             typename std::tuple_element_t<I, std::remove_const_t<T>>;
-            { get<I>(t) } -> std::convertible_to<const std::tuple_element_t<I,T>&>;
+
+            // NOTE: This causes a "cannot form a reference to 'void'"
+            // compile-time error with std::tuple<void>;
+            //{ get<I>(t) } -> std::convertible_to<const std::tuple_element_t<I,T>&>;
         };
 
         template <typename T, std::size_t... I>
@@ -26,10 +29,8 @@ namespace easy
         { 
             return (has_tuple_element<T,I> && ...);
         };
-        // clang-format on
     }
 
-    // clang-format off
     template<typename T>
     concept tuple_like = !std::is_reference_v<T> &&
     requires(T t)
@@ -147,6 +148,8 @@ namespace easy
                 std::get<Is>(std::forward<Tuple>(t))), ...);
         }(std::make_index_sequence<std::tuple_size_v<tuple_t>>{});
     }
+
+    // clang-format on
 }
 
 #if 0
