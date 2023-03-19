@@ -10,6 +10,9 @@ target_sources(easy
             easy/tuple.h
             easy/type_list.h
             easy/type_traits.h
+
+            easy/test/dummy.h
+            easy/test/type_list.h
 )
 
 target_compile_features(easy INTERFACE cxx_std_23)
