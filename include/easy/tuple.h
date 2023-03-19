@@ -90,6 +90,19 @@ namespace easy
     template <tuple_like Tuple, typename... Types>
     using tuple_prepend_t = tuple_cat_t<std::tuple<Types...>, Tuple>;
 
+// special types
+    // Reference:
+    // https://en.cppreference.com/w/cpp/language/cv
+    template <typename T>
+    struct is_cv_qualifiable_type : std::bool_constant<
+        !std::is_reference_v<T> &&
+        !std::is_function_v<T>
+    > {};
+
+    template <typename T>
+    inline constexpr bool is_cv_qualifiable_type_v =
+        is_cv_qualifiable_type<T>::value;
+
 // iteration functions
     template <typename Tuple, typename F>
     requires tuple_like<std::remove_cvref_t<Tuple>>
@@ -124,7 +137,6 @@ namespace easy
                 std::tuple_element_t<Is, tuple_t>>(), ...);
         }(std::make_index_sequence<std::tuple_size_v<tuple_t>>{});
     }
-
 
     template <typename Tuple, typename F>
     requires tuple_like<std::remove_cvref_t<Tuple>>
