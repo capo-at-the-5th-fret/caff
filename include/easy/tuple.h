@@ -77,55 +77,6 @@ namespace easy
     template <tuple_like Tuple, typename... Types>
     using tuple_prepend_t = tuple_cat_t<std::tuple<Types...>, Tuple>;
 
-// special types
-
-    // A cv qualified type set is a tuple where:
-    // element 0 = T, element 1 = const T, element 2 = volatile T,
-    // element 3 = const volatile T
-
-    template <typename T>
-    struct is_cv_qualified_type_set : std::false_type {};
-
-    template <typename T, typename CT, typename VT, typename CVT>
-    requires (is_cv_qualifiable_v<T> &&
-        !std::is_const_v<T> && !std::is_volatile_v<T> &&
-        std::is_same_v<CT, std::add_const_t<T>> &&
-        std::is_same_v<VT, std::add_volatile_t<T>> &&
-        std::is_same_v<CVT, std::add_cv_t<T>>)
-    struct is_cv_qualified_type_set<std::tuple<T,CT,VT,CVT>> : std::true_type {};
-
-    template <typename T>
-    inline constexpr bool is_cv_qualified_type_set_v =
-        is_cv_qualified_type_set<T>::value;
-
-    template <typename T>
-    concept cv_qualified_type_set = is_cv_qualified_type_set_v<T>;
-
-    template <typename T>
-    requires (cv_qualifiable<T>)
-    using make_cv_qualified_type_set = std::tuple<
-        std::remove_cv_t<T>,
-        std::add_const_t<std::remove_cv_t<T>>,
-        std::add_volatile_t<std::remove_cv_t<T>>,
-        std::add_cv_t<std::remove_cv_t<T>>
-    >;
-
-    template <typename T>
-    requires cv_qualified_type_set<T>
-    using non_qualified_type = std::tuple_element_t<0,T>;
-
-    template <typename T>
-    requires cv_qualified_type_set<T>
-    using const_type = std::tuple_element_t<1,T>;
-
-    template <typename T>
-    requires cv_qualified_type_set<T>
-    using volatile_type = std::tuple_element_t<2,T>;
-
-    template <typename T>
-    requires cv_qualified_type_set<T>
-    using cv_type = std::tuple_element_t<3,T>;
-
 // iteration functions
 
     template <typename Tuple, typename F>
