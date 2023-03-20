@@ -7,7 +7,7 @@ TEST_CASE("primary_type")
 
     static_assert(std::tuple_size_v<T> == 31);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, void>);
-    static_assert(std::is_same_v<std::tuple_element_t<1,T>, nullptr_t>);
+    static_assert(std::is_same_v<std::tuple_element_t<1,T>, std::nullptr_t>);
     static_assert(std::is_same_v<std::tuple_element_t<2,T>, bool>);
     static_assert(std::is_same_v<std::tuple_element_t<3,T>, char>);
     static_assert(std::is_same_v<std::tuple_element_t<4,T>, wchar_t>);
@@ -40,7 +40,7 @@ TEST_CASE("primary_type")
 
     REQUIRE(std::tuple_size_v<T> == 31);
     REQUIRE(std::is_same_v<std::tuple_element_t<0,T>, void>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<1,T>, nullptr_t>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<1,T>, std::nullptr_t>);
     REQUIRE(std::is_same_v<std::tuple_element_t<2,T>, bool>);
     REQUIRE(std::is_same_v<std::tuple_element_t<3,T>, char>);
     REQUIRE(std::is_same_v<std::tuple_element_t<4,T>, wchar_t>);
@@ -78,7 +78,7 @@ TEST_CASE("cv_qualifiable_types")
 
     static_assert(std::tuple_size_v<T> == 28);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, void>);
-    static_assert(std::is_same_v<std::tuple_element_t<1,T>, nullptr_t>);
+    static_assert(std::is_same_v<std::tuple_element_t<1,T>, std::nullptr_t>);
     static_assert(std::is_same_v<std::tuple_element_t<2,T>, bool>);
     static_assert(std::is_same_v<std::tuple_element_t<3,T>, char>);
     static_assert(std::is_same_v<std::tuple_element_t<4,T>, wchar_t>);
@@ -111,7 +111,7 @@ TEST_CASE("cv_qualifiable_types")
 
     REQUIRE(std::tuple_size_v<T> == 28);
     REQUIRE(std::is_same_v<std::tuple_element_t<0,T>, void>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<1,T>, nullptr_t>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<1,T>, std::nullptr_t>);
     REQUIRE(std::is_same_v<std::tuple_element_t<2,T>, bool>);
     REQUIRE(std::is_same_v<std::tuple_element_t<3,T>, char>);
     REQUIRE(std::is_same_v<std::tuple_element_t<4,T>, wchar_t>);
