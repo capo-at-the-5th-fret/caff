@@ -22,6 +22,9 @@ namespace easy
 
     using string_hash = basic_string_hash<char>;
     using wstring_hash = basic_string_hash<wchar_t>;
+    using u8string_hash = basic_string_hash<char8_t>;
+    using u16string_hash = basic_string_hash<char16_t>;
+    using u32string_hash = basic_string_hash<char32_t>;
 
     // Usage:
     // using my_set = std::unordered_set<std::string, string_hash, std::equal_to<>>;

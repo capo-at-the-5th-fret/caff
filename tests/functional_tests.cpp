@@ -167,3 +167,38 @@ TEST_CASE_TEMPLATE_DEFINE("basic_string_hash", CharT, basic_string_hash_test_id)
 }
 TEST_CASE_TEMPLATE_APPLY(basic_string_hash_test_id,
     easy::standard_character_types);
+
+TEST_CASE("basic_string_hash aliases")
+{
+    // clang-format off
+    static_assert(std::is_same_v
+    <
+        easy::string_hash::hash_type,
+        std::hash<std::string_view>
+    >);
+
+    static_assert(std::is_same_v
+    <
+        easy::wstring_hash::hash_type,
+        std::hash<std::wstring_view>
+    >);
+
+    static_assert(std::is_same_v
+    <
+        easy::u8string_hash::hash_type,
+        std::hash<std::u8string_view>
+    >);
+
+    static_assert(std::is_same_v
+    <
+        easy::u16string_hash::hash_type,
+        std::hash<std::u16string_view>
+    >);
+
+    static_assert(std::is_same_v
+    <
+        easy::u32string_hash::hash_type,
+        std::hash<std::u32string_view>
+    >);
+    // clang-format on
+}
