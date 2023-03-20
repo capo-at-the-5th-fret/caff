@@ -88,6 +88,14 @@ namespace easy
     template <typename T>
     inline constexpr bool is_boolean_v = is_boolean<T>::value;
 
+    template <typename T>
+    struct is_standard_integer : std::conjunction<std::is_integral<T>,
+        is_none_of_same<std::remove_cv_t<T>, bool, char, wchar_t, char8_t,
+        char16_t, char32_t>> {};
+
+    template <typename T>
+    inline constexpr bool is_standard_integer_v = is_standard_integer<T>::value;
+
     // Reference:
     // https://en.cppreference.com/w/cpp/language/cv
 

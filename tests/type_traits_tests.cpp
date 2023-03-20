@@ -256,6 +256,32 @@ TEST_CASE_TEMPLATE_DEFINE("is_boolean", TestType, is_boolean_test_id)
 }
 TEST_CASE_TEMPLATE_APPLY(is_boolean_test_id, easy::test::primary_types);
 
+TEST_CASE_TEMPLATE_DEFINE("is_standard_integer", TestType,
+    is_standard_integer_test_id)
+{
+    if constexpr (easy::is_cv_qualifiable_v<TestType>)
+    {
+        using qts_t = easy::make_cv_qualified_type_set<TestType>;
+    
+        easy::tuple_enumerate_types<qts_t>([]<auto I, typename T>()
+        {
+            CAPTURE(I);
+    
+            constexpr bool expected = easy::tuple_contains_type_v<
+                std::remove_cv_t<T>, easy::standard_integer_types>;
+        
+            static_assert(easy::is_standard_integer<T>::value == expected);
+            static_assert(easy::is_standard_integer_v<T> == expected);
+        });
+    }
+    else
+    {
+        static_assert(!easy::is_standard_integer<TestType>::value);
+        static_assert(!easy::is_standard_integer_v<TestType>);
+    }
+}
+TEST_CASE_TEMPLATE_APPLY(is_standard_integer_test_id, easy::test::primary_types);
+
 TEST_CASE("is_cv_qualifiable")
 {
     easy::tuple_for_each_type<easy::test::primary_types>([]<typename T>
