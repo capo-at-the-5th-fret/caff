@@ -29,8 +29,207 @@ TEST_CASE_TEMPLATE_DEFINE("always_false", TestType, always_false_test_id)
         static_assert(!easy::always_false_v<TestType, double>);
     }
 }
-
 TEST_CASE_TEMPLATE_APPLY(always_false_test_id, easy::test::primary_types);
+
+TEST_CASE("is_all_of")
+{
+    using easy::is_all_of;
+    using easy::is_all_of_v;
+
+    SUBCASE("no types")
+    {
+        static_assert(is_all_of<int, std::is_same>::value);
+        static_assert(is_all_of_v<int, std::is_same>);
+    }
+
+    SUBCASE("single type")
+    {
+        static_assert(is_all_of<int, std::is_same, int>::value);
+        static_assert(!is_all_of<int, std::is_same, double>::value);
+
+        static_assert(is_all_of_v<int, std::is_same, int>);
+        static_assert(!is_all_of_v<int, std::is_same, double>);
+    }
+
+    SUBCASE("multiple types")
+    {
+        static_assert(is_all_of<int, std::is_same, int, int>::value);
+        static_assert(!is_all_of<int, std::is_same, int, double>::value);
+        static_assert(!is_all_of<int, std::is_same, double, int>::value);
+
+        static_assert(is_all_of_v<int, std::is_same, int, int>);
+        static_assert(!is_all_of_v<int, std::is_same, int, double>);
+        static_assert(!is_all_of_v<int, std::is_same, double, int>);
+    }
+}
+
+TEST_CASE("is_any_of")
+{
+    using easy::is_any_of;
+    using easy::is_any_of_v;
+
+    SUBCASE("no types")
+    {
+        static_assert(!is_any_of<int, std::is_same>::value);
+        static_assert(!is_any_of_v<int, std::is_same>);
+    }
+
+    SUBCASE("single type")
+    {
+        static_assert(is_any_of<int, std::is_same, int>::value);
+        static_assert(!is_any_of<int, std::is_same, double>::value);
+
+        static_assert(is_any_of_v<int, std::is_same, int>);
+        static_assert(!is_any_of_v<int, std::is_same, double>);
+    }
+
+    SUBCASE("multiple types")
+    {
+        static_assert(is_any_of<int, std::is_same, int, int>::value);
+        static_assert(is_any_of<int, std::is_same, int, double>::value);
+        static_assert(is_any_of<int, std::is_same, double, int>::value);
+        static_assert(!is_any_of<int, std::is_same, double, short>::value);
+
+        static_assert(is_any_of_v<int, std::is_same, int, int>);
+        static_assert(is_any_of_v<int, std::is_same, int, double>);
+        static_assert(is_any_of_v<int, std::is_same, double, int>);
+        static_assert(!is_any_of_v<int, std::is_same, double, short>);
+    }
+}
+
+TEST_CASE("is_none_of")
+{
+    using easy::is_none_of;
+    using easy::is_none_of_v;
+
+    SUBCASE("no types")
+    {
+        static_assert(is_none_of<int, std::is_same>::value);
+        static_assert(is_none_of_v<int, std::is_same>);
+    }
+
+    SUBCASE("single type")
+    {
+        static_assert(!is_none_of<int, std::is_same, int>::value);
+        static_assert(is_none_of<int, std::is_same, double>::value);
+
+        static_assert(!is_none_of_v<int, std::is_same, int>);
+        static_assert(is_none_of_v<int, std::is_same, double>);
+    }
+
+    SUBCASE("multiple types")
+    {
+        static_assert(!is_none_of<int, std::is_same, int, int>::value);
+        static_assert(!is_none_of<int, std::is_same, int, double>::value);
+        static_assert(!is_none_of<int, std::is_same, double, int>::value);
+        static_assert(is_none_of<int, std::is_same, double, short>::value);
+
+        static_assert(!is_none_of_v<int, std::is_same, int, int>);
+        static_assert(!is_none_of_v<int, std::is_same, int, double>);
+        static_assert(!is_none_of_v<int, std::is_same, double, int>);
+        static_assert(is_none_of_v<int, std::is_same, double, short>);
+    }
+}
+
+TEST_CASE("is_all_of_same")
+{
+    using easy::is_all_of_same;
+    using easy::is_all_of_same_v;
+
+    SUBCASE("no types")
+    {
+        static_assert(is_all_of_same<int>::value);
+        static_assert(is_all_of_same_v<int>);
+    }
+
+    SUBCASE("single type")
+    {
+        static_assert(is_all_of_same<int, int>::value);
+        static_assert(!is_all_of_same<int, double>::value);
+
+        static_assert(is_all_of_same_v<int, int>);
+        static_assert(!is_all_of_same_v<int, double>);
+    }
+
+    SUBCASE("multiple types")
+    {
+        static_assert(is_all_of_same<int, int, int>::value);
+        static_assert(!is_all_of_same<int, int, double>::value);
+        static_assert(!is_all_of_same<int, double, int>::value);
+
+        static_assert(is_all_of_same_v<int, int, int>);
+        static_assert(!is_all_of_same_v<int, int, double>);
+        static_assert(!is_all_of_same_v<int, double, int>);
+    }
+}
+
+TEST_CASE("is_any_of_same")
+{
+    using easy::is_any_of_same;
+    using easy::is_any_of_same_v;
+
+    SUBCASE("no types")
+    {
+        static_assert(!is_any_of_same<int>::value);
+        static_assert(!is_any_of_same_v<int>);
+    }
+
+    SUBCASE("single type")
+    {
+        static_assert(is_any_of_same<int, int>::value);
+        static_assert(!is_any_of_same<int, double>::value);
+
+        static_assert(is_any_of_same_v<int, int>);
+        static_assert(!is_any_of_same_v<int, double>);
+    }
+
+    SUBCASE("multiple types")
+    {
+        static_assert(is_any_of_same<int, int, int>::value);
+        static_assert(is_any_of_same<int, int, double>::value);
+        static_assert(is_any_of_same<int, double, int>::value);
+        static_assert(!is_any_of_same<int, double, short>::value);
+
+        static_assert(is_any_of_same_v<int, int, int>);
+        static_assert(is_any_of_same_v<int, int, double>);
+        static_assert(is_any_of_same_v<int, double, int>);
+        static_assert(!is_any_of_same_v<int, double, short>);
+    }
+}
+
+TEST_CASE("is_none_of_same")
+{
+    using easy::is_none_of_same;
+    using easy::is_none_of_same_v;
+
+    SUBCASE("no types")
+    {
+        static_assert(is_none_of_same<int>::value);
+        static_assert(is_none_of_same_v<int>);
+    }
+
+    SUBCASE("single type")
+    {
+        static_assert(!is_none_of_same<int, int>::value);
+        static_assert(is_none_of_same<int, double>::value);
+
+        static_assert(!is_none_of_same_v<int, int>);
+        static_assert(is_none_of_same_v<int, double>);
+    }
+
+    SUBCASE("multiple types")
+    {
+        static_assert(!is_none_of_same<int, int, int>::value);
+        static_assert(!is_none_of_same<int, int, double>::value);
+        static_assert(!is_none_of_same<int, double, int>::value);
+        static_assert(is_none_of_same<int, double, short>::value);
+
+        static_assert(!is_none_of_same_v<int, int, int>);
+        static_assert(!is_none_of_same_v<int, int, double>);
+        static_assert(!is_none_of_same_v<int, double, int>);
+        static_assert(is_none_of_same_v<int, double, short>);
+    }
+}
 
 TEST_CASE_TEMPLATE_DEFINE("is_boolean", TestType, is_boolean_test_id)
 {
