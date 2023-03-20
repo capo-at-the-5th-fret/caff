@@ -34,6 +34,7 @@ add_executable(testrunner
     type_list_tests.cpp
     type_traits_tests.cpp
 
+    test/test_type_list_tests.cpp
 )
 
 target_link_libraries(testrunner

@@ -29,6 +29,9 @@ namespace easy::test
         >
     >;
 
+    // Reference:
+    // https://en.cppreference.com/w/cpp/language/cv
+
     using cv_qualifiable_types = easy::tuple_cat_t
     <
         std::tuple<void, std::nullptr_t>,

@@ -187,7 +187,7 @@ TEST_CASE("integral_types")
     REQUIRE(std::is_same_v<std::tuple_element_t<15,T>, unsigned long long>);
 }
 
-TEST_CASE("floating_point_types")
+TEST_CASE("standard_floating_point_types")
 {
     using T = easy::standard_floating_point_types;
 
