@@ -1,0 +1,15 @@
+# Format Style Options - Created with Clang Power Tools
+---
+BasedOnStyle: Microsoft
+AccessModifierOffset: -4
+AlwaysBreakTemplateDeclarations: Yes
+BinPackParameters: false
+BraceWrapping: 
+  AfterCaseLabel: true
+BreakBeforeBraces: Allman
+ColumnLimit: 80
+FixNamespaceComments: false
+NamespaceIndentation: All
+PointerAlignment: Left
+SortIncludes: false
+...
