@@ -87,7 +87,7 @@ namespace easy
     struct is_cv_qualified_type_set : std::false_type {};
 
     template <typename T, typename CT, typename VT, typename CVT>
-    requires (is_cv_qualifiable_type_v<T> &&
+    requires (is_cv_qualifiable_v<T> &&
         !std::is_const_v<T> && !std::is_volatile_v<T> &&
         std::is_same_v<CT, std::add_const_t<T>> &&
         std::is_same_v<VT, std::add_volatile_t<T>> &&

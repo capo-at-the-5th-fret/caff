@@ -60,7 +60,7 @@ namespace easy::test
     // ensure all types in cv_qualifiable_types are cv_qualifiable
     static_assert([]<auto... Is>(std::index_sequence<Is...>)
     {
-        return (... && easy::is_cv_qualifiable_type_v<
+        return (... && easy::is_cv_qualifiable_v<
             std::tuple_element_t<Is, cv_qualifiable_types>>);
     }(std::make_index_sequence<std::tuple_size_v<cv_qualifiable_types>>{}));
 }

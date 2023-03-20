@@ -14,7 +14,7 @@ TEST_CASE("always_false")
 
 TEST_CASE_TEMPLATE_DEFINE("is_boolean", TestType, is_boolean_test_id)
 {
-    if constexpr (easy::is_cv_qualifiable_type_v<TestType>)
+    if constexpr (easy::is_cv_qualifiable_v<TestType>)
     {
         using qts_t = easy::make_cv_qualified_type_set<TestType>;
 
@@ -37,14 +37,14 @@ TEST_CASE_TEMPLATE_DEFINE("is_boolean", TestType, is_boolean_test_id)
 }
 TEST_CASE_TEMPLATE_APPLY(is_boolean_test_id, easy::test::primary_types);
 
-TEST_CASE("is_cv_qualifiable_type")
+TEST_CASE("is_cv_qualifiable")
 {
     easy::tuple_for_each_type<easy::test::primary_types>([]<typename T>
     {
         constexpr bool expected_value = (!std::is_reference_v<T> &&
             !std::is_function_v<T>);
-        static_assert(easy::is_cv_qualifiable_type<T>::value == expected_value);
-        static_assert(easy::is_cv_qualifiable_type_v<T> == expected_value);
+        static_assert(easy::is_cv_qualifiable<T>::value == expected_value);
+        static_assert(easy::is_cv_qualifiable_v<T> == expected_value);
         static_assert(easy::cv_qualifiable_type<T> == expected_value);
 
         if constexpr (expected_value)
