@@ -7,17 +7,17 @@ TEST_CASE("standard_character_types")
 
     static_assert(std::tuple_size_v<T> == 5);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, char>);
-    static_assert(std::is_same_v<std::tuple_element_t<1,T>, char8_t>);
-    static_assert(std::is_same_v<std::tuple_element_t<2,T>, char16_t>);
-    static_assert(std::is_same_v<std::tuple_element_t<3,T>, char32_t>);
-    static_assert(std::is_same_v<std::tuple_element_t<4,T>, wchar_t>);
+    static_assert(std::is_same_v<std::tuple_element_t<1,T>, wchar_t>);
+    static_assert(std::is_same_v<std::tuple_element_t<2,T>, char8_t>);
+    static_assert(std::is_same_v<std::tuple_element_t<3,T>, char16_t>);
+    static_assert(std::is_same_v<std::tuple_element_t<4,T>, char32_t>);
 
     REQUIRE(std::tuple_size_v<T> == 5);
     REQUIRE(std::is_same_v<std::tuple_element_t<0,T>, char>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<1,T>, char8_t>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<2,T>, char16_t>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<3,T>, char32_t>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<4,T>, wchar_t>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<1,T>, wchar_t>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<2,T>, char8_t>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<3,T>, char16_t>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<4,T>, char32_t>);
 }
 
 TEST_CASE("signed_integer_types")
@@ -153,10 +153,10 @@ TEST_CASE("integral_types")
     static_assert(std::tuple_size_v<T> == 16);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, bool>);
     static_assert(std::is_same_v<std::tuple_element_t<1,T>, char>);
-    static_assert(std::is_same_v<std::tuple_element_t<2,T>, char8_t>);
-    static_assert(std::is_same_v<std::tuple_element_t<3,T>, char16_t>);
-    static_assert(std::is_same_v<std::tuple_element_t<4,T>, char32_t>);
-    static_assert(std::is_same_v<std::tuple_element_t<5,T>, wchar_t>);
+    static_assert(std::is_same_v<std::tuple_element_t<2,T>, wchar_t>);
+    static_assert(std::is_same_v<std::tuple_element_t<3,T>, char8_t>);
+    static_assert(std::is_same_v<std::tuple_element_t<4,T>, char16_t>);
+    static_assert(std::is_same_v<std::tuple_element_t<5,T>, char32_t>);
     static_assert(std::is_same_v<std::tuple_element_t<6,T>, signed char>);
     static_assert(std::is_same_v<std::tuple_element_t<7,T>, short>);
     static_assert(std::is_same_v<std::tuple_element_t<8,T>, int>);
@@ -171,10 +171,10 @@ TEST_CASE("integral_types")
     REQUIRE(std::tuple_size_v<T> == 16);
     REQUIRE(std::is_same_v<std::tuple_element_t<0,T>, bool>);
     REQUIRE(std::is_same_v<std::tuple_element_t<1,T>, char>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<2,T>, char8_t>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<3,T>, char16_t>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<4,T>, char32_t>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<5,T>, wchar_t>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<2,T>, wchar_t>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<3,T>, char8_t>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<4,T>, char16_t>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<5,T>, char32_t>);
     REQUIRE(std::is_same_v<std::tuple_element_t<6,T>, signed char>);
     REQUIRE(std::is_same_v<std::tuple_element_t<7,T>, short>);
     REQUIRE(std::is_same_v<std::tuple_element_t<8,T>, int>);
