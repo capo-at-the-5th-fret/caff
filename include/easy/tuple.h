@@ -2,7 +2,7 @@
 
 #include <concepts>
 #include <tuple>
-#include "easy/type_traits.h"
+#include "easy/concepts.h"
 
 namespace easy
 {
@@ -102,7 +102,7 @@ namespace easy
     concept cv_qualified_type_set = is_cv_qualified_type_set_v<T>;
 
     template <typename T>
-    requires (cv_qualifiable_type<T>)
+    requires (cv_qualifiable<T>)
     using make_cv_qualified_type_set = std::tuple<
         std::remove_cv_t<T>,
         std::add_const_t<std::remove_cv_t<T>>,

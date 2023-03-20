@@ -6,6 +6,7 @@ target_sources(easy
         FILE_SET HEADERS
         FILES
             easy/bit.h
+            easy/concepts.h
             easy/functional.h
             easy/tuple.h
             easy/type_list.h

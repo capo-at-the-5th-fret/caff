@@ -3,14 +3,34 @@
 
 #include "easy/test/type_list.h"
 
-TEST_CASE("always_false")
+TEST_CASE_TEMPLATE_DEFINE("always_false", TestType, always_false_test_id)
 {
-    static_assert(easy::always_false<int>::value == false);
-    static_assert(easy::always_false<int, double>::value == false);
+    if constexpr (easy::is_cv_qualifiable_v<TestType>)
+    {
+        using qts_t = easy::make_cv_qualified_type_set<TestType>;
 
-    static_assert(easy::always_false_v<int> == false);
-    static_assert(easy::always_false_v<int, double> == false);
+        easy::tuple_enumerate_types<qts_t>([]<auto I, typename T>()
+        {
+            CAPTURE(I);
+
+            static_assert(!easy::always_false<TestType>::value);
+            static_assert(!easy::always_false_v<TestType>);
+
+            static_assert(!easy::always_false<TestType, double>::value);
+            static_assert(!easy::always_false_v<TestType, double>);
+        });
+    }
+    else
+    {
+        static_assert(!easy::always_false<TestType>::value);
+        static_assert(!easy::always_false_v<TestType>);
+
+        static_assert(!easy::always_false<TestType, double>::value);
+        static_assert(!easy::always_false_v<TestType, double>);
+    }
 }
+
+TEST_CASE_TEMPLATE_APPLY(always_false_test_id, easy::test::primary_types);
 
 TEST_CASE_TEMPLATE_DEFINE("is_boolean", TestType, is_boolean_test_id)
 {
@@ -41,11 +61,10 @@ TEST_CASE("is_cv_qualifiable")
 {
     easy::tuple_for_each_type<easy::test::primary_types>([]<typename T>
     {
-        constexpr bool expected_value = (!std::is_reference_v<T> &&
-            !std::is_function_v<T>);
+        constexpr bool expected_value = (!std::is_function_v<T> &&
+            !std::is_reference_v<T>);
         static_assert(easy::is_cv_qualifiable<T>::value == expected_value);
         static_assert(easy::is_cv_qualifiable_v<T> == expected_value);
-        static_assert(easy::cv_qualifiable_type<T> == expected_value);
 
         if constexpr (expected_value)
         {

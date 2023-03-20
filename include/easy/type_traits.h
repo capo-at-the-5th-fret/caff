@@ -25,15 +25,10 @@ namespace easy
 
     template <typename T>
     struct is_cv_qualifiable
-        : std::bool_constant<!std::is_reference_v<T> && !std::is_function_v<T>>
+        : std::bool_constant<!std::is_function_v<T> && !std::is_reference_v<T>>
     {
     };
 
     template <typename T>
-    inline constexpr bool is_cv_qualifiable_v =
-        is_cv_qualifiable<T>::value;
-
-    template <typename T>
-    concept cv_qualifiable_type = is_cv_qualifiable_v<T>;
-
+    inline constexpr bool is_cv_qualifiable_v = is_cv_qualifiable<T>::value;
 }

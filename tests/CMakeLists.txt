@@ -29,6 +29,7 @@ add_executable(testrunner
     main.cpp
 
     bit_tests.cpp
+    concepts_tests.cpp
     functional_tests.cpp
     tuple_tests.cpp
     type_list_tests.cpp
