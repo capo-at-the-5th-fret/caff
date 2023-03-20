@@ -2,7 +2,7 @@ name: Feature Continuous Integration
 
 on:
   push:
-    branches-ignore: [ "main", "fix/*" ]
+    branches-ignore: [ "main", "fix*" ]
   pull_request:
 
 env:

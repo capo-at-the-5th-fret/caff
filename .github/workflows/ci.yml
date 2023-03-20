@@ -2,9 +2,9 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [ "main", "fix/*" ]
+    branches: [ "main", "fix*" ]
   pull_request:
-    branches: [ "main", "fix/*" ]
+    branches: [ "main", "fix*" ]
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
