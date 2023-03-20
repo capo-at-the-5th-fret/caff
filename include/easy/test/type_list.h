@@ -32,6 +32,11 @@ namespace easy::test
     // Reference:
     // https://en.cppreference.com/w/cpp/language/cv
 
+    // For any type T (including incomplete types), other than function type or
+    // reference type, there are three more distinct types in the C++ type
+    // system: const-qualified T, volatile-qualified T, and
+    // const-volatile-qualified T.
+
     using cv_qualifiable_types = easy::tuple_cat_t
     <
         std::tuple<void, std::nullptr_t>,
@@ -51,5 +56,11 @@ namespace easy::test
             decltype(&test::dummy_class::member_function)
         >
     >;
-    //static_assert(is_qualifiable_type<qualifiable_types>)
+
+    // ensure all types in cv_qualifiable_types are cv_qualifiable
+    static_assert([]<auto... Is>(std::index_sequence<Is...>)
+    {
+        return (... && easy::is_cv_qualifiable_type_v<
+            std::tuple_element_t<Is, cv_qualifiable_types>>);
+    }(std::make_index_sequence<std::tuple_size_v<cv_qualifiable_types>>{}));
 }
