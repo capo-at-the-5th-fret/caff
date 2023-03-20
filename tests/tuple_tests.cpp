@@ -239,26 +239,6 @@ TEST_CASE_TEMPLATE_DEFINE("tuple_prepend_t", TestTypes, tuple_prepend_t_test_id)
 }
 TEST_CASE_TEMPLATE_APPLY(tuple_prepend_t_test_id, tuple_prepend_t_test_types);
 
-TEST_CASE("is_cv_qualifiable_type")
-{
-    easy::tuple_for_each_type<easy::test::primary_types>([]<typename T>
-    {
-        constexpr bool expected_value = (!std::is_reference_v<T> &&
-            !std::is_function_v<T>);
-        static_assert(easy::is_cv_qualifiable_type<T>::value == expected_value);
-        static_assert(easy::is_cv_qualifiable_type_v<T> == expected_value);
-        static_assert(easy::cv_qualifiable_type<T> == expected_value);
-
-        if constexpr (expected_value)
-        {
-            static_assert(std::is_const_v<std::add_const_t<T>>);
-            static_assert(std::is_volatile_v<std::add_volatile_t<T>>);
-            using cv_t = std::add_cv_t<T>;
-            static_assert(std::is_const_v<cv_t> && std::is_volatile_v<cv_t>);
-        }
-    });
-}
-
 namespace
 {
     template <typename T>

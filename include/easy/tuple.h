@@ -1,8 +1,8 @@
 #pragma once
 
-#include <type_traits>
 #include <concepts>
 #include <tuple>
+#include "easy/type_traits.h"
 
 namespace easy
 {
@@ -78,22 +78,6 @@ namespace easy
     using tuple_prepend_t = tuple_cat_t<std::tuple<Types...>, Tuple>;
 
 // special types
-
-    // Reference:
-    // https://en.cppreference.com/w/cpp/language/cv
-
-    template <typename T>
-    struct is_cv_qualifiable_type : std::bool_constant<
-        !std::is_reference_v<T> &&
-        !std::is_function_v<T>
-    > {};
-
-    template <typename T>
-    inline constexpr bool is_cv_qualifiable_type_v =
-        is_cv_qualifiable_type<T>::value;
-
-    template <typename T>
-    concept cv_qualifiable_type = is_cv_qualifiable_type_v<T>;
 
     // A cv qualified type set is a tuple where:
     // element 0 = T, element 1 = const T, element 2 = volatile T,
