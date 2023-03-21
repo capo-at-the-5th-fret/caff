@@ -8,6 +8,7 @@ target_sources(easy
             easy/bit.h
             easy/concepts.h
             easy/functional.h
+            easy/math.h
             easy/tuple.h
             easy/type_list.h
             easy/type_traits.h
