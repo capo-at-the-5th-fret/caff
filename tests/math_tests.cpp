@@ -4,6 +4,99 @@
 #include <array>
 #include "easy/type_list.h"
 
+TEST_CASE_TEMPLATE_DEFINE("mod functions using signed types", TestType,
+    mod_functions_using_signed_types_test_id)
+{
+    using T = TestType;
+
+    constexpr std::array test_values =
+    {
+        // lhs, native, truncated, floored, euclidean
+
+        // positive, positive
+        std::tuple{ T{ 0 }, T{ 0 }, T{ 0 }, T{ 0 }, T{ 0 } },
+        std::tuple{ T{ 1 }, T{ 1 }, T{ 1 }, T{ 1 }, T{ 1 } },
+        std::tuple{ T{ 2 }, T{ 2 }, T{ 2 }, T{ 2 }, T{ 2 } },
+        std::tuple{ T{ 3 }, T{ 0 }, T{ 0 }, T{ 0 }, T{ 0 } },
+        std::tuple{ T{ 4 }, T{ 1 }, T{ 1 }, T{ 1 }, T{ 1 } },
+        std::tuple{ T{ 5 }, T{ 2 }, T{ 2 }, T{ 2 }, T{ 2 } },
+        std::tuple{ T{ 6 }, T{ 0 }, T{ 0 }, T{ 0 }, T{ 0 } },
+
+        // negative, positive
+        std::tuple{ T{ -1 }, T{ -1 }, T{ -1 }, T{ 2 }, T{ 2 } },
+        std::tuple{ T{ -2 }, T{ -2 }, T{ -2 }, T{ 1 }, T{ 1 } },
+        std::tuple{ T{ -3 }, T{ 0 },  T{ 0 },  T{ 0 }, T{ 0 } },
+        std::tuple{ T{ -4 }, T{ -1 }, T{ -1 }, T{ 2 }, T{ 2 } },
+        std::tuple{ T{ -5 }, T{ -2 },  T{ -2 }, T{ 1 }, T{ 1 } },
+        std::tuple{ T{ -6 }, T{ 0 },  T{ 0 },  T{ 0 }, T{ 0 } },
+
+        // positive, negative
+        std::tuple{ T{ 1 }, T{ 1 }, T{ 1 }, T{ -2 }, T{ 1 } },
+        std::tuple{ T{ 2 }, T{ 2 }, T{ 2 }, T{ -1 }, T{ 2 } },
+        std::tuple{ T{ 3 }, T{ 0 }, T{ 0 }, T{ 0 },  T{ 0 } },
+        std::tuple{ T{ 4 }, T{ 1 }, T{ 1 }, T{ -2 }, T{ 1 } },
+        std::tuple{ T{ 5 }, T{ 2 }, T{ 2 }, T{ -1 }, T{ 2 } },
+        std::tuple{ T{ 6 }, T{ 0 }, T{ 0 }, T{ 0 },  T{ 0 } },
+
+        // negative, negative
+        std::tuple{ T{ -1 }, T{ -1 }, T{ -1 }, T{ -1 }, T{ 2 } },
+        std::tuple{ T{ -2 }, T{ -2 }, T{ -2 }, T{ -2 }, T{ 1 } },
+        std::tuple{ T{ -3 }, T{ 0 },  T{ 0 },  T{ 0 },  T{ 0 } },
+        std::tuple{ T{ -4 }, T{ -1 }, T{ -1 }, T{ -1 }, T{ 2 } },
+        std::tuple{ T{ -5 }, T{ -2 }, T{ -2 }, T{ -2 }, T{ 1 } },
+        std::tuple{ T{ -6 }, T{ 0 },  T{ 0 },  T{ 0 },  T{ 0 } },
+    };
+
+    for (int i = 0; const auto& [lhs, native_expected, truncated_expected,
+        floored_expected, euclidean_expected] :
+        test_values)
+    {
+        CAPTURE(i);
+
+        const T rhs{ static_cast<T>((i < 13) ? 3 : -3) };
+        REQUIRE(easy::mod_native(lhs, rhs) == native_expected);
+        REQUIRE(easy::mod_truncated(lhs, rhs) == truncated_expected);
+        REQUIRE(easy::mod_floored(lhs, rhs) == floored_expected);
+        REQUIRE(easy::mod_euclidean(lhs, rhs) == euclidean_expected);
+        REQUIRE(easy::mod_native(lhs, rhs) == easy::mod_truncated(lhs, rhs));
+        ++i;
+    }
+}
+TEST_CASE_TEMPLATE_APPLY(mod_functions_using_signed_types_test_id,
+    easy::signed_standard_integer_types);
+
+TEST_CASE_TEMPLATE_DEFINE("mod functions using unsigned types", TestType,
+    mod_functions_using_unsigned_types_test_id)
+{
+    using T = TestType;
+
+    constexpr std::array test_values =
+    {
+        std::tuple{ T{ 0 }, T{ 0 } },
+        std::tuple{ T{ 1 }, T{ 1 } },
+        std::tuple{ T{ 2 }, T{ 2 } },
+        std::tuple{ T{ 3 }, T{ 0 } },
+        std::tuple{ T{ 4 }, T{ 1 } },
+        std::tuple{ T{ 5 }, T{ 2 } },
+        std::tuple{ T{ 6 }, T{ 0 } },
+    };
+
+    const T rhs{ 3 };
+
+    for (int i = 0; const auto& [lhs, expected] : test_values)
+    {
+        CAPTURE(i);
+        REQUIRE(easy::mod_native(lhs, rhs) == expected);
+        REQUIRE(easy::mod_truncated(lhs, rhs) == expected);
+        REQUIRE(easy::mod_floored(lhs, rhs) == expected);
+        REQUIRE(easy::mod_euclidean(lhs, rhs) == expected);
+        REQUIRE(easy::mod_native(lhs, rhs) == easy::mod_truncated(lhs, rhs));
+        ++i;
+    }
+}
+TEST_CASE_TEMPLATE_APPLY(mod_functions_using_unsigned_types_test_id,
+    easy::unsigned_standard_integer_types);
+
 namespace
 {
     constexpr std::array is_even_test_values =
