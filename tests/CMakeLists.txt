@@ -35,6 +35,7 @@ add_executable(testrunner
     tuple_tests.cpp
     type_list_tests.cpp
     type_traits_tests.cpp
+    variant_tests.cpp
 
     test/test_type_list_tests.cpp
 )
