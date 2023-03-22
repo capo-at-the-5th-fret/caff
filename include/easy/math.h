@@ -17,15 +17,24 @@ namespace easy
     template <easy::standard_integer T>
     constexpr T mod_truncated(T x, T y)
     {
-        return x - y * T(x / static_cast<double>(y));
+        // NOTE: The C++ modulo operator uses truncated algorithm
+        return x % y;
+        //return x - y * T(x / static_cast<double>(y));
     }
 
     template <easy::standard_integer T>
     constexpr T mod_floored(T x, T y)
     {
+        // NOTE: std::floor requires constexpr cmath feature
+        // NOTE: The floor algorithm is faster
+    #ifdef __cpp_lib_constexpr_cmath
         return x - y * T(std::floor(x / static_cast<double>(y)));
+    #else
+        return ((x % y) + y) % y;
+    #endif
     }
 
+    // NOTE: constexpr mod_euclidean requires __cpp_lib_constexpr_cmath
     template <easy::standard_integer T>
     constexpr T mod_euclidean(T x, T y)
     {
