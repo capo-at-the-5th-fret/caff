@@ -44,7 +44,10 @@ namespace easy
     {
         // n_range requires a MIN <= MAX
         template <std::size_t MIN, std::size_t MAX, typename T = void>
-        struct valid_n_range;
+        struct valid_n_range
+        {
+            static_assert(easy::always_false_v<T>, "MIN must be <= MAX");
+        };
 
         template <std::size_t MIN, std::size_t MAX>
         struct valid_n_range<MIN, MAX,
