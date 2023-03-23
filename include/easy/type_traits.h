@@ -113,7 +113,7 @@ namespace easy
     // element 3 = const volatile T
 
     template <typename T>
-    struct is_cv_qualified_type_set : std::false_type
+    struct is_cv_qualified_set : std::false_type
     {
     };
 
@@ -123,38 +123,37 @@ namespace easy
                  std::is_same_v<CT, std::add_const_t<T>> &&
                  std::is_same_v<VT, std::add_volatile_t<T>> &&
                  std::is_same_v<CVT, std::add_cv_t<T>>)
-    struct is_cv_qualified_type_set<std::tuple<T, CT, VT, CVT>> : std::true_type
+    struct is_cv_qualified_set<std::tuple<T, CT, VT, CVT>> : std::true_type
     {
     };
 
     template <typename T>
-    inline constexpr bool is_cv_qualified_type_set_v =
-        is_cv_qualified_type_set<T>::value;
+    inline constexpr bool is_cv_qualified_set_v = is_cv_qualified_set<T>::value;
 
     template <typename T>
-    concept cv_qualified_type_set = is_cv_qualified_type_set_v<T>;
+    concept cv_qualified_set = is_cv_qualified_set_v<T>;
 
     template <typename T>
         requires(is_cv_qualifiable_v<T>)
-    using make_cv_qualified_type_set =
+    using cv_qualified_set_t =
         std::tuple<std::remove_cv_t<T>,
                    std::add_const_t<std::remove_cv_t<T>>,
                    std::add_volatile_t<std::remove_cv_t<T>>,
                    std::add_cv_t<std::remove_cv_t<T>>>;
 
     template <typename T>
-        requires cv_qualified_type_set<T>
+    requires cv_qualified_set<T>
     using non_qualified_type = std::tuple_element_t<0, T>;
 
     template <typename T>
-        requires cv_qualified_type_set<T>
+    requires cv_qualified_set<T>
     using const_type = std::tuple_element_t<1, T>;
 
     template <typename T>
-        requires cv_qualified_type_set<T>
+    requires cv_qualified_set<T>
     using volatile_type = std::tuple_element_t<2, T>;
 
     template <typename T>
-        requires cv_qualified_type_set<T>
+    requires cv_qualified_set<T>
     using cv_type = std::tuple_element_t<3, T>;
 }

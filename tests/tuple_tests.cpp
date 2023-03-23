@@ -86,7 +86,7 @@ TEST_CASE_TEMPLATE_DEFINE("tuple_like std types", TestType,
     // Reference:
     // https://stackoverflow.com/questions/26854320/volatile-and-const-volatile-stdtuple-and-stdget
 
-    using qts_t = easy::make_cv_qualified_type_set<TestType>;
+    using qts_t = easy::cv_qualified_set_t<TestType>;
 
     easy::tuple_for_each_type<qts_t>([]<typename T>
     {
@@ -99,7 +99,7 @@ TEST_CASE_TEMPLATE_APPLY(tuple_like_std_types_test_id, tuple_like_types);
 TEST_CASE_TEMPLATE_DEFINE("tuple_like other types", TestType,
     tuple_like_other_types_test_id)
 {
-    using qts_t = easy::make_cv_qualified_type_set<TestType>;
+    using qts_t = easy::cv_qualified_set_t<TestType>;
 
     easy::tuple_for_each_type<qts_t>([]<typename T>
     {
@@ -115,7 +115,7 @@ TEST_CASE_TEMPLATE_DEFINE("tuple_contains_type", TestType,
     using tuple_t = TestType;
     using success_list = tuple_t;
     using failure_list = easy::tuple_append_t<
-        easy::make_cv_qualified_type_set<void>, void*>;
+        easy::cv_qualified_set_t<void>, void*>;
 
     SUBCASE("successes")
     {

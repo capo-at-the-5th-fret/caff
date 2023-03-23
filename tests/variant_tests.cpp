@@ -13,7 +13,7 @@ TEST_CASE_TEMPLATE_DEFINE("variant_contains_type", TestType,
 
     if constexpr (easy::is_cv_qualifiable_v<TestType>)
     {
-        using qts_t = easy::make_cv_qualified_type_set<TestType>;
+        using qts_t = easy::cv_qualified_set_t<TestType>;
         easy::tuple_enumerate_types<qts_t>([]<auto I, typename T>()
         {
             CAPTURE(I);
