@@ -23,6 +23,10 @@ namespace easy::test
         using member_type = int;
     };
 
+    class other_dummy_class
+    {
+    };
+
     union dummy_union
     {
         int i;
