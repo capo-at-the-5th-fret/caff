@@ -202,3 +202,40 @@ TEST_CASE("basic_string_hash aliases")
     >);
     // clang-format on
 }
+
+TEST_CASE("hash_combine")
+{
+    auto hash_value = std::hash<int>{}(12);
+
+    SUBCASE("single value")
+    {
+        easy::hash_combine(hash_value, 2.5);
+        REQUIRE(hash_value == easy::hash(12, 2.5));
+    }
+    
+    SUBCASE("multi-value")
+    {
+        easy::hash_combine(hash_value, 2.5);
+        easy::hash_combine(hash_value, true);
+        REQUIRE(hash_value == easy::hash(12, 2.5, true));
+    }
+}
+
+TEST_CASE("hash")
+{
+    auto hash_value = std::hash<int>{}(12);
+
+    // single value should be the same as using std::hash
+    SUBCASE("single value")
+    {
+        REQUIRE(easy::hash(12) == hash_value);
+    }
+
+    // multi-value should be the same as using hash_combine on types
+    SUBCASE("multi-value")
+    {
+        easy::hash_combine(hash_value, 2.5);
+        easy::hash_combine(hash_value, true);
+        REQUIRE(easy::hash(12, 2.5, true) == hash_value);
+    }
+}
