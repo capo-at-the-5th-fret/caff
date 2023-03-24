@@ -6,6 +6,18 @@
 
 namespace easy
 {
+    // Reference:
+    // https://en.cppreference.com/w/cpp/utility/variant/visit
+
+    template <typename... Ts>
+    struct overload : Ts...
+    {
+        using Ts::operator()...;
+    };
+
+    template <typename... Ts>
+    overload(Ts...) -> overload<Ts...>;
+
     // References:
     // https://stackoverflow.com/questions/68443804/c20-concept-to-check-tuple-like-types
     // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2165r2.pdf

@@ -7,8 +7,37 @@
 #include <iterator>
 #include <array>
 #include <utility>
+#include <variant>
 #include "easy/type_traits.h"
 #include "easy/test/type_list.h"
+
+TEST_CASE("overload")
+{
+    using var_t = std::variant<int, long, double, std::string>;
+    std::vector<std::pair<var_t,int>> vec =
+    {
+        { 10, 1 },
+        { 15l, 1 },
+        { 1.5, 2 },
+        { "hello", 3 }
+    };
+
+    for (int i{ 0 }; const auto [v, expected] : vec)
+    {
+        CAPTURE(i);
+
+        auto r = std::visit(easy::overload
+        {
+            [](auto arg) { return 1; },
+            [](double arg) { return 2; },
+            [](const std::string& arg) { return 3; }
+        }, v);
+
+        REQUIRE(r == expected);
+
+        ++i;
+    }
+}
 
 namespace
 {
