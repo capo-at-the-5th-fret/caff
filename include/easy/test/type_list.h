@@ -9,7 +9,7 @@ namespace easy::test
     // REFERENCE:
     // https://en.cppreference.com/w/cpp/header/type_traits
 
-    using primary_types = easy::tuple_cat_t
+    using primary_types = tuple_cat_t
     <
         std::tuple<void, std::nullptr_t>,
         integral_types,
@@ -37,7 +37,7 @@ namespace easy::test
     // system: const-qualified T, volatile-qualified T, and
     // const-volatile-qualified T.
 
-    using cv_qualifiable_types = easy::tuple_cat_t
+    using cv_qualifiable_types = tuple_cat_t
     <
         std::tuple<void, std::nullptr_t>,
         integral_types,
@@ -60,7 +60,7 @@ namespace easy::test
     // ensure all types in cv_qualifiable_types are cv_qualifiable
     static_assert([]<auto... Is>(std::index_sequence<Is...>)
     {
-        return (... && easy::is_cv_qualifiable_v<
+        return (... && is_cv_qualifiable_v<
             std::tuple_element_t<Is, cv_qualifiable_types>>);
     }(std::make_index_sequence<std::tuple_size_v<cv_qualifiable_types>>{}));
 }
