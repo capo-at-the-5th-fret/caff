@@ -6,6 +6,19 @@
 namespace easy
 {
     // clang-format off
+
+    // Reference:
+    // https://en.cppreference.com/w/cpp/utility/variant/visit
+
+    template <typename... Ts>
+    struct overload : Ts...
+    {
+        using Ts::operator()...;
+    };
+
+    template <typename... Ts>
+    overload(Ts...) -> overload<Ts...>;
+
     template <typename T, typename Variant>
     constexpr inline bool variant_contains_type_v =
         []<std::size_t... Is>(std::index_sequence<Is...>)
