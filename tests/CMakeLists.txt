@@ -29,9 +29,9 @@ add_executable(testrunner
     main.cpp
 
     bit_tests.cpp
+    cmath_tests.cpp
     concepts_tests.cpp
     functional_tests.cpp
-    math_tests.cpp
     tuple_tests.cpp
     type_list_tests.cpp
     type_traits_tests.cpp

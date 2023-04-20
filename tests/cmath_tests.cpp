@@ -1,5 +1,5 @@
 #include <doctest/doctest.h>
-#include "easy/math.h"
+#include "easy/cmath.h"
 
 #include <array>
 #include "easy/type_list.h"
