@@ -12,6 +12,7 @@ target_sources(easy
             easy/tuple.h
             easy/type_list.h
             easy/type_traits.h
+            easy/utility.h
             easy/variant.h
 
             easy/test/dummy.h
