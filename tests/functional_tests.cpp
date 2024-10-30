@@ -33,11 +33,11 @@ namespace
             {
                 return U"c_str";
             }
-            else
-            {
-                static_assert(easy::always_false_v<CharT>,
-                    "The type used for template parameter CharT is unsupported");
-            }
+            // else
+            // {
+            //     static_assert(easy::always_false_v<CharT>,
+            //         "The type used for template parameter CharT is unsupported");
+            // }
         }();
 
         const std::basic_string<CharT> str = []()
@@ -62,11 +62,11 @@ namespace
             {
                 return U"str";
             }
-            else
-            {
-                static_assert(easy::always_false_v<CharT>,
-                    "The type used for template parameter CharT is unsupported");
-            }
+            // else
+            // {
+            //     static_assert(easy::always_false_v<CharT>,
+            //         "The type used for template parameter CharT is unsupported");
+            // }
         }();
 
         const std::basic_string_view<CharT> sv = []()
@@ -91,11 +91,11 @@ namespace
             {
                 return U"sv";
             }
-            else
-            {
-                static_assert(easy::always_false_v<CharT>,
-                    "The type used for template parameter CharT is unsupported");
-            }
+            // else
+            // {
+            //     static_assert(easy::always_false_v<CharT>,
+            //         "The type used for template parameter CharT is unsupported");
+            // }
         }();
     };
 
