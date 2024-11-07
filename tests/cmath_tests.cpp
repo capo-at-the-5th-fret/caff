@@ -1,8 +1,8 @@
 #include <doctest/doctest.h>
-#include "easy/cmath.h"
+#include "caff/cmath.h"
 
 #include <array>
-#include "easy/type_list.h"
+#include "caff/type_list.h"
 
 TEST_CASE_TEMPLATE_DEFINE("mod functions using signed types", TestType,
     mod_functions_using_signed_types_test_id)
@@ -54,16 +54,16 @@ TEST_CASE_TEMPLATE_DEFINE("mod functions using signed types", TestType,
         CAPTURE(i);
 
         const T rhs{ static_cast<T>((i < 13) ? 3 : -3) };
-        REQUIRE(easy::mod_native(lhs, rhs) == native_expected);
-        REQUIRE(easy::mod_truncated(lhs, rhs) == truncated_expected);
-        REQUIRE(easy::mod_floored(lhs, rhs) == floored_expected);
-        REQUIRE(easy::mod_euclidean(lhs, rhs) == euclidean_expected);
-        REQUIRE(easy::mod_native(lhs, rhs) == easy::mod_truncated(lhs, rhs));
+        REQUIRE(caff::mod_native(lhs, rhs) == native_expected);
+        REQUIRE(caff::mod_truncated(lhs, rhs) == truncated_expected);
+        REQUIRE(caff::mod_floored(lhs, rhs) == floored_expected);
+        REQUIRE(caff::mod_euclidean(lhs, rhs) == euclidean_expected);
+        REQUIRE(caff::mod_native(lhs, rhs) == caff::mod_truncated(lhs, rhs));
         ++i;
     }
 }
 TEST_CASE_TEMPLATE_APPLY(mod_functions_using_signed_types_test_id,
-    easy::signed_standard_integer_types);
+    caff::signed_standard_integer_types);
 
 TEST_CASE_TEMPLATE_DEFINE("mod functions using unsigned types", TestType,
     mod_functions_using_unsigned_types_test_id)
@@ -86,16 +86,16 @@ TEST_CASE_TEMPLATE_DEFINE("mod functions using unsigned types", TestType,
     for (int i = 0; const auto& [lhs, expected] : test_values)
     {
         CAPTURE(i);
-        REQUIRE(easy::mod_native(lhs, rhs) == expected);
-        REQUIRE(easy::mod_truncated(lhs, rhs) == expected);
-        REQUIRE(easy::mod_floored(lhs, rhs) == expected);
-        REQUIRE(easy::mod_euclidean(lhs, rhs) == expected);
-        REQUIRE(easy::mod_native(lhs, rhs) == easy::mod_truncated(lhs, rhs));
+        REQUIRE(caff::mod_native(lhs, rhs) == expected);
+        REQUIRE(caff::mod_truncated(lhs, rhs) == expected);
+        REQUIRE(caff::mod_floored(lhs, rhs) == expected);
+        REQUIRE(caff::mod_euclidean(lhs, rhs) == expected);
+        REQUIRE(caff::mod_native(lhs, rhs) == caff::mod_truncated(lhs, rhs));
         ++i;
     }
 }
 TEST_CASE_TEMPLATE_APPLY(mod_functions_using_unsigned_types_test_id,
-    easy::unsigned_standard_integer_types);
+    caff::unsigned_standard_integer_types);
 
 namespace
 {
@@ -115,15 +115,15 @@ TEST_CASE_TEMPLATE_DEFINE("is_even", TestType, is_even_test_id)
         is_even_test_values)
     {
         CAPTURE(i++);
-        REQUIRE(easy::is_even(test_value) == expected);
+        REQUIRE(caff::is_even(test_value) == expected);
 
         if constexpr (std::is_signed_v<TestType>)
         {
-            REQUIRE(easy::is_even(-test_value) == expected);
+            REQUIRE(caff::is_even(-test_value) == expected);
         }
     }
 }
-TEST_CASE_TEMPLATE_APPLY(is_even_test_id, easy::standard_integer_types);
+TEST_CASE_TEMPLATE_APPLY(is_even_test_id, caff::standard_integer_types);
 
 TEST_CASE_TEMPLATE_DEFINE("is_odd", TestType, is_odd_test_id)
 {
@@ -132,15 +132,15 @@ TEST_CASE_TEMPLATE_DEFINE("is_odd", TestType, is_odd_test_id)
     {
         const bool odd_expected{ !even_expected };
         CAPTURE(i++);
-        REQUIRE(easy::is_odd(test_value) == odd_expected);
+        REQUIRE(caff::is_odd(test_value) == odd_expected);
 
         if constexpr (std::is_signed_v<TestType>)
         {
-            REQUIRE(easy::is_odd(-test_value) == odd_expected);
+            REQUIRE(caff::is_odd(-test_value) == odd_expected);
         }
     }
 }
-TEST_CASE_TEMPLATE_APPLY(is_odd_test_id, easy::standard_integer_types);
+TEST_CASE_TEMPLATE_APPLY(is_odd_test_id, caff::standard_integer_types);
 
 namespace
 {
@@ -165,9 +165,9 @@ TEST_CASE_TEMPLATE_DEFINE("evenly_divisible", TestType,
     evenly_divisible_test_id)
 {
     using test_types_t = evenly_divisible_test_types<TestType>;
-    using easy::evenly_divisible;
+    using caff::evenly_divisible;
 
-    easy::tuple_for_each_type<test_types_t>([]<typename T>
+    caff::tuple_for_each_type<test_types_t>([]<typename T>
     {
         using lhs_t = std::tuple_element_t<0,T>;
         using rhs_t = std::tuple_element_t<1,T>;
@@ -194,4 +194,4 @@ TEST_CASE_TEMPLATE_DEFINE("evenly_divisible", TestType,
     
 }
 TEST_CASE_TEMPLATE_APPLY(evenly_divisible_test_id,
-    easy::standard_integer_types);
+    caff::standard_integer_types);

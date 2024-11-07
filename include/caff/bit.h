@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <concepts>
 
-namespace easy
+namespace caff
 {
     // clang-format off
     template <typename T>

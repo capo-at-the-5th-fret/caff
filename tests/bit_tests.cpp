@@ -1,5 +1,5 @@
 #include <doctest/doctest.h>
-#include "easy/bit.h"
+#include "caff/bit.h"
 
 namespace
 {
@@ -56,7 +56,7 @@ namespace
 
 TEST_CASE("enum bitmask")
 {
-    using namespace easy;
+    using namespace caff;
     using enum options;
 
     options o{ none };

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <cmath>
-#include "easy/concepts.h"
+#include "caff/concepts.h"
 
-namespace easy
+namespace caff
 {
     // Reference:
     // https://www.youtube.com/watch?v=xVNYurap-lk&ab_channel=C%E1%90%A9%E1%90%A9WeeklyWithJasonTurner

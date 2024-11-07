@@ -3,7 +3,7 @@
 #include <type_traits>
 #include <tuple>
 
-namespace easy
+namespace caff
 {
     template <typename... Ts>
     struct always_false : std::false_type

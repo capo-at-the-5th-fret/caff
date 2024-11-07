@@ -4,7 +4,7 @@
 #include <initializer_list>
 #include <utility>
 
-namespace easy
+namespace caff
 {
     template <typename E>
     requires std::is_enum_v<E>
@@ -119,11 +119,11 @@ namespace easy
 }
 
 template <typename E>
-struct std::hash<easy::flags<E>>
+struct std::hash<caff::flags<E>>
 {
-    std::size_t operator()(const easy::flags<E>& f) const noexcept
+    std::size_t operator()(const caff::flags<E>& f) const noexcept
     {
-        using hash_type = std::hash<typename easy::flags<E>::underlying_type>;
+        using hash_type = std::hash<typename caff::flags<E>::underlying_type>;
         return hash_type{}(f.to_underlying());
     }
 };

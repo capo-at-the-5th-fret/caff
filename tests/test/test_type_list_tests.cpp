@@ -1,9 +1,9 @@
 #include <doctest/doctest.h>
-#include "easy/test/type_list.h"
+#include "caff/test/type_list.h"
 
 TEST_CASE("primary_type")
 {
-    using T = easy::test::primary_types;
+    using T = caff::test::primary_types;
 
     static_assert(std::tuple_size_v<T> == 31);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, void>);
@@ -28,15 +28,15 @@ TEST_CASE("primary_type")
     static_assert(std::is_same_v<std::tuple_element_t<19,T>, double>);
     static_assert(std::is_same_v<std::tuple_element_t<20,T>, long double>);
     static_assert(std::is_same_v<std::tuple_element_t<21,T>, int[]>);
-    static_assert(std::is_same_v<std::tuple_element_t<22,T>, easy::test::dummy_enum>);
-    static_assert(std::is_same_v<std::tuple_element_t<23,T>, easy::test::dummy_union>);
-    static_assert(std::is_same_v<std::tuple_element_t<24,T>, easy::test::dummy_class>);
-    static_assert(std::is_same_v<std::tuple_element_t<25,T>, decltype(easy::test::dummy_function)>);
+    static_assert(std::is_same_v<std::tuple_element_t<22,T>, caff::test::dummy_enum>);
+    static_assert(std::is_same_v<std::tuple_element_t<23,T>, caff::test::dummy_union>);
+    static_assert(std::is_same_v<std::tuple_element_t<24,T>, caff::test::dummy_class>);
+    static_assert(std::is_same_v<std::tuple_element_t<25,T>, decltype(caff::test::dummy_function)>);
     static_assert(std::is_same_v<std::tuple_element_t<26,T>, int*>);
     static_assert(std::is_same_v<std::tuple_element_t<27,T>, int&>);
     static_assert(std::is_same_v<std::tuple_element_t<28,T>, int&&>);
-    static_assert(std::is_same_v<std::tuple_element_t<29,T>, decltype(&easy::test::dummy_class::member_variable)>);
-    static_assert(std::is_same_v<std::tuple_element_t<30,T>, decltype(&easy::test::dummy_class::member_function)>);
+    static_assert(std::is_same_v<std::tuple_element_t<29,T>, decltype(&caff::test::dummy_class::member_variable)>);
+    static_assert(std::is_same_v<std::tuple_element_t<30,T>, decltype(&caff::test::dummy_class::member_function)>);
 
     REQUIRE(std::tuple_size_v<T> == 31);
     REQUIRE(std::is_same_v<std::tuple_element_t<0,T>, void>);
@@ -61,20 +61,20 @@ TEST_CASE("primary_type")
     REQUIRE(std::is_same_v<std::tuple_element_t<19,T>, double>);
     REQUIRE(std::is_same_v<std::tuple_element_t<20,T>, long double>);
     REQUIRE(std::is_same_v<std::tuple_element_t<21,T>, int[]>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<22,T>, easy::test::dummy_enum>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<23,T>, easy::test::dummy_union>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<24,T>, easy::test::dummy_class>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<25,T>, decltype(easy::test::dummy_function)>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<22,T>, caff::test::dummy_enum>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<23,T>, caff::test::dummy_union>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<24,T>, caff::test::dummy_class>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<25,T>, decltype(caff::test::dummy_function)>);
     REQUIRE(std::is_same_v<std::tuple_element_t<26,T>, int*>);
     REQUIRE(std::is_same_v<std::tuple_element_t<27,T>, int&>);
     REQUIRE(std::is_same_v<std::tuple_element_t<28,T>, int&&>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<29,T>, decltype(&easy::test::dummy_class::member_variable)>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<30,T>, decltype(&easy::test::dummy_class::member_function)>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<29,T>, decltype(&caff::test::dummy_class::member_variable)>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<30,T>, decltype(&caff::test::dummy_class::member_function)>);
 }
 
 TEST_CASE("cv_qualifiable_types")
 {
-    using T = easy::test::cv_qualifiable_types;
+    using T = caff::test::cv_qualifiable_types;
 
     static_assert(std::tuple_size_v<T> == 28);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, void>);
@@ -99,15 +99,15 @@ TEST_CASE("cv_qualifiable_types")
     static_assert(std::is_same_v<std::tuple_element_t<19,T>, double>);
     static_assert(std::is_same_v<std::tuple_element_t<20,T>, long double>);
     static_assert(std::is_same_v<std::tuple_element_t<21,T>, int[]>);
-    static_assert(std::is_same_v<std::tuple_element_t<22,T>, easy::test::dummy_enum>);
-    static_assert(std::is_same_v<std::tuple_element_t<23,T>, easy::test::dummy_union>);
-    static_assert(std::is_same_v<std::tuple_element_t<24,T>, easy::test::dummy_class>);
-    //static_assert(std::is_same_v<std::tuple_element_t<25,T>, decltype(easy::test::dummy_function)>);
+    static_assert(std::is_same_v<std::tuple_element_t<22,T>, caff::test::dummy_enum>);
+    static_assert(std::is_same_v<std::tuple_element_t<23,T>, caff::test::dummy_union>);
+    static_assert(std::is_same_v<std::tuple_element_t<24,T>, caff::test::dummy_class>);
+    //static_assert(std::is_same_v<std::tuple_element_t<25,T>, decltype(caff::test::dummy_function)>);
     static_assert(std::is_same_v<std::tuple_element_t<25,T>, int*>);
     //static_assert(std::is_same_v<std::tuple_element_t<27,T>, int&>);
     //static_assert(std::is_same_v<std::tuple_element_t<28,T>, int&&>);
-    static_assert(std::is_same_v<std::tuple_element_t<26,T>, decltype(&easy::test::dummy_class::member_variable)>);
-    static_assert(std::is_same_v<std::tuple_element_t<27,T>, decltype(&easy::test::dummy_class::member_function)>);
+    static_assert(std::is_same_v<std::tuple_element_t<26,T>, decltype(&caff::test::dummy_class::member_variable)>);
+    static_assert(std::is_same_v<std::tuple_element_t<27,T>, decltype(&caff::test::dummy_class::member_function)>);
 
     REQUIRE(std::tuple_size_v<T> == 28);
     REQUIRE(std::is_same_v<std::tuple_element_t<0,T>, void>);
@@ -132,13 +132,13 @@ TEST_CASE("cv_qualifiable_types")
     REQUIRE(std::is_same_v<std::tuple_element_t<19,T>, double>);
     REQUIRE(std::is_same_v<std::tuple_element_t<20,T>, long double>);
     REQUIRE(std::is_same_v<std::tuple_element_t<21,T>, int[]>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<22,T>, easy::test::dummy_enum>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<23,T>, easy::test::dummy_union>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<24,T>, easy::test::dummy_class>);
-    //REQUIRE(std::is_same_v<std::tuple_element_t<25,T>, decltype(easy::test::dummy_function)>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<22,T>, caff::test::dummy_enum>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<23,T>, caff::test::dummy_union>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<24,T>, caff::test::dummy_class>);
+    //REQUIRE(std::is_same_v<std::tuple_element_t<25,T>, decltype(caff::test::dummy_function)>);
     REQUIRE(std::is_same_v<std::tuple_element_t<25,T>, int*>);
     //REQUIRE(std::is_same_v<std::tuple_element_t<27,T>, int&>);
     //REQUIRE(std::is_same_v<std::tuple_element_t<28,T>, int&&>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<26,T>, decltype(&easy::test::dummy_class::member_variable)>);
-    REQUIRE(std::is_same_v<std::tuple_element_t<27,T>, decltype(&easy::test::dummy_class::member_function)>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<26,T>, decltype(&caff::test::dummy_class::member_variable)>);
+    REQUIRE(std::is_same_v<std::tuple_element_t<27,T>, decltype(&caff::test::dummy_class::member_function)>);
 }

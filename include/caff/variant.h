@@ -3,7 +3,7 @@
 #include <type_traits>
 #include <variant>
 
-namespace easy
+namespace caff
 {
     // clang-format off
 

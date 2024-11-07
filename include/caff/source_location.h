@@ -6,7 +6,7 @@
     #include <cstdint>
 #endif
 
-namespace easy
+namespace caff
 {
 #if __has_include(<source_location>) && defined(__cpp_lib_source_location)
 

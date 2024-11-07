@@ -1,22 +1,22 @@
-add_library(easy INTERFACE)
-add_library(easy::easy ALIAS easy)
+add_library(caff INTERFACE)
+add_library(caff::caff ALIAS caff)
 
-target_sources(easy
+target_sources(caff
     INTERFACE
         FILE_SET HEADERS
         FILES
-            easy/bit.h
-            easy/concepts.h
-            easy/functional.h
-            easy/math.h
-            easy/tuple.h
-            easy/type_list.h
-            easy/type_traits.h
-            easy/utility.h
-            easy/variant.h
+            caff/bit.h
+            caff/concepts.h
+            caff/functional.h
+            caff/math.h
+            caff/tuple.h
+            caff/type_list.h
+            caff/type_traits.h
+            caff/utility.h
+            caff/variant.h
 
-            easy/test/dummy.h
-            easy/test/type_list.h
+            caff/test/dummy.h
+            caff/test/type_list.h
 )
 
-target_compile_features(easy INTERFACE cxx_std_23)
+target_compile_features(caff INTERFACE cxx_std_23)

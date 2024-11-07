@@ -1,8 +1,8 @@
 #pragma once
 
-#include "easy/tuple.h"
+#include "caff/tuple.h"
 
-namespace easy
+namespace caff
 {
     // Reference:
     // https://en.cppreference.com/w/cpp/language/types

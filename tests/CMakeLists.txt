@@ -45,7 +45,7 @@ add_executable(testrunner
 target_link_libraries(testrunner
     PRIVATE
         doctest::doctest
-        easy::easy
+        caff::caff
 )
 
 doctest_discover_tests(testrunner)

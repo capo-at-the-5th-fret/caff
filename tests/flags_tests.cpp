@@ -4,7 +4,7 @@
 
 TEST_SUITE("flags")
 {
-    using namespace easy::test::dummy;
+    using namespace caff::test::dummy;
     using enum option;
 
     TEST_CASE("default constructor")
@@ -165,7 +165,7 @@ TEST_SUITE("flags")
 #if 0
 TEST_CASE("flags")
 {
-    using namespace easy::test::dummy;
+    using namespace caff::test::dummy;
     using enum option;
     using underlying_type = typename options::underlying_type;
 
@@ -416,7 +416,7 @@ TEST_CASE("flags")
 
 TEST_CASE_METHOD(fixture_namespace::test::flags_fixture, "test_case_name")
 {
-    using easy::test::dummy::options;
+    using caff::test::dummy::options;
 
     SECTION("constructors")
     {

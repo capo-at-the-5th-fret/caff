@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <functional>
 
-namespace easy::test
+namespace caff::test
 {
     enum class dummy_enum : std::uint8_t
     {
@@ -49,10 +49,10 @@ namespace easy::test
 }
 
 template <>
-struct std::hash<easy::test::projection_type>
+struct std::hash<caff::test::projection_type>
 {
     std::size_t operator()(
-        easy::test::projection_type const& key) const noexcept
+        caff::test::projection_type const& key) const noexcept
     {
         return std::hash<std::size_t>{}(key.value);
     }

@@ -1,9 +1,9 @@
 #include <doctest/doctest.h>
-#include "easy/functional.h"
+#include "caff/functional.h"
 #include <utility>
 #include <unordered_set>
-#include "easy/type_traits.h"
-#include "easy/type_list.h"
+#include "caff/type_traits.h"
+#include "caff/type_list.h"
 
 namespace
 {
@@ -35,7 +35,7 @@ namespace
             }
             // else
             // {
-            //     static_assert(easy::always_false_v<CharT>,
+            //     static_assert(caff::always_false_v<CharT>,
             //         "The type used for template parameter CharT is unsupported");
             // }
         }();
@@ -64,7 +64,7 @@ namespace
             }
             // else
             // {
-            //     static_assert(easy::always_false_v<CharT>,
+            //     static_assert(caff::always_false_v<CharT>,
             //         "The type used for template parameter CharT is unsupported");
             // }
         }();
@@ -93,7 +93,7 @@ namespace
             }
             // else
             // {
-            //     static_assert(easy::always_false_v<CharT>,
+            //     static_assert(caff::always_false_v<CharT>,
             //         "The type used for template parameter CharT is unsupported");
             // }
         }();
@@ -107,7 +107,7 @@ TEST_CASE_TEMPLATE_DEFINE("basic_string_hash", CharT, basic_string_hash_test_id)
     using namespace std::string_view_literals;
     using test_set = std::unordered_set<
         std::basic_string<CharT>,
-        easy::basic_string_hash<CharT>,
+        caff::basic_string_hash<CharT>,
         std::equal_to<>
     >;
 
@@ -166,38 +166,38 @@ TEST_CASE_TEMPLATE_DEFINE("basic_string_hash", CharT, basic_string_hash_test_id)
     }
 }
 TEST_CASE_TEMPLATE_APPLY(basic_string_hash_test_id,
-    easy::standard_character_types);
+    caff::standard_character_types);
 
 TEST_CASE("basic_string_hash aliases")
 {
     // clang-format off
     static_assert(std::is_same_v
     <
-        easy::string_hash::hash_type,
+        caff::string_hash::hash_type,
         std::hash<std::string_view>
     >);
 
     static_assert(std::is_same_v
     <
-        easy::wstring_hash::hash_type,
+        caff::wstring_hash::hash_type,
         std::hash<std::wstring_view>
     >);
 
     static_assert(std::is_same_v
     <
-        easy::u8string_hash::hash_type,
+        caff::u8string_hash::hash_type,
         std::hash<std::u8string_view>
     >);
 
     static_assert(std::is_same_v
     <
-        easy::u16string_hash::hash_type,
+        caff::u16string_hash::hash_type,
         std::hash<std::u16string_view>
     >);
 
     static_assert(std::is_same_v
     <
-        easy::u32string_hash::hash_type,
+        caff::u32string_hash::hash_type,
         std::hash<std::u32string_view>
     >);
     // clang-format on
@@ -209,15 +209,15 @@ TEST_CASE("hash_combine")
 
     SUBCASE("single value")
     {
-        easy::hash_combine(hash_value, 2.5);
-        REQUIRE(hash_value == easy::hash(12, 2.5));
+        caff::hash_combine(hash_value, 2.5);
+        REQUIRE(hash_value == caff::hash(12, 2.5));
     }
     
     SUBCASE("multi-value")
     {
-        easy::hash_combine(hash_value, 2.5);
-        easy::hash_combine(hash_value, true);
-        REQUIRE(hash_value == easy::hash(12, 2.5, true));
+        caff::hash_combine(hash_value, 2.5);
+        caff::hash_combine(hash_value, true);
+        REQUIRE(hash_value == caff::hash(12, 2.5, true));
     }
 }
 
@@ -228,14 +228,14 @@ TEST_CASE("hash")
     // single value should be the same as using std::hash
     SUBCASE("single value")
     {
-        REQUIRE(easy::hash(12) == hash_value);
+        REQUIRE(caff::hash(12) == hash_value);
     }
 
     // multi-value should be the same as using hash_combine on types
     SUBCASE("multi-value")
     {
-        easy::hash_combine(hash_value, 2.5);
-        easy::hash_combine(hash_value, true);
-        REQUIRE(easy::hash(12, 2.5, true) == hash_value);
+        caff::hash_combine(hash_value, 2.5);
+        caff::hash_combine(hash_value, true);
+        REQUIRE(caff::hash(12, 2.5, true) == hash_value);
     }
 }

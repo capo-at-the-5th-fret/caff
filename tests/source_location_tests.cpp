@@ -1,11 +1,11 @@
 #include <doctest/doctest.h>
-#include "easy/source_location.h"
+#include "caff/source_location.h"
 
 #include <string_view>
 
 TEST_CASE("source_location")
 {
-    constexpr auto sl = easy::source_location::current();
+    constexpr auto sl = caff::source_location::current();
 
 #if __has_include(<source_location>) && __cpp_lib_source_location
     static_assert(sl.line() == 8);

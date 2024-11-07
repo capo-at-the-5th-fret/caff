@@ -1,5 +1,5 @@
 #include <doctest/doctest.h>
-#include "easy/tuple.h"
+#include "caff/tuple.h"
 
 // NOTE: These four std includes are needed for tuple_like test
 #include <ranges>
@@ -7,8 +7,8 @@
 #include <iterator>
 #include <array>
 #include <utility>
-#include "easy/type_traits.h"
-#include "easy/test/type_list.h"
+#include "caff/type_traits.h"
+#include "caff/test/type_list.h"
 
 namespace
 {
@@ -58,21 +58,21 @@ TEST_CASE_TEMPLATE_DEFINE("has_tuple_element", TupleLike,
     has_tuple_element_test_id)
 {
     std::size_t i{ 0 };
-    easy::tuple_for_each_index<TupleLike>([&i]<std::size_t I>
+    caff::tuple_for_each_index<TupleLike>([&i]<std::size_t I>
     {
         CAPTURE(I);
         CAPTURE(i);
         REQUIRE(I == i);
-        static_assert(easy::detail::has_tuple_element<TupleLike, I>);
+        static_assert(caff::detail::has_tuple_element<TupleLike, I>);
         ++i;
     });
 
     // Non tuple-like types
-    static_assert(!easy::detail::has_tuple_element<int, 0>);
+    static_assert(!caff::detail::has_tuple_element<int, 0>);
 
     // NOTE: Won't compile
     // Out of range index
-    //static_assert(!easy::has_tuple_element<TestType,
+    //static_assert(!caff::has_tuple_element<TestType,
       //  std::tuple_size_v<TestType>>);
 }
 TEST_CASE_TEMPLATE_APPLY(has_tuple_element_test_id, tuple_like_types);
@@ -86,12 +86,12 @@ TEST_CASE_TEMPLATE_DEFINE("tuple_like std types", TestType,
     // Reference:
     // https://stackoverflow.com/questions/26854320/volatile-and-const-volatile-stdtuple-and-stdget
 
-    using qts_t = easy::cv_qualified_set_t<TestType>;
+    using qts_t = caff::cv_qualified_set_t<TestType>;
 
-    easy::tuple_for_each_type<qts_t>([]<typename T>
+    caff::tuple_for_each_type<qts_t>([]<typename T>
     {
-        static_assert(easy::tuple_like<T>);
-        static_assert(!easy::tuple_like<T&>);
+        static_assert(caff::tuple_like<T>);
+        static_assert(!caff::tuple_like<T&>);
     });
 }
 TEST_CASE_TEMPLATE_APPLY(tuple_like_std_types_test_id, tuple_like_types);
@@ -99,39 +99,39 @@ TEST_CASE_TEMPLATE_APPLY(tuple_like_std_types_test_id, tuple_like_types);
 TEST_CASE_TEMPLATE_DEFINE("tuple_like other types", TestType,
     tuple_like_other_types_test_id)
 {
-    using qts_t = easy::cv_qualified_set_t<TestType>;
+    using qts_t = caff::cv_qualified_set_t<TestType>;
 
-    easy::tuple_for_each_type<qts_t>([]<typename T>
+    caff::tuple_for_each_type<qts_t>([]<typename T>
     {
-        static_assert(!easy::tuple_like<T>);
+        static_assert(!caff::tuple_like<T>);
     });
 }
 TEST_CASE_TEMPLATE_APPLY(tuple_like_other_types_test_id,
-    easy::test::cv_qualifiable_types);
+    caff::test::cv_qualifiable_types);
 
 TEST_CASE_TEMPLATE_DEFINE("tuple_contains_type", TestType,
     tuple_contains_type_test_id)
 {
     using tuple_t = TestType;
     using success_list = tuple_t;
-    using failure_list = easy::tuple_append_t<
-        easy::cv_qualified_set_t<void>, void*>;
+    using failure_list = caff::tuple_append_t<
+        caff::cv_qualified_set_t<void>, void*>;
 
     SUBCASE("successes")
     {
-        easy::tuple_for_each_type<success_list>([]<typename T>
+        caff::tuple_for_each_type<success_list>([]<typename T>
         {
-            static_assert(easy::tuple_contains_type<T, tuple_t>::value);
-            static_assert(easy::tuple_contains_type_v<T, tuple_t>);
+            static_assert(caff::tuple_contains_type<T, tuple_t>::value);
+            static_assert(caff::tuple_contains_type_v<T, tuple_t>);
         });
     }
 
     SUBCASE("failures")
     {
-        easy::tuple_for_each_type<failure_list>([]<typename T>
+        caff::tuple_for_each_type<failure_list>([]<typename T>
         {
-            static_assert(!easy::tuple_contains_type<T, tuple_t>::value);
-            static_assert(!easy::tuple_contains_type_v<T, tuple_t>);
+            static_assert(!caff::tuple_contains_type<T, tuple_t>::value);
+            static_assert(!caff::tuple_contains_type_v<T, tuple_t>);
         });
     }
 }
@@ -161,7 +161,7 @@ TEST_CASE_TEMPLATE_DEFINE("tuple_cat_t", TestTypes, tuple_cat_t_test_id)
     
     static_assert(std::is_same_v
     <
-        easy::tuple_cat_t<tuple_t_1, tuple_t_2>,
+        caff::tuple_cat_t<tuple_t_1, tuple_t_2>,
         expected_type
     >);
 }
@@ -188,7 +188,7 @@ namespace
     template <typename Tuple, typename Types>
     using tuple_append_t_applier = decltype(std::apply([](auto... args)
     {
-        return easy::tuple_append_t<Tuple, decltype(args)...>{};
+        return caff::tuple_append_t<Tuple, decltype(args)...>{};
     }, std::declval<Types>()));
 }
 
@@ -224,7 +224,7 @@ namespace
     template <typename Tuple, typename Types>
     using tuple_prepend_t_applier = decltype(std::apply([](auto... args)
     {
-        return easy::tuple_prepend_t<Tuple, decltype(args)...>{};
+        return caff::tuple_prepend_t<Tuple, decltype(args)...>{};
     }, std::declval<Types>()));
 }
 
@@ -245,7 +245,7 @@ TEST_CASE_TEMPLATE_DEFINE("tuple_for_each_index", TupleLike,
     constexpr std::size_t expected_size = std::tuple_size_v<TupleLike>;
 
     std::size_t i{ 0 };
-    easy::tuple_for_each_index<TupleLike>([&i]<std::size_t I>
+    caff::tuple_for_each_index<TupleLike>([&i]<std::size_t I>
     {
         REQUIRE(I == i);
         static_assert(I < expected_size);
@@ -269,14 +269,14 @@ TEST_CASE("tuple_for_each_type")
     static_assert(std::tuple_size_v<tuple_like_types> == 6);
 #endif
 
-    easy::tuple_enumerate_types<tuple_like_types>(
+    caff::tuple_enumerate_types<tuple_like_types>(
         []<std::size_t I, typename TupleLike>()
     {
         using tuple_t = TupleLike;
         static_assert(std::tuple_size_v<tuple_t> == tuple_like_type_sizes[I]);
 
         std::size_t i{ 0 };
-        easy::tuple_for_each_type<tuple_t>([&i]<typename T>
+        caff::tuple_for_each_type<tuple_t>([&i]<typename T>
         {
             CAPTURE(I);
             CAPTURE(i);
@@ -314,7 +314,7 @@ TEST_CASE_TEMPLATE_DEFINE("tuple_enumerate_types", TupleLike,
     tuple_enumerate_types_test_id)
 {
     std::size_t i{ 0 };
-    easy::tuple_enumerate_types<TupleLike>([&i]<std::size_t I, typename T>
+    caff::tuple_enumerate_types<TupleLike>([&i]<std::size_t I, typename T>
     {
         CAPTURE(I);
         CAPTURE(i);
@@ -421,7 +421,7 @@ TEST_CASE_TEMPLATE("tuple_for_each", TestType, tuple_test_type, pair_test_type,
     SUBCASE("verify the element types")
     {
         int i = 0;
-        easy::tuple_for_each(t, [&]<typename T>(T element)
+        caff::tuple_for_each(t, [&]<typename T>(T element)
         {
             CAPTURE(i);
             tuple_for_each_validator v;
@@ -432,7 +432,7 @@ TEST_CASE_TEMPLATE("tuple_for_each", TestType, tuple_test_type, pair_test_type,
 
     SUBCASE("modify the elements")
     {
-        easy::tuple_for_each(t, [](auto& element)
+        caff::tuple_for_each(t, [](auto& element)
         {
             ++element;
         });
@@ -443,7 +443,7 @@ TEST_CASE_TEMPLATE("tuple_for_each", TestType, tuple_test_type, pair_test_type,
     SUBCASE("verify const correctness")
     {
         int i = 0;
-        easy::tuple_for_each(std::as_const(t), [&](const auto& element)
+        caff::tuple_for_each(std::as_const(t), [&](const auto& element)
         {
             CAPTURE(i);
             tuple_for_each_validator v;
@@ -465,7 +465,7 @@ TEST_CASE_TEMPLATE("tuple_enumerate", TestType, tuple_test_type, pair_test_type,
 
     SUBCASE("verify the indices and element types")
     {
-        easy::tuple_enumerate(t, [&t = t]<auto I>(auto element)
+        caff::tuple_enumerate(t, [&t = t]<auto I>(auto element)
         {
             CAPTURE(I);
             static_assert(std::is_same_v<std::tuple_element_t<I, tuple_t>,
@@ -476,7 +476,7 @@ TEST_CASE_TEMPLATE("tuple_enumerate", TestType, tuple_test_type, pair_test_type,
 
     SUBCASE("modify the elements")
     {
-        easy::tuple_enumerate(t, []<auto I>(auto& element)
+        caff::tuple_enumerate(t, []<auto I>(auto& element)
         {
             ++element;
         });
@@ -486,7 +486,7 @@ TEST_CASE_TEMPLATE("tuple_enumerate", TestType, tuple_test_type, pair_test_type,
 
     SUBCASE("verify const correctness")
     {
-        easy::tuple_enumerate(std::as_const(t), []<auto I>(const auto& element)
+        caff::tuple_enumerate(std::as_const(t), []<auto I>(const auto& element)
         {
             CAPTURE(I);
             static_assert(

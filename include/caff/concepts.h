@@ -1,8 +1,8 @@
 #pragma once
 
-#include "easy/type_traits.h"
+#include "caff/type_traits.h"
 
-namespace easy
+namespace caff
 {
     template <typename T>
     concept boolean = is_boolean_v<T>;

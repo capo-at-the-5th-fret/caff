@@ -72,7 +72,7 @@ jobs:
       - name: LCOV
         run: |
           mkdir coverage
-          lcov -c -d build/ -o coverage/lcov.info --include "*include/easy*"
+          lcov -c -d build/ -o coverage/lcov.info --include "*include/caff*"
 
       - name: Codecov
         uses: codecov/codecov-action@v3

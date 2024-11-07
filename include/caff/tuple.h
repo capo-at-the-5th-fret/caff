@@ -2,9 +2,9 @@
 
 #include <concepts>
 #include <tuple>
-#include "easy/concepts.h"
+#include "caff/concepts.h"
 
-namespace easy
+namespace caff
 {
     // References:
     // https://stackoverflow.com/questions/68443804/c20-concept-to-check-tuple-like-types

@@ -3,10 +3,10 @@
 #include <tuple>
 #include <vector>
 #include <cstdint>
-#include "easy/test/compare.h"
-#include "easy/flags.h"
+#include "caff/test/compare.h"
+#include "caff/flags.h"
 
-namespace easy::test
+namespace caff::test
 {
     namespace dummy
     {
@@ -19,7 +19,7 @@ namespace easy::test
             trunc = 0x08
         };
 
-        using options = easy::flags<option>;
+        using options = caff::flags<option>;
 
         constexpr options options_all = options
         {

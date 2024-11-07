@@ -1,40 +1,40 @@
 #include <doctest/doctest.h>
-#include "easy/type_traits.h"
+#include "caff/type_traits.h"
 
-#include "easy/test/type_list.h"
+#include "caff/test/type_list.h"
 
 TEST_CASE_TEMPLATE_DEFINE("always_false", TestType, always_false_test_id)
 {
-    if constexpr (easy::is_cv_qualifiable_v<TestType>)
+    if constexpr (caff::is_cv_qualifiable_v<TestType>)
     {
-        using qts_t = easy::cv_qualified_set_t<TestType>;
+        using qts_t = caff::cv_qualified_set_t<TestType>;
 
-        easy::tuple_enumerate_types<qts_t>([]<auto I, typename T>()
+        caff::tuple_enumerate_types<qts_t>([]<auto I, typename T>()
         {
             CAPTURE(I);
 
-            static_assert(!easy::always_false<TestType>::value);
-            static_assert(!easy::always_false_v<TestType>);
+            static_assert(!caff::always_false<TestType>::value);
+            static_assert(!caff::always_false_v<TestType>);
 
-            static_assert(!easy::always_false<TestType, double>::value);
-            static_assert(!easy::always_false_v<TestType, double>);
+            static_assert(!caff::always_false<TestType, double>::value);
+            static_assert(!caff::always_false_v<TestType, double>);
         });
     }
     else
     {
-        static_assert(!easy::always_false<TestType>::value);
-        static_assert(!easy::always_false_v<TestType>);
+        static_assert(!caff::always_false<TestType>::value);
+        static_assert(!caff::always_false_v<TestType>);
 
-        static_assert(!easy::always_false<TestType, double>::value);
-        static_assert(!easy::always_false_v<TestType, double>);
+        static_assert(!caff::always_false<TestType, double>::value);
+        static_assert(!caff::always_false_v<TestType, double>);
     }
 }
-TEST_CASE_TEMPLATE_APPLY(always_false_test_id, easy::test::primary_types);
+TEST_CASE_TEMPLATE_APPLY(always_false_test_id, caff::test::primary_types);
 
 TEST_CASE("is_all_of")
 {
-    using easy::is_all_of;
-    using easy::is_all_of_v;
+    using caff::is_all_of;
+    using caff::is_all_of_v;
 
     SUBCASE("no types")
     {
@@ -65,8 +65,8 @@ TEST_CASE("is_all_of")
 
 TEST_CASE("is_any_of")
 {
-    using easy::is_any_of;
-    using easy::is_any_of_v;
+    using caff::is_any_of;
+    using caff::is_any_of_v;
 
     SUBCASE("no types")
     {
@@ -99,8 +99,8 @@ TEST_CASE("is_any_of")
 
 TEST_CASE("is_none_of")
 {
-    using easy::is_none_of;
-    using easy::is_none_of_v;
+    using caff::is_none_of;
+    using caff::is_none_of_v;
 
     SUBCASE("no types")
     {
@@ -133,8 +133,8 @@ TEST_CASE("is_none_of")
 
 TEST_CASE("is_all_of_same")
 {
-    using easy::is_all_of_same;
-    using easy::is_all_of_same_v;
+    using caff::is_all_of_same;
+    using caff::is_all_of_same_v;
 
     SUBCASE("no types")
     {
@@ -165,8 +165,8 @@ TEST_CASE("is_all_of_same")
 
 TEST_CASE("is_any_of_same")
 {
-    using easy::is_any_of_same;
-    using easy::is_any_of_same_v;
+    using caff::is_any_of_same;
+    using caff::is_any_of_same_v;
 
     SUBCASE("no types")
     {
@@ -199,8 +199,8 @@ TEST_CASE("is_any_of_same")
 
 TEST_CASE("is_none_of_same")
 {
-    using easy::is_none_of_same;
-    using easy::is_none_of_same_v;
+    using caff::is_none_of_same;
+    using caff::is_none_of_same_v;
 
     SUBCASE("no types")
     {
@@ -233,63 +233,63 @@ TEST_CASE("is_none_of_same")
 
 TEST_CASE_TEMPLATE_DEFINE("is_boolean", TestType, is_boolean_test_id)
 {
-    if constexpr (easy::is_cv_qualifiable_v<TestType>)
+    if constexpr (caff::is_cv_qualifiable_v<TestType>)
     {
-        using qts_t = easy::cv_qualified_set_t<TestType>;
+        using qts_t = caff::cv_qualified_set_t<TestType>;
 
-        easy::tuple_enumerate_types<qts_t>([]<auto I, typename T>()
+        caff::tuple_enumerate_types<qts_t>([]<auto I, typename T>()
         {
             CAPTURE(I);
 
             constexpr bool expected = std::is_same_v<qts_t,
-                easy::cv_qualified_set_t<bool>>;
+                caff::cv_qualified_set_t<bool>>;
 
-            static_assert(easy::is_boolean<T>::value == expected);
-            static_assert(easy::is_boolean_v<T> == expected);
+            static_assert(caff::is_boolean<T>::value == expected);
+            static_assert(caff::is_boolean_v<T> == expected);
         });
     }
     else
     {
-        static_assert(!easy::is_boolean<TestType>::value);
-        static_assert(!easy::is_boolean_v<TestType>);
+        static_assert(!caff::is_boolean<TestType>::value);
+        static_assert(!caff::is_boolean_v<TestType>);
     }
 }
-TEST_CASE_TEMPLATE_APPLY(is_boolean_test_id, easy::test::primary_types);
+TEST_CASE_TEMPLATE_APPLY(is_boolean_test_id, caff::test::primary_types);
 
 TEST_CASE_TEMPLATE_DEFINE("is_standard_integer", TestType,
     is_standard_integer_test_id)
 {
-    if constexpr (easy::is_cv_qualifiable_v<TestType>)
+    if constexpr (caff::is_cv_qualifiable_v<TestType>)
     {
-        using qts_t = easy::cv_qualified_set_t<TestType>;
+        using qts_t = caff::cv_qualified_set_t<TestType>;
     
-        easy::tuple_enumerate_types<qts_t>([]<auto I, typename T>()
+        caff::tuple_enumerate_types<qts_t>([]<auto I, typename T>()
         {
             CAPTURE(I);
     
-            constexpr bool expected = easy::tuple_contains_type_v<
-                std::remove_cv_t<T>, easy::standard_integer_types>;
+            constexpr bool expected = caff::tuple_contains_type_v<
+                std::remove_cv_t<T>, caff::standard_integer_types>;
         
-            static_assert(easy::is_standard_integer<T>::value == expected);
-            static_assert(easy::is_standard_integer_v<T> == expected);
+            static_assert(caff::is_standard_integer<T>::value == expected);
+            static_assert(caff::is_standard_integer_v<T> == expected);
         });
     }
     else
     {
-        static_assert(!easy::is_standard_integer<TestType>::value);
-        static_assert(!easy::is_standard_integer_v<TestType>);
+        static_assert(!caff::is_standard_integer<TestType>::value);
+        static_assert(!caff::is_standard_integer_v<TestType>);
     }
 }
-TEST_CASE_TEMPLATE_APPLY(is_standard_integer_test_id, easy::test::primary_types);
+TEST_CASE_TEMPLATE_APPLY(is_standard_integer_test_id, caff::test::primary_types);
 
 TEST_CASE("is_cv_qualifiable")
 {
-    easy::tuple_for_each_type<easy::test::primary_types>([]<typename T>
+    caff::tuple_for_each_type<caff::test::primary_types>([]<typename T>
     {
         constexpr bool expected_value = (!std::is_function_v<T> &&
             !std::is_reference_v<T>);
-        static_assert(easy::is_cv_qualifiable<T>::value == expected_value);
-        static_assert(easy::is_cv_qualifiable_v<T> == expected_value);
+        static_assert(caff::is_cv_qualifiable<T>::value == expected_value);
+        static_assert(caff::is_cv_qualifiable_v<T> == expected_value);
 
         if constexpr (expected_value)
         {
@@ -346,71 +346,71 @@ TEST_CASE_TEMPLATE_DEFINE("is_cv_qualified_set", T,
     SUBCASE("successes")
     {
         using qst = valid_qst<T>;
-        static_assert(easy::is_cv_qualified_set<qst>::value);
-        static_assert(easy::is_cv_qualified_set_v<qst>);
+        static_assert(caff::is_cv_qualified_set<qst>::value);
+        static_assert(caff::is_cv_qualified_set_v<qst>);
     }
 
     SUBCASE("failures")
     {
         using testTypes = invalid_qsts<T>;
 
-        easy::tuple_for_each_type<testTypes>([]<typename U>
+        caff::tuple_for_each_type<testTypes>([]<typename U>
         {
-            static_assert(!easy::is_cv_qualified_set<U>::value);
-            static_assert(!easy::is_cv_qualified_set_v<U>);
+            static_assert(!caff::is_cv_qualified_set<U>::value);
+            static_assert(!caff::is_cv_qualified_set_v<U>);
         });
    }
 }
 TEST_CASE_TEMPLATE_APPLY(is_cv_qualified_set_test_id,
-    easy::test::cv_qualifiable_types);
+    caff::test::cv_qualifiable_types);
 
 TEST_CASE_TEMPLATE_DEFINE("cv_qualified_type_set", T,
     cv_qualified_type_set_test_id)
 {
     SUBCASE("make using non-qualified type")
     {
-        using qts_t = easy::cv_qualified_set_t<T>;
-        static_assert(std::is_same_v<easy::non_qualified_type<qts_t>, T>);
-        static_assert(std::is_same_v<easy::const_type<qts_t>,
+        using qts_t = caff::cv_qualified_set_t<T>;
+        static_assert(std::is_same_v<caff::non_qualified_type<qts_t>, T>);
+        static_assert(std::is_same_v<caff::const_type<qts_t>,
             std::add_const_t<T>>);
-        static_assert(std::is_same_v<easy::volatile_type<qts_t>,
+        static_assert(std::is_same_v<caff::volatile_type<qts_t>,
             std::add_volatile_t<T>>);
-        static_assert(std::is_same_v<easy::cv_type<qts_t>, std::add_cv_t<T>>);
+        static_assert(std::is_same_v<caff::cv_type<qts_t>, std::add_cv_t<T>>);
     }
 
     SUBCASE("make using const type")
     {
-        using qts_t = easy::cv_qualified_set_t<std::add_const_t<T>>;
-        static_assert(std::is_same_v<easy::non_qualified_type<qts_t>, T>);
-        static_assert(std::is_same_v<easy::const_type<qts_t>,
+        using qts_t = caff::cv_qualified_set_t<std::add_const_t<T>>;
+        static_assert(std::is_same_v<caff::non_qualified_type<qts_t>, T>);
+        static_assert(std::is_same_v<caff::const_type<qts_t>,
             std::add_const_t<T>>);
-        static_assert(std::is_same_v<easy::volatile_type<qts_t>,
+        static_assert(std::is_same_v<caff::volatile_type<qts_t>,
             std::add_volatile_t<T>>);
-        static_assert(std::is_same_v<easy::cv_type<qts_t>, std::add_cv_t<T>>);
+        static_assert(std::is_same_v<caff::cv_type<qts_t>, std::add_cv_t<T>>);
     }
 
     SUBCASE("make using volatile type")
     {
-        using qts_t = easy::cv_qualified_set_t<std::add_volatile_t<T>>;
-        static_assert(std::is_same_v<easy::non_qualified_type<qts_t>, T>);
-        static_assert(std::is_same_v<easy::const_type<qts_t>,
+        using qts_t = caff::cv_qualified_set_t<std::add_volatile_t<T>>;
+        static_assert(std::is_same_v<caff::non_qualified_type<qts_t>, T>);
+        static_assert(std::is_same_v<caff::const_type<qts_t>,
             std::add_const_t<T>>);
-        static_assert(std::is_same_v<easy::volatile_type<qts_t>,
+        static_assert(std::is_same_v<caff::volatile_type<qts_t>,
             std::add_volatile_t<T>>);
-        static_assert(std::is_same_v<easy::cv_type<qts_t>, std::add_cv_t<T>>);
+        static_assert(std::is_same_v<caff::cv_type<qts_t>, std::add_cv_t<T>>);
     }
 
     SUBCASE("make using const volatile type")
     {
-        using qts_t = easy::cv_qualified_set_t<std::add_cv_t<T>>;
-        static_assert(std::is_same_v<easy::non_qualified_type<qts_t>, T>);
-        static_assert(std::is_same_v<easy::const_type<qts_t>,
+        using qts_t = caff::cv_qualified_set_t<std::add_cv_t<T>>;
+        static_assert(std::is_same_v<caff::non_qualified_type<qts_t>, T>);
+        static_assert(std::is_same_v<caff::const_type<qts_t>,
             std::add_const_t<T>>);
-        static_assert(std::is_same_v<easy::volatile_type<qts_t>,
+        static_assert(std::is_same_v<caff::volatile_type<qts_t>,
             std::add_volatile_t<T>>);
-        static_assert(std::is_same_v<easy::cv_type<qts_t>, std::add_cv_t<T>>);
+        static_assert(std::is_same_v<caff::cv_type<qts_t>, std::add_cv_t<T>>);
     }
 }
 TEST_CASE_TEMPLATE_APPLY(cv_qualified_type_set_test_id,
-    easy::test::cv_qualifiable_types);
+    caff::test::cv_qualifiable_types);
 

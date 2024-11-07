@@ -3,9 +3,9 @@
 #include <functional>
 #include <string>
 #include <string_view>
-#include "easy/type_traits.h"
+#include "caff/type_traits.h"
 
-namespace easy
+namespace caff
 {
     // Reference:
     // https://en.cppreference.com/w/cpp/container/unordered_map/find
@@ -65,7 +65,7 @@ namespace easy
             }
             else
             {
-                static_assert(easy::always_false_v<T>,
+                static_assert(caff::always_false_v<T>,
                               "The size of std::size_t is not supported by "
                               "hash_combine");
             }

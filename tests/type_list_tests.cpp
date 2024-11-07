@@ -1,9 +1,9 @@
 #include <doctest/doctest.h>
-#include "easy/type_list.h"
+#include "caff/type_list.h"
 
 TEST_CASE("standard_character_types")
 {
-    using T = easy::standard_character_types;
+    using T = caff::standard_character_types;
 
     static_assert(std::tuple_size_v<T> == 5);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, char>);
@@ -22,7 +22,7 @@ TEST_CASE("standard_character_types")
 
 TEST_CASE("signed_integer_types")
 {
-    using T = easy::signed_integer_types;
+    using T = caff::signed_integer_types;
 
     static_assert(std::tuple_size_v<T> == 4);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, short>);
@@ -39,7 +39,7 @@ TEST_CASE("signed_integer_types")
 
 TEST_CASE("unsigned_integer_types")
 {
-    using T = easy::unsigned_integer_types;
+    using T = caff::unsigned_integer_types;
 
     static_assert(std::tuple_size_v<T> == 4);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, unsigned short>);
@@ -56,7 +56,7 @@ TEST_CASE("unsigned_integer_types")
 
 TEST_CASE("integer_types")
 {
-    using T = easy::integer_types;
+    using T = caff::integer_types;
 
     static_assert(std::tuple_size_v<T> == 8);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, short>);
@@ -81,7 +81,7 @@ TEST_CASE("integer_types")
 
 TEST_CASE("signed_standard_integer_types")
 {
-    using T = easy::signed_standard_integer_types;
+    using T = caff::signed_standard_integer_types;
 
     static_assert(std::tuple_size_v<T> == 5);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, signed char>);
@@ -100,7 +100,7 @@ TEST_CASE("signed_standard_integer_types")
 
 TEST_CASE("unsigned_standard_integer_types")
 {
-    using T = easy::unsigned_standard_integer_types;
+    using T = caff::unsigned_standard_integer_types;
 
     static_assert(std::tuple_size_v<T> == 5);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, unsigned char>);
@@ -119,7 +119,7 @@ TEST_CASE("unsigned_standard_integer_types")
 
 TEST_CASE("standard_integer_types")
 {
-    using T = easy::standard_integer_types;
+    using T = caff::standard_integer_types;
 
     static_assert(std::tuple_size_v<T> == 10);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, signed char>);
@@ -148,7 +148,7 @@ TEST_CASE("standard_integer_types")
 
 TEST_CASE("integral_types")
 {
-    using T = easy::integral_types;
+    using T = caff::integral_types;
 
     static_assert(std::tuple_size_v<T> == 16);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, bool>);
@@ -189,7 +189,7 @@ TEST_CASE("integral_types")
 
 TEST_CASE("standard_floating_point_types")
 {
-    using T = easy::standard_floating_point_types;
+    using T = caff::standard_floating_point_types;
 
     static_assert(std::tuple_size_v<T> == 3);
     static_assert(std::is_same_v<std::tuple_element_t<0,T>, float>);

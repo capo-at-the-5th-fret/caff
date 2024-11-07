@@ -3,7 +3,7 @@
 #include <functional>
 #include <variant>
 
-namespace easy::test
+namespace caff::test
 {
     enum class equality_result
     {

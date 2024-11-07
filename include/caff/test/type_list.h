@@ -1,9 +1,9 @@
 #pragma once
 
-#include "easy/type_list.h"
-#include "easy/test/dummy.h"
+#include "caff/type_list.h"
+#include "caff/test/dummy.h"
 
-namespace easy::test
+namespace caff::test
 {
     // A sample type from each of the 14 primary type categories
     // REFERENCE:
