@@ -2,6 +2,7 @@
 
 #include <tuple>
 #include <vector>
+#include <cstdint>
 #include "easy/test/compare.h"
 #include "easy/flags.h"
 
