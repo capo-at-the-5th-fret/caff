@@ -177,17 +177,7 @@ namespace easy::test
                 rhs.variant());
         }
 
-        struct le
-        {
-            template <typename T, typename U>
-            requires std::equality_comparable_with<T, U>
-            constexpr bool operator()(T&& t, U&& u) const
-            {
-                return std::ranges::less{}(t,u) || std::ranges::equal_to{}(t,u);
-            }
-        };
-
-        template <typename T1, typename T2, typename Pred = le>//std::ranges::less_equal>
+        template <typename T1, typename T2, typename Pred = std::ranges::less_equal>
         constexpr bool compare_less_equal(T1 const& lhs, T2 const& rhs, Pred p = {}) const
         {
             return (p(lhs,rhs)) == (expected != ordering_result::greater);
@@ -205,17 +195,7 @@ namespace easy::test
                 rhs.variant());
         }
 
-        struct ge
-        {
-            template <typename T, typename U>
-            requires std::equality_comparable_with<T, U>
-            constexpr bool operator()(T&& t, U&& u) const
-            {
-                return std::ranges::greater{}(t,u) || std::ranges::equal_to{}(t,u);
-            }
-        };
-
-        template <typename T1, typename T2, typename Pred = ge>
+        template <typename T1, typename T2, typename Pred = std::ranges::greater_equal>
         constexpr bool compare_greater_equal(T1 const& lhs, T2 const& rhs, Pred p = {}) const
         {
             return (p(lhs,rhs)) == (expected != ordering_result::less);
