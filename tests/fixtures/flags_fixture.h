@@ -37,10 +37,10 @@ namespace caff::test
             std::vector<std::tuple<options, equality_comparator>> comparisons =
             {
                 { base, equality_equal },
-                //{ options{  }, equality_not_equal },
-                //{ options{ option::read }, equality_not_equal },
-                //{ options{ option::write, option::append, option::trunc }, equality_not_equal },
-                //{ options_all, equality_not_equal }
+                { options{  }, equality_not_equal },
+                { options{ option::read }, equality_not_equal },
+                { options{ option::write, option::append, option::trunc }, equality_not_equal },
+                { options_all, equality_not_equal }
             };
         };
     }
