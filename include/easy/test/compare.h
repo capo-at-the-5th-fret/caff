@@ -233,7 +233,7 @@ namespace easy::test
                 rhs.variant());
         }
 
-        template <typename T1, typename T2, typename Pred = std::ranges::compare_three_way>
+        template <typename T1, typename T2, typename Pred = std::compare_three_way>
         constexpr bool compare_three_way(T1 const& lhs, T2 const& rhs, Pred p = {}) const
         {
             const auto cmp = p(lhs,rhs);
