@@ -6,7 +6,7 @@
 
 namespace caff
 {
-    template <typename E>
+    template <typename E, std::underlying_type_t<E> AllBitsMask>
     requires std::is_enum_v<E>
     class flags
     {
@@ -115,12 +115,12 @@ namespace caff
     };
 }
 
-template <typename E>
-struct std::hash<caff::flags<E>>
+template <typename E, std::underlying_type_t<E> AllBitsMask>
+struct std::hash<caff::flags<E, AllBitsMask>>
 {
-    std::size_t operator()(const caff::flags<E>& f) const noexcept
+    std::size_t operator()(const caff::flags<E, AllBitsMask>& f) const noexcept
     {
-        using hash_type = std::hash<typename caff::flags<E>::underlying_type>;
+        using hash_type = std::hash<typename caff::flags<E, AllBitsMask>::underlying_type>;
         return hash_type{}(f.to_underlying());
     }
 };

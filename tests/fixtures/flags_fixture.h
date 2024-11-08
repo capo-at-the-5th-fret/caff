@@ -19,7 +19,13 @@ namespace caff::test
             trunc = 0x08
         };
 
-        using options = caff::flags<option>;
+        inline constexpr std::underlying_type_t<option> options_bitmask =
+            std::to_underlying(option::read) |
+            std::to_underlying(option::write) |
+            std::to_underlying(option::append) |
+            std::to_underlying(option::trunc);
+
+        using options = caff::flags<option, options_bitmask>;
 
         constexpr options options_all = options
         {
