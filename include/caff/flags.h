@@ -40,6 +40,37 @@ namespace caff
 
         bool operator==(flags const& rhs) const = default;
 
+        [[nodiscard]] constexpr bool test(E value) const noexcept
+        {
+            const auto test_bits = std::to_underlying(value);
+            return ((bits_ & test_bits) == test_bits);
+        }
+
+        template <typename... Es>
+        requires (... && std::is_same_v<Es, E>)
+        constexpr bool test_all_of(E value, Es... values) const noexcept
+        {
+            const auto test_bits = (std::to_underlying(value) | ... |
+                std::to_underlying(values));
+            return ((bits_ & test_bits) == test_bits);
+        }
+
+        template <typename... Es>
+        requires (... && std::is_same_v<Es, E>)
+        constexpr bool test_any_of(E value, Es... values) const noexcept
+        {
+            return ((bits_ & (std::to_underlying(value) | ... |
+                std::to_underlying(values))) != 0);
+        }
+
+        template <typename... Es>
+        requires (... && std::is_same_v<Es, E>)
+        constexpr bool test_none_of(E value, Es... values) const noexcept
+        {
+            return (bits_ & (std::to_underlying(value) | ... |
+                std::to_underlying(values))) == 0;
+        }
+
         template <typename... Es>
         requires (... && std::is_same_v<Es, E>)
         constexpr flags& set(E value, Es... values) noexcept
@@ -72,37 +103,6 @@ namespace caff
             bits_ ^= (std::to_underlying(value) | ... |
                 std::to_underlying(values));
             return *this;
-        }
-
-        [[nodiscard]] constexpr bool test(E value) const noexcept
-        {
-            const auto test_bits = std::to_underlying(value);
-            return ((bits_ & test_bits) == test_bits);
-        }
-
-        template <typename... Es>
-        requires (... && std::is_same_v<Es, E>)
-        constexpr bool test_all_of(E value, Es... values) const noexcept
-        {
-            const auto test_bits = (std::to_underlying(value) | ... |
-                std::to_underlying(values));
-            return ((bits_ & test_bits) == test_bits);
-        }
-
-        template <typename... Es>
-        requires (... && std::is_same_v<Es, E>)
-        constexpr bool test_any_of(E value, Es... values) const noexcept
-        {
-            return ((bits_ & (std::to_underlying(value) | ... |
-                std::to_underlying(values))) != 0);
-        }
-
-        template <typename... Es>
-        requires (... && std::is_same_v<Es, E>)
-        constexpr bool test_none_of(E value, Es... values) const noexcept
-        {
-            return (bits_ & (std::to_underlying(value) | ... |
-                std::to_underlying(values))) == 0;
         }
 
         constexpr underlying_type to_underlying() const noexcept
