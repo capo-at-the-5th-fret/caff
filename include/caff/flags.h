@@ -65,12 +65,9 @@ namespace caff
             return *this;
         }
 
-        template <typename... Es>
-        requires (... && std::is_same_v<Es, E>)
-        [[nodiscard]] constexpr bool test(E value, Es... values) const noexcept
+        [[nodiscard]] constexpr bool test(E value) const noexcept
         {
-            const auto test_bits = (std::to_underlying(value) | ... |
-                std::to_underlying(values));
+            const auto test_bits = std::to_underlying(value);
             return ((bits_ & test_bits) == test_bits);
         }
 
