@@ -89,6 +89,13 @@ TEST_SUITE("flags")
         o.reset(write);
         REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(append)));
 
+        o.reset(read);
+        REQUIRE(o.to_underlying() == std::to_underlying(append));
+
+        o.reset(append);
+        REQUIRE(o.to_underlying() == 0);
+
+        o = { read, write, append };
         o.reset();
         REQUIRE(o.to_underlying() == 0);
     }

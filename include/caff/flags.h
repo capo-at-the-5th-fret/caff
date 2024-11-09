@@ -106,19 +106,15 @@ namespace caff
             return *this;
         }
 
-        template <typename... Es>
-        requires (... && std::is_same_v<Es, E>)
-        constexpr flags& reset(Es... values) noexcept
+        constexpr flags& reset() noexcept
         {
-            if constexpr (sizeof...(Es) > 0)
-            {
-                bits_ &= ~(... | std::to_underlying(values));
-            }
-            else
-            {
-                bits_ = 0;
-            }
+            bits_ = 0;
+            return *this;
+        }
 
+        constexpr flags& reset(E value) noexcept
+        {
+            bits_ &= ~std::to_underlying(value);
             return *this;
         }
 
