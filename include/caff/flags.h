@@ -67,6 +67,29 @@ namespace caff
             return std::popcount(bits_);
         }
 
+        constexpr flags& operator&=(const flags& other) noexcept
+        {
+            bits_ &= other.bits_;
+            return *this;
+        }
+
+        constexpr flags& operator|=(const flags& other) noexcept
+        {
+            bits_ |= other.bits_;
+            return *this;
+        }
+
+        constexpr flags& operator^=(const flags& other) noexcept
+        {
+            bits_ ^= other.bits_;
+            return *this;
+        }
+
+        constexpr flags operator~() const noexcept
+        {
+            return flags(*this).flip();
+        }
+
         template <typename... Es>
         requires (... && std::is_same_v<Es, E>)
         constexpr bool test_all_of(E value, Es... values) const noexcept
@@ -133,6 +156,21 @@ namespace caff
         constexpr underlying_type to_underlying() const noexcept
         {
             return bits_;
+        }
+
+        friend constexpr flags operator&(const flags& lhs, const flags& rhs) noexcept
+        {
+            return flags{ lhs } &= rhs;
+        }
+
+        friend constexpr flags operator|(const flags& lhs, const flags& rhs) noexcept
+        {
+            return flags{ lhs } |= rhs;
+        }
+
+        friend constexpr flags operator^(const flags& lhs, const flags& rhs) noexcept
+        {
+            return flags{ lhs } ^= rhs;
         }
 
     private:

@@ -242,6 +242,40 @@ TEST_SUITE("flags")
         }
     }
 
+    TEST_CASE("bitwise assignment operators")
+    {
+        SUBCASE("AND")
+        {
+            options o1{ read, write };
+            options o2{ write, append };
+            o1 &= o2;
+            REQUIRE(o1 == options{ write });
+        }
+
+        SUBCASE("OR")
+        {
+            options o1{ read, write };
+            options o2{ write, append };
+            o1 |= o2;
+            REQUIRE(o1 == options{ read, write, append });
+        }
+
+        SUBCASE("XOR")
+        {
+            options o1{ read, write };
+            options o2{ write, append };
+            o1 ^= o2;
+            REQUIRE(o1 == options{ read, append });
+        }
+
+        SUBCASE("NOT")
+        {
+            options o1{ read, write };
+            options o2 = ~o1;
+            REQUIRE(o2 == options{ append, trunc });
+        }
+    }
+
     TEST_CASE("test_all_of")
     {
         options o({read, write, append});
@@ -270,6 +304,33 @@ TEST_SUITE("flags")
 
         o.set(read);
         REQUIRE(o.to_underlying() == std::to_underlying(read));
+    }
+
+    TEST_CASE("bitwise operators")
+    {
+        SUBCASE("AND")
+        {
+            options o1{ read, write };
+            options o2{ write, append };
+            options o3 = o1 & o2;
+            REQUIRE(o3 == options{ write });
+        }
+
+        SUBCASE("OR")
+        {
+            options o1{ read, write };
+            options o2{ write, append };
+            options o3 = o1 | o2;
+            REQUIRE(o3 == options{ read, write, append });
+        }
+
+        SUBCASE("XOR")
+        {
+            options o1{ read, write };
+            options o2{ write, append };
+            options o3 = o1 ^ o2;
+            REQUIRE(o3 == options{ read, append });
+        }
     }
 
     TEST_CASE_FIXTURE(options_fixture, "hash")
