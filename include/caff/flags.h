@@ -92,12 +92,17 @@ namespace caff
                 std::to_underlying(values))) == 0;
         }
 
-        template <typename... Es>
-        requires (... && std::is_same_v<Es, E>)
-        constexpr flags& set(E value, Es... values) noexcept
+        constexpr flags& set(E value, bool set = true) noexcept
         {
-            bits_ |= (std::to_underlying(value) | ... |
-                std::to_underlying(values));
+            if (set)
+            {
+                bits_ |= std::to_underlying(value);
+            }
+            else
+            {
+                bits_ &= ~std::to_underlying(value);
+            }
+
             return *this;
         }
 

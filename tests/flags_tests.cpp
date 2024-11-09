@@ -66,8 +66,21 @@ TEST_SUITE("flags")
     TEST_CASE("set")
     {
         options o;
-        o.set(read, append);
+        o.set(read).set(append);
         REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(append)));
+
+        o.set(trunc, true);
+        REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(append) |
+            std::to_underlying(trunc)));
+        
+        o.set(read, false);
+        REQUIRE(o.to_underlying() == (std::to_underlying(append) | std::to_underlying(trunc)));
+
+        o.set(append, false);
+        REQUIRE(o.to_underlying() == std::to_underlying(trunc));
+
+        o.set(trunc, false);
+        REQUIRE(o.to_underlying() == 0);
     }
 
     TEST_CASE("reset")
