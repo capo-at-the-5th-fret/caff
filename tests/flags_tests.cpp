@@ -1,5 +1,7 @@
 #include <doctest/doctest.h>
 #include <unordered_set>
+#include <tuple>
+#include <array>
 #include "fixtures/flags_fixture.h"
 
 TEST_SUITE("flags")
@@ -95,6 +97,39 @@ TEST_SUITE("flags")
         REQUIRE_FALSE(o.test(write));
         REQUIRE_FALSE(o.test(append));
         REQUIRE_FALSE(o.test(trunc));
+    }
+
+    TEST_CASE("all, any, none")
+    {
+        constexpr std::array test_values =
+        {
+            std::tuple{ options{ }, false, false, true },
+            std::tuple{ options{ read }, false, true, false },
+            std::tuple{ options{ write }, false, true, false },
+            std::tuple{ options{ append }, false, true, false },
+            std::tuple{ options{ trunc }, false, true, false },
+            std::tuple{ options{ read, write }, false, true, false },
+            std::tuple{ options{ read, append }, false, true, false },
+            std::tuple{ options{ read, trunc }, false, true, false },
+            std::tuple{ options{ write, append }, false, true, false },
+            std::tuple{ options{ write, trunc }, false, true, false },
+            std::tuple{ options{ append, trunc }, false, true, false },
+            std::tuple{ options{ read, write, append }, false, true, false },
+            std::tuple{ options{ read, write, trunc }, false, true, false },
+            std::tuple{ options{ read, append, trunc }, false, true, false },
+            std::tuple{ options{ write, append, trunc }, false, true, false },
+            std::tuple{ options{ read, write, append, trunc }, true, true, false }
+        };
+
+        for (int i = 0; const auto& [o, expected_all, expected_any, expected_none] :
+            test_values)
+        {
+            CAPTURE(i);
+            REQUIRE(o.all() == expected_all);
+            REQUIRE(o.any() == expected_any);
+            REQUIRE(o.none() == expected_none);
+            i++;
+        }
     }
 
     TEST_CASE("test_all_of")

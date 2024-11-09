@@ -46,6 +46,21 @@ namespace caff
             return ((bits_ & test_bits) == test_bits);
         }
 
+        [[nodiscard]] constexpr bool all() const noexcept
+        {
+            return (bits_ == AllBitsMask);
+        }
+
+        [[nodiscard]] constexpr bool any() const noexcept
+        {
+            return (bits_ != 0);
+        }
+
+        [[nodiscard]] constexpr bool none() const noexcept
+        {
+            return (bits_ == 0);
+        }
+
         template <typename... Es>
         requires (... && std::is_same_v<Es, E>)
         constexpr bool test_all_of(E value, Es... values) const noexcept
