@@ -3,11 +3,12 @@
 #include <type_traits>
 #include <initializer_list>
 #include <utility>
+#include <bit>
 
 namespace caff
 {
     template <typename E, std::underlying_type_t<E> AllBitsMask>
-    requires std::is_enum_v<E>
+    requires (std::is_enum_v<E> && std::is_unsigned_v<std::underlying_type_t<E>>)
     class flags
     {
     public:
@@ -40,25 +41,30 @@ namespace caff
 
         bool operator==(flags const& rhs) const = default;
 
-        [[nodiscard]] constexpr bool test(E value) const noexcept
+        constexpr bool test(E value) const noexcept
         {
             const auto test_bits = std::to_underlying(value);
             return ((bits_ & test_bits) == test_bits);
         }
 
-        [[nodiscard]] constexpr bool all() const noexcept
+        constexpr bool all() const noexcept
         {
             return (bits_ == AllBitsMask);
         }
 
-        [[nodiscard]] constexpr bool any() const noexcept
+        constexpr bool any() const noexcept
         {
             return (bits_ != 0);
         }
 
-        [[nodiscard]] constexpr bool none() const noexcept
+        constexpr bool none() const noexcept
         {
             return (bits_ == 0);
+        }
+
+        constexpr std::size_t count() const noexcept
+        {
+            return std::popcount(bits_);
         }
 
         template <typename... Es>

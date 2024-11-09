@@ -99,35 +99,36 @@ TEST_SUITE("flags")
         REQUIRE_FALSE(o.test(trunc));
     }
 
-    TEST_CASE("all, any, none")
+    TEST_CASE("all, any, none, count")
     {
         constexpr std::array test_values =
         {
-            std::tuple{ options{ }, false, false, true },
-            std::tuple{ options{ read }, false, true, false },
-            std::tuple{ options{ write }, false, true, false },
-            std::tuple{ options{ append }, false, true, false },
-            std::tuple{ options{ trunc }, false, true, false },
-            std::tuple{ options{ read, write }, false, true, false },
-            std::tuple{ options{ read, append }, false, true, false },
-            std::tuple{ options{ read, trunc }, false, true, false },
-            std::tuple{ options{ write, append }, false, true, false },
-            std::tuple{ options{ write, trunc }, false, true, false },
-            std::tuple{ options{ append, trunc }, false, true, false },
-            std::tuple{ options{ read, write, append }, false, true, false },
-            std::tuple{ options{ read, write, trunc }, false, true, false },
-            std::tuple{ options{ read, append, trunc }, false, true, false },
-            std::tuple{ options{ write, append, trunc }, false, true, false },
-            std::tuple{ options{ read, write, append, trunc }, true, true, false }
+            std::tuple{ options{ }, false, false, true, 0 },
+            std::tuple{ options{ read }, false, true, false, 1 },
+            std::tuple{ options{ write }, false, true, false, 1 },
+            std::tuple{ options{ append }, false, true, false, 1 },
+            std::tuple{ options{ trunc }, false, true, false, 1 },
+            std::tuple{ options{ read, write }, false, true, false, 2 },
+            std::tuple{ options{ read, append }, false, true, false, 2 },
+            std::tuple{ options{ read, trunc }, false, true, false, 2 },
+            std::tuple{ options{ write, append }, false, true, false, 2 },
+            std::tuple{ options{ write, trunc }, false, true, false, 2 },
+            std::tuple{ options{ append, trunc }, false, true, false, 2 },
+            std::tuple{ options{ read, write, append }, false, true, false, 3 },
+            std::tuple{ options{ read, write, trunc }, false, true, false, 3 },
+            std::tuple{ options{ read, append, trunc }, false, true, false, 3 },
+            std::tuple{ options{ write, append, trunc }, false, true, false, 3 },
+            std::tuple{ options{ read, write, append, trunc }, true, true, false, 4 }
         };
 
-        for (int i = 0; const auto& [o, expected_all, expected_any, expected_none] :
+        for (int i = 0; const auto& [o, expected_all, expected_any, expected_none, expected_count] :
             test_values)
         {
             CAPTURE(i);
             REQUIRE(o.all() == expected_all);
             REQUIRE(o.any() == expected_any);
             REQUIRE(o.none() == expected_none);
+            REQUIRE(o.count() == expected_count);
             i++;
         }
     }
