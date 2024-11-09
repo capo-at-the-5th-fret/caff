@@ -81,33 +81,122 @@ TEST_SUITE("flags")
 
         o.set(trunc, false);
         REQUIRE(o.to_underlying() == 0);
+
+        SUBCASE("chaining")
+        {
+            o.reset();
+            o.set(read).set(append).set(trunc);
+            REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(append) |
+                std::to_underlying(trunc)));
+        }
     }
 
     TEST_CASE("reset")
     {
-        options o({read, write, append});
-        o.reset(write);
-        REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(append)));
+        options o{ read, write, append };
 
-        o.reset(read);
-        REQUIRE(o.to_underlying() == std::to_underlying(append));
+        SUBCASE("no parameters")
+        {
+            o.reset();
+            REQUIRE(o.to_underlying() == 0);
+        }
 
-        o.reset(append);
-        REQUIRE(o.to_underlying() == 0);
+        SUBCASE("single parameter")
+        {
+            o.reset(write);
+            REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(append)));
 
-        o = { read, write, append };
-        o.reset();
-        REQUIRE(o.to_underlying() == 0);
+            o.reset(read);
+            REQUIRE(o.to_underlying() == std::to_underlying(append));
+
+            o.reset(append);
+            REQUIRE(o.to_underlying() == 0);
+        }
+
+        SUBCASE("chaining")
+        {
+            o.reset(read).reset(write).reset(append);
+            REQUIRE(o.to_underlying() == 0);
+        }
     }
 
     TEST_CASE("flip")
     {
-        options o(read);
-        o.flip(read, append);
-        REQUIRE(o.to_underlying() == std::to_underlying(append));
+        SUBCASE("no parameters")
+        {
+            constexpr std::array test_values =
+            {
+                std::tuple{ options{ }, options{ read, write, append, trunc } },
+                std::tuple{ options{ read }, options{ write, append, trunc } },
+                std::tuple{ options{ write }, options{ read, append, trunc } },
+                std::tuple{ options{ append }, options{ read, write, trunc } },
+                std::tuple{ options{ trunc }, options{ read, write, append } },
+                std::tuple{ options{ read, write }, options{ append, trunc } },
+                std::tuple{ options{ read, append }, options{ write, trunc } },
+                std::tuple{ options{ read, trunc }, options{ write, append } },
+                std::tuple{ options{ write, append }, options{ read, trunc } },
+                std::tuple{ options{ write, trunc }, options{ read, append } },
+                std::tuple{ options{ append, trunc }, options{ read, write } },
+                std::tuple{ options{ read, write, append }, options{ trunc } },
+                std::tuple{ options{ read, write, trunc }, options{ append } },
+                std::tuple{ options{ read, append, trunc }, options{ write } },
+                std::tuple{ options{ write, append, trunc }, options{ read } },
+                std::tuple{ options{ read, write, append, trunc }, options{ } }
+            };
 
-        o.flip(write);
-        REQUIRE(o.to_underlying() == (std::to_underlying(append) | std::to_underlying(write)));
+            for (int i = 0; const auto& [test_value, expected_result] : test_values)
+            {
+                CAPTURE(i);
+                options o{ test_value };
+                o.flip();
+                REQUIRE(o == expected_result);
+                ++i;
+            }
+        }
+
+        SUBCASE("single parameter")
+        {
+            options o;
+
+            o.flip(read);
+            REQUIRE(o.to_underlying() == std::to_underlying(read));
+
+            o.flip(write);
+            REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(write)));
+
+            o.flip(append);
+            REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(write) |    
+                std::to_underlying(append)));
+
+            o.flip(trunc);
+            REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(write) |    
+                std::to_underlying(append) | std::to_underlying(trunc)));
+
+            o.flip(read);
+            REQUIRE(o.to_underlying() == (std::to_underlying(write) | std::to_underlying(append) |
+                std::to_underlying(trunc)));
+
+            o.flip(write);
+            REQUIRE(o.to_underlying() == (std::to_underlying(append) | std::to_underlying(trunc)));
+
+            o.flip(append);
+            REQUIRE(o.to_underlying() == std::to_underlying(trunc));
+
+            o.flip(trunc);
+            REQUIRE(o.to_underlying() == 0);
+        }
+
+        SUBCASE("chaining")
+        {
+            options o;
+            o.flip(read).flip(read);
+            REQUIRE(o.to_underlying() == 0);
+
+            o.flip(read).flip(write).flip(append).flip(trunc);
+            REQUIRE(o.to_underlying() == (std::to_underlying(read) |
+                std::to_underlying(write) | std::to_underlying(append) |
+                std::to_underlying(trunc)));
+        }
     }
 
     TEST_CASE_FIXTURE(options_fixture, "test")

@@ -118,12 +118,15 @@ namespace caff
             return *this;
         }
 
-        template <typename... Es>
-        requires (... && std::is_same_v<Es, E>)
-        constexpr flags& flip(E value, Es... values) noexcept
+        constexpr flags& flip() noexcept
         {
-            bits_ ^= (std::to_underlying(value) | ... |
-                std::to_underlying(values));
+            bits_ ^= AllBitsMask;
+            return *this;
+        }
+
+        constexpr flags& flip(E value) noexcept
+        {
+            bits_ ^= std::to_underlying(value);
             return *this;
         }
 
