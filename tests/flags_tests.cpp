@@ -263,6 +263,15 @@ TEST_SUITE("flags")
         REQUIRE_FALSE(o.test_none_of(read, append));
     }
 
+    TEST_CASE("to_underlying")
+    {
+        options o;
+        REQUIRE(o.to_underlying() == 0);
+
+        o.set(read);
+        REQUIRE(o.to_underlying() == std::to_underlying(read));
+    }
+
     TEST_CASE_FIXTURE(options_fixture, "hash")
     {
         using underlying_type = typename options::underlying_type;
