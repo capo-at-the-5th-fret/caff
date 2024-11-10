@@ -7,13 +7,16 @@
 
 namespace caff
 {
-    template <typename E, std::underlying_type_t<E> AllBitsMask>
-    requires (std::is_enum_v<E> && std::is_unsigned_v<std::underlying_type_t<E>>)
+    template <typename E, E... enumerators>
+    requires (std::is_enum_v<E> && std::is_unsigned_v<std::underlying_type_t<E>> &&
+        (... && (std::popcount(std::to_underlying(enumerators)) == 1)))
     class flags
     {
     public:
         using enum_type = E;
         using underlying_type = std::underlying_type_t<E>;
+
+        static constexpr underlying_type all_bits_mask = (... | std::to_underlying(enumerators));
 
         constexpr flags() = default;
 
@@ -50,7 +53,7 @@ namespace caff
 
         constexpr bool all() const noexcept
         {
-            return (bits_ == AllBitsMask);
+            return (bits_ == all_bits_mask);
         }
 
         constexpr bool any() const noexcept
@@ -144,7 +147,7 @@ namespace caff
 
         constexpr flags& flip() noexcept
         {
-            bits_ ^= AllBitsMask;
+            bits_ ^= all_bits_mask;
             return *this;
         }
 
@@ -179,12 +182,12 @@ namespace caff
     };
 }
 
-template <typename E, std::underlying_type_t<E> AllBitsMask>
-struct std::hash<caff::flags<E, AllBitsMask>>
+template <typename E, E... enumerators>
+struct std::hash<caff::flags<E, enumerators...>>
 {
-    std::size_t operator()(const caff::flags<E, AllBitsMask>& f) const noexcept
+    std::size_t operator()(const caff::flags<E, enumerators...>& f) const noexcept
     {
-        using hash_type = std::hash<typename caff::flags<E, AllBitsMask>::underlying_type>;
+        using hash_type = std::hash<typename caff::flags<E, enumerators...>::underlying_type>;
         return hash_type{}(f.to_underlying());
     }
 };

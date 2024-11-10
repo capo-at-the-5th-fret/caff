@@ -22,11 +22,12 @@ namespace caff::test
         using options = caff::flags
         <
             option,
-            std::to_underlying(option::read) |
-            std::to_underlying(option::write) |
-            std::to_underlying(option::append) |
-            std::to_underlying(option::trunc)
+            option::read,
+            option::write,
+            option::append,
+            option::trunc
         >;
+        static_assert(options::all_bits_mask == 0b1111);
 
         constexpr options options_all = options
         {
