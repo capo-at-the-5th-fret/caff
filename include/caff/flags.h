@@ -94,6 +94,24 @@ namespace caff
             return flags(*this).flip();
         }
 
+        constexpr flags& operator&=(E value) noexcept
+        {
+            bits_ &= std::to_underlying(value);
+            return *this;
+        }
+
+        constexpr flags& operator|=(E value) noexcept
+        {
+            bits_ |= std::to_underlying(value);
+            return *this;
+        }
+
+        constexpr flags& operator^=(E value) noexcept
+        {
+            bits_ ^= std::to_underlying(value);
+            return *this;
+        }
+
         template <typename... Es>
         requires (... && std::is_same_v<Es, E>)
         constexpr bool test_all_of(E value, Es... values) const noexcept
@@ -173,6 +191,21 @@ namespace caff
         }
 
         friend constexpr flags operator^(const flags& lhs, const flags& rhs) noexcept
+        {
+            return flags{ lhs } ^= rhs;
+        }
+
+        friend constexpr flags operator&(const flags& lhs, E rhs) noexcept
+        {
+            return flags{ lhs } &= rhs;
+        }
+
+        friend constexpr flags operator|(const flags& lhs, E rhs) noexcept
+        {
+            return flags{ lhs } |= rhs;
+        }
+
+        friend constexpr flags operator^(const flags& lhs, E rhs) noexcept
         {
             return flags{ lhs } ^= rhs;
         }

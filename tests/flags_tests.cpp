@@ -282,35 +282,71 @@ TEST_SUITE("flags")
 
     TEST_CASE("bitwise assignment operators")
     {
-        SUBCASE("AND")
+        SUBCASE("default")
         {
-            options o1{ read, write };
-            options o2{ write, append };
-            o1 &= o2;
-            REQUIRE(o1 == options{ write });
+            SUBCASE("AND")
+            {
+                options o1{ read, write };
+                options o2{ write, append };
+                o1 &= o2;
+                REQUIRE(o1 == options{ write });
+            }
+
+            SUBCASE("OR")
+            {
+                options o1{ read, write };
+                options o2{ write, append };
+                o1 |= o2;
+                REQUIRE(o1 == options{ read, write, append });
+            }
+
+            SUBCASE("XOR")
+            {
+                options o1{ read, write };
+                options o2{ write, append };
+                o1 ^= o2;
+                REQUIRE(o1 == options{ read, append });
+            }
+
+            SUBCASE("NOT")
+            {
+                options o1{ read, write };
+                options o2 = ~o1;
+                REQUIRE(o2 == options{ append, trunc });
+            }
         }
 
-        SUBCASE("OR")
+        SUBCASE("enumerator value")
         {
-            options o1{ read, write };
-            options o2{ write, append };
-            o1 |= o2;
-            REQUIRE(o1 == options{ read, write, append });
-        }
+            SUBCASE("AND")
+            {
+                options o1{ read, write };
+                o1 &= write;
+                REQUIRE(o1 == options{ write });
 
-        SUBCASE("XOR")
-        {
-            options o1{ read, write };
-            options o2{ write, append };
-            o1 ^= o2;
-            REQUIRE(o1 == options{ read, append });
-        }
+                o1 &= append;
+                REQUIRE(o1 == options{ });
+            }
 
-        SUBCASE("NOT")
-        {
-            options o1{ read, write };
-            options o2 = ~o1;
-            REQUIRE(o2 == options{ append, trunc });
+            SUBCASE("OR")
+            {
+                options o1{ read, write };
+                o1 |= write;
+                REQUIRE(o1 == options{ read, write });
+
+                o1 |= append;
+                REQUIRE(o1 == options{ read, write, append });
+            }
+
+            SUBCASE("XOR")
+            {
+                options o1{ read, write };
+                o1 ^= write;
+                REQUIRE(o1 == options{ read });
+
+                o1 ^= append;
+                REQUIRE(o1 == options{ read, append });
+            }
         }
     }
 
@@ -346,28 +382,58 @@ TEST_SUITE("flags")
 
     TEST_CASE("bitwise operators")
     {
-        SUBCASE("AND")
+        SUBCASE("default")
         {
-            options o1{ read, write };
-            options o2{ write, append };
-            options o3 = o1 & o2;
-            REQUIRE(o3 == options{ write });
+            SUBCASE("AND")
+            {
+                options o1{ read, write };
+                options o2{ write, append };
+                options o3 = o1 & o2;
+                REQUIRE(o3 == options{ write });
+            }
+
+            SUBCASE("OR")
+            {
+                options o1{ read, write };
+                options o2{ write, append };
+                options o3 = o1 | o2;
+                REQUIRE(o3 == options{ read, write, append });
+            }
+
+            SUBCASE("XOR")
+            {
+                options o1{ read, write };
+                options o2{ write, append };
+                options o3 = o1 ^ o2;
+                REQUIRE(o3 == options{ read, append });
+            }
         }
 
-        SUBCASE("OR")
+        SUBCASE("enumerator value")
         {
-            options o1{ read, write };
-            options o2{ write, append };
-            options o3 = o1 | o2;
-            REQUIRE(o3 == options{ read, write, append });
-        }
+            SUBCASE("AND")
+            {
+                options o1{ read, write };
+                options o2 = o1 & write;
+                REQUIRE(o2 == options{ write });
 
-        SUBCASE("XOR")
-        {
-            options o1{ read, write };
-            options o2{ write, append };
-            options o3 = o1 ^ o2;
-            REQUIRE(o3 == options{ read, append });
+                o2 = o1 & append;
+                REQUIRE(o2 == options{ });
+            }
+
+            SUBCASE("OR")
+            {
+                options o1{ read, write };
+                options o2 = o1 | write | append;
+                REQUIRE(o2 == options{ read, write, append });
+            }
+
+            SUBCASE("XOR")
+            {
+                options o1{ read, write };
+                options o2 = o1 ^ write ^ append;
+                REQUIRE(o2 == options{ read, append });
+            }
         }
     }
 
