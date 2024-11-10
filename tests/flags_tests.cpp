@@ -17,8 +17,17 @@ TEST_SUITE("flags")
 
     TEST_CASE("single value constructor")
     {
-        options o{ read };
-        REQUIRE(o.to_underlying() == std::to_underlying(read));
+        SUBCASE("initialize to none")
+        {
+            options o{ none };
+            REQUIRE(o.to_underlying() == 0);
+        }
+
+        SUBCASE("initialize to non-none value")
+        {
+            options o{ read };
+            REQUIRE(o.to_underlying() == std::to_underlying(read));
+        }
     }
 
     TEST_CASE_FIXTURE(options_fixture, "initializer list constructor")
