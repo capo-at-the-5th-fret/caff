@@ -201,11 +201,35 @@ TEST_SUITE("flags")
 
     TEST_CASE_FIXTURE(options_fixture, "test")
     {
-        options o{ read };
+        options o;
+        REQUIRE_FALSE(o.test(read));
+        REQUIRE_FALSE(o.test(write));
+        REQUIRE_FALSE(o.test(append));
+        REQUIRE_FALSE(o.test(trunc));
+
+        o.set(read);
         REQUIRE(o.test(read));
         REQUIRE_FALSE(o.test(write));
         REQUIRE_FALSE(o.test(append));
         REQUIRE_FALSE(o.test(trunc));
+
+        o.set(write);
+        REQUIRE(o.test(read));
+        REQUIRE(o.test(write));
+        REQUIRE_FALSE(o.test(append));
+        REQUIRE_FALSE(o.test(trunc));
+
+        o.set(append);
+        REQUIRE(o.test(read));
+        REQUIRE(o.test(write));
+        REQUIRE(o.test(append));
+        REQUIRE_FALSE(o.test(trunc));
+
+        o.set(trunc);
+        REQUIRE(o.test(read));
+        REQUIRE(o.test(write));
+        REQUIRE(o.test(append));
+        REQUIRE(o.test(trunc));
     }
 
     TEST_CASE("all, any, none, count")
@@ -278,21 +302,21 @@ TEST_SUITE("flags")
 
     TEST_CASE("test_all_of")
     {
-        options o({read, write, append});
+        options o{ read, write, append };
         REQUIRE(o.test_all_of(read, write));
         REQUIRE_FALSE(o.test_all_of(read, trunc));
     }
 
     TEST_CASE("test_any_of")
     {
-        options o({read, write});
+        options o{ read, write };
         REQUIRE(o.test_any_of(read, append));
         REQUIRE_FALSE(o.test_any_of(trunc, append));
     }
 
     TEST_CASE("test_none_of")
     {
-        options o(read);
+        options o{ read };
         REQUIRE(o.test_none_of(write, append));
         REQUIRE_FALSE(o.test_none_of(read, append));
     }
