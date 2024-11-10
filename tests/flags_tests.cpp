@@ -202,30 +202,35 @@ TEST_SUITE("flags")
     TEST_CASE_FIXTURE(options_fixture, "test")
     {
         options o;
+        REQUIRE(o.test(none));
         REQUIRE_FALSE(o.test(read));
         REQUIRE_FALSE(o.test(write));
         REQUIRE_FALSE(o.test(append));
         REQUIRE_FALSE(o.test(trunc));
 
         o.set(read);
+        REQUIRE_FALSE(o.test(none));
         REQUIRE(o.test(read));
         REQUIRE_FALSE(o.test(write));
         REQUIRE_FALSE(o.test(append));
         REQUIRE_FALSE(o.test(trunc));
 
         o.set(write);
+        REQUIRE_FALSE(o.test(none));
         REQUIRE(o.test(read));
         REQUIRE(o.test(write));
         REQUIRE_FALSE(o.test(append));
         REQUIRE_FALSE(o.test(trunc));
 
         o.set(append);
+        REQUIRE_FALSE(o.test(none));
         REQUIRE(o.test(read));
         REQUIRE(o.test(write));
         REQUIRE(o.test(append));
         REQUIRE_FALSE(o.test(trunc));
 
         o.set(trunc);
+        REQUIRE_FALSE(o.test(none));
         REQUIRE(o.test(read));
         REQUIRE(o.test(write));
         REQUIRE(o.test(append));

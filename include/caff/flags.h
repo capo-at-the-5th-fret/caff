@@ -44,7 +44,8 @@ namespace caff
         constexpr bool test(E value) const noexcept
         {
             const auto test_bits = std::to_underlying(value);
-            return ((bits_ & test_bits) == test_bits);
+            return ((test_bits != 0) ? ((bits_ & test_bits) == test_bits) :
+                (bits_ == 0));
         }
 
         constexpr bool all() const noexcept
