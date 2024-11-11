@@ -18,6 +18,7 @@ target_sources(caff
         FILES
             caff/bit.h
             caff/concepts.h
+            caff/diagnostic_info.h
             caff/format.h
             caff/functional.h
             caff/math.h
