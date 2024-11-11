@@ -1,6 +1,6 @@
 #pragma once
 
-#include <format>
+#include <fmt/core.h>
 
 namespace caff
 {
@@ -16,7 +16,7 @@ namespace caff
         requires(sizeof...(Args) > 0)
         std::string operator()(Args const&... args) const
         {
-            return std::vformat(fmt_, std::make_format_args(args...));
+            return fmt::format(fmt::runtime(fmt_), args...);
         }
 
     private:
