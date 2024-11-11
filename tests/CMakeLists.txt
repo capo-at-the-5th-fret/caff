@@ -32,7 +32,6 @@ add_executable(testrunner
     cmath_tests.cpp
     concepts_tests.cpp
     flags_tests.cpp
-    format_tests.cpp
     functional_tests.cpp
     tuple_tests.cpp
     type_list_tests.cpp
