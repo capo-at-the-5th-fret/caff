@@ -19,6 +19,7 @@ target_sources(caff
             caff/bit.h
             caff/concepts.h
             caff/diagnostic_info.h
+            caff/exception.h
             caff/format.h
             caff/functional.h
             caff/math.h

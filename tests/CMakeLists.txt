@@ -32,12 +32,14 @@ add_executable(testrunner
     cmath_tests.cpp
     concepts_tests.cpp
     diagnostic_info_tests.cpp
+    exception_tests.cpp
     flags_tests.cpp
     functional_tests.cpp
     tuple_tests.cpp
     type_list_tests.cpp
     type_traits_tests.cpp
     utility_tests.cpp
+    variable_tests.cpp
     variant_tests.cpp
 
     test/test_type_list_tests.cpp
