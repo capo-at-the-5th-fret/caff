@@ -23,6 +23,7 @@ target_sources(caff
             caff/format.h
             caff/functional.h
             caff/math.h
+            caff/stdexcept.h
             caff/tuple.h
             caff/type_list.h
             caff/type_traits.h

@@ -35,6 +35,7 @@ add_executable(testrunner
     exception_tests.cpp
     flags_tests.cpp
     functional_tests.cpp
+    stdexcept_tests.cpp
     tuple_tests.cpp
     type_list_tests.cpp
     type_traits_tests.cpp
