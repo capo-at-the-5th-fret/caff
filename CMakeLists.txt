@@ -5,6 +5,9 @@ project(caff
     LANGUAGES CXX
 )
 
+# https://stackoverflow.com/questions/48026483/setting-cmake-cxx-standard-to-various-values
+set(CMAKE_CXX_STANDARD 23 CACHE STRING "C++ standard to be used")
+
 add_subdirectory(include)
 
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)

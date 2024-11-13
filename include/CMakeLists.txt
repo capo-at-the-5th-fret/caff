@@ -34,5 +34,4 @@ target_sources(caff
             caff/test/type_list.h
 )
 
-target_compile_features(caff INTERFACE cxx_std_23)
 target_link_libraries(caff INTERFACE fmt::fmt)
