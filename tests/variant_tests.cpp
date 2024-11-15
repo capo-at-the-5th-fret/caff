@@ -1,4 +1,6 @@
-#include <doctest/doctest.h>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 #include "caff/variant.h"
 
 #include <string>
@@ -8,36 +10,30 @@
 #include "caff/tuple.h"
 #include "caff/test/type_list.h"
 
-TEST_CASE("overload")
+TEST_CASE("overload", "[variant]")
 {
     using var_t = std::variant<int, long, double, std::string>;
-    std::vector<std::pair<var_t,int>> vec =
-    {
+
+    auto [v, expected] = GENERATE(table<var_t,int>({
         { 10, 1 },
-        { 15l, 1 },
-        { 1.5, 2 },
-        { "hello", 3 }
-    };
+        { 15l, 2 },
+        { 1.5, 3 },
+        { "hello", 4 }
+    }));
 
-    for (int i{ 0 }; const auto [v, expected] : vec)
+    auto r = std::visit(caff::overload
     {
-        CAPTURE(i);
+        [](long arg) { return 2; },
+        [](double arg) { return 3; },
+        [](const std::string& arg) { return 4; },
+        [](auto arg) { return 1; },
+    }, v);
 
-        auto r = std::visit(caff::overload
-        {
-            [](auto arg) { return 1; },
-            [](double arg) { return 2; },
-            [](const std::string& arg) { return 3; }
-        }, v);
-
-        REQUIRE(r == expected);
-
-        ++i;
-    }
+    CHECK(r == expected);
 }
 
-TEST_CASE_TEMPLATE_DEFINE("variant_contains_type", TestType,
-    variant_contains_type_test_id)
+TEMPLATE_LIST_TEST_CASE("variant_contains_type", "[variant]",
+    caff::test::primary_types)
 {
     using var_t = std::variant<int, volatile double, const bool,
         const volatile char>;
@@ -68,6 +64,6 @@ TEST_CASE_TEMPLATE_DEFINE("variant_contains_type", TestType,
         static_assert(!caff::variant_contains_type<TestType, var_t>::value);
         static_assert(!caff::variant_contains_type_v<TestType, var_t>);
     }
+
+    CHECK(true);
 }
-TEST_CASE_TEMPLATE_APPLY(variant_contains_type_test_id,
-    caff::test::primary_types);

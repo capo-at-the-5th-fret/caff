@@ -1,146 +1,167 @@
-#include <doctest/doctest.h>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 #include "caff/cmath.h"
 
-#include <array>
 #include "caff/type_list.h"
 
-TEST_CASE_TEMPLATE_DEFINE("mod functions using signed types", TestType,
-    mod_functions_using_signed_types_test_id)
+TEMPLATE_LIST_TEST_CASE("mod functions using signed types", "[cmath][mod]",
+    caff::signed_standard_integer_types)
 {
     using T = TestType;
+    static_assert(std::is_signed_v<T>);
 
-    constexpr std::array test_values =
+    auto [x, y, native_expected, truncated_expected, floored_expected, euclidean_expected] =
+        GENERATE(table<T,T,T,T,T,T>(
     {
-        // lhs, native, truncated, floored, euclidean
+        // x, y, native, truncated, floored, euclidean
 
         // positive, positive
-        std::tuple{ T{ 0 }, T{ 0 }, T{ 0 }, T{ 0 }, T{ 0 } },
-        std::tuple{ T{ 1 }, T{ 1 }, T{ 1 }, T{ 1 }, T{ 1 } },
-        std::tuple{ T{ 2 }, T{ 2 }, T{ 2 }, T{ 2 }, T{ 2 } },
-        std::tuple{ T{ 3 }, T{ 0 }, T{ 0 }, T{ 0 }, T{ 0 } },
-        std::tuple{ T{ 4 }, T{ 1 }, T{ 1 }, T{ 1 }, T{ 1 } },
-        std::tuple{ T{ 5 }, T{ 2 }, T{ 2 }, T{ 2 }, T{ 2 } },
-        std::tuple{ T{ 6 }, T{ 0 }, T{ 0 }, T{ 0 }, T{ 0 } },
+        { T{ 0 }, T{ 3 }, T{ 0 }, T{ 0 }, T{ 0 }, T{ 0 } },
+        { T{ 1 }, T{ 3 }, T{ 1 }, T{ 1 }, T{ 1 }, T{ 1 } },
+        { T{ 2 }, T{ 3 }, T{ 2 }, T{ 2 }, T{ 2 }, T{ 2 } },
+        { T{ 3 }, T{ 3 }, T{ 0 }, T{ 0 }, T{ 0 }, T{ 0 } },
+        { T{ 4 }, T{ 3 }, T{ 1 }, T{ 1 }, T{ 1 }, T{ 1 } },
+        { T{ 5 }, T{ 3 }, T{ 2 }, T{ 2 }, T{ 2 }, T{ 2 } },
+        { T{ 6 }, T{ 3 }, T{ 0 }, T{ 0 }, T{ 0 }, T{ 0 } },
 
         // negative, positive
-        std::tuple{ T{ -1 }, T{ -1 }, T{ -1 }, T{ 2 }, T{ 2 } },
-        std::tuple{ T{ -2 }, T{ -2 }, T{ -2 }, T{ 1 }, T{ 1 } },
-        std::tuple{ T{ -3 }, T{ 0 },  T{ 0 },  T{ 0 }, T{ 0 } },
-        std::tuple{ T{ -4 }, T{ -1 }, T{ -1 }, T{ 2 }, T{ 2 } },
-        std::tuple{ T{ -5 }, T{ -2 },  T{ -2 }, T{ 1 }, T{ 1 } },
-        std::tuple{ T{ -6 }, T{ 0 },  T{ 0 },  T{ 0 }, T{ 0 } },
+        { T{ -1 }, T{ 3 }, T{ -1 }, T{ -1 }, T{ 2 }, T{ 2 } },
+        { T{ -2 }, T{ 3 }, T{ -2 }, T{ -2 }, T{ 1 }, T{ 1 } },
+        { T{ -3 }, T{ 3 }, T{ 0 },  T{ 0 },  T{ 0 }, T{ 0 } },
+        { T{ -4 }, T{ 3 }, T{ -1 }, T{ -1 }, T{ 2 }, T{ 2 } },
+        { T{ -5 }, T{ 3 }, T{ -2 },  T{ -2 }, T{ 1 }, T{ 1 } },
+        { T{ -6 }, T{ 3 }, T{ 0 },  T{ 0 },  T{ 0 }, T{ 0 } },
 
         // positive, negative
-        std::tuple{ T{ 1 }, T{ 1 }, T{ 1 }, T{ -2 }, T{ 1 } },
-        std::tuple{ T{ 2 }, T{ 2 }, T{ 2 }, T{ -1 }, T{ 2 } },
-        std::tuple{ T{ 3 }, T{ 0 }, T{ 0 }, T{ 0 },  T{ 0 } },
-        std::tuple{ T{ 4 }, T{ 1 }, T{ 1 }, T{ -2 }, T{ 1 } },
-        std::tuple{ T{ 5 }, T{ 2 }, T{ 2 }, T{ -1 }, T{ 2 } },
-        std::tuple{ T{ 6 }, T{ 0 }, T{ 0 }, T{ 0 },  T{ 0 } },
+        { T{ 0 }, T{ -3 }, T{ 0 }, T{ 0 }, T{ 0 }, T{ 0 } },
+        { T{ 1 }, T{ -3 }, T{ 1 }, T{ 1 }, T{ -2 }, T{ 1 } },
+        { T{ 2 }, T{ -3 }, T{ 2 }, T{ 2 }, T{ -1 }, T{ 2 } },
+        { T{ 3 }, T{ -3 }, T{ 0 }, T{ 0 }, T{ 0 },  T{ 0 } },
+        { T{ 4 }, T{ -3 }, T{ 1 }, T{ 1 }, T{ -2 }, T{ 1 } },
+        { T{ 5 }, T{ -3 }, T{ 2 }, T{ 2 }, T{ -1 }, T{ 2 } },
+        { T{ 6 }, T{ -3 }, T{ 0 }, T{ 0 }, T{ 0 },  T{ 0 } },
 
         // negative, negative
-        std::tuple{ T{ -1 }, T{ -1 }, T{ -1 }, T{ -1 }, T{ 2 } },
-        std::tuple{ T{ -2 }, T{ -2 }, T{ -2 }, T{ -2 }, T{ 1 } },
-        std::tuple{ T{ -3 }, T{ 0 },  T{ 0 },  T{ 0 },  T{ 0 } },
-        std::tuple{ T{ -4 }, T{ -1 }, T{ -1 }, T{ -1 }, T{ 2 } },
-        std::tuple{ T{ -5 }, T{ -2 }, T{ -2 }, T{ -2 }, T{ 1 } },
-        std::tuple{ T{ -6 }, T{ 0 },  T{ 0 },  T{ 0 },  T{ 0 } },
-    };
+        { T{ -1 }, T{ -3 }, T{ -1 }, T{ -1 }, T{ -1 }, T{ 2 } },
+        { T{ -2 }, T{ -3 }, T{ -2 }, T{ -2 }, T{ -2 }, T{ 1 } },
+        { T{ -3 }, T{ -3 }, T{ 0 },  T{ 0 },  T{ 0 },  T{ 0 } },
+        { T{ -4 }, T{ -3 }, T{ -1 }, T{ -1 }, T{ -1 }, T{ 2 } },
+        { T{ -5 }, T{ -3 }, T{ -2 }, T{ -2 }, T{ -2 }, T{ 1 } },
+        { T{ -6 }, T{ -3 }, T{ 0 },  T{ 0 },  T{ 0 },  T{ 0 } },
+    }));
 
-    for (int i = 0; const auto& [lhs, native_expected, truncated_expected,
-        floored_expected, euclidean_expected] :
-        test_values)
-    {
-        CAPTURE(i);
-
-        const T rhs{ static_cast<T>((i < 13) ? 3 : -3) };
-        REQUIRE(caff::mod_native(lhs, rhs) == native_expected);
-        REQUIRE(caff::mod_truncated(lhs, rhs) == truncated_expected);
-        REQUIRE(caff::mod_floored(lhs, rhs) == floored_expected);
-        REQUIRE(caff::mod_euclidean(lhs, rhs) == euclidean_expected);
-        REQUIRE(caff::mod_native(lhs, rhs) == caff::mod_truncated(lhs, rhs));
-        ++i;
-    }
+    CHECK(caff::mod_native(x, y) == native_expected);
+    CHECK(caff::mod_truncated(x, y) == truncated_expected);
+    CHECK(caff::mod_floored(x, y) == floored_expected);
+    CHECK(caff::mod_euclidean(x, y) == euclidean_expected);
+    CHECK(caff::mod_native(x, y) == caff::mod_truncated(x, y));
 }
-TEST_CASE_TEMPLATE_APPLY(mod_functions_using_signed_types_test_id,
-    caff::signed_standard_integer_types);
 
-TEST_CASE_TEMPLATE_DEFINE("mod functions using unsigned types", TestType,
-    mod_functions_using_unsigned_types_test_id)
+TEMPLATE_LIST_TEST_CASE("mod functions using unsigned types", "[cmath][mod]",
+    caff::unsigned_standard_integer_types)
 {
     using T = TestType;
+    static_assert(std::is_unsigned_v<T>);
 
-    constexpr std::array test_values =
+    auto [x, expected] = GENERATE(table<T,T>(
     {
-        std::tuple{ T{ 0 }, T{ 0 } },
-        std::tuple{ T{ 1 }, T{ 1 } },
-        std::tuple{ T{ 2 }, T{ 2 } },
-        std::tuple{ T{ 3 }, T{ 0 } },
-        std::tuple{ T{ 4 }, T{ 1 } },
-        std::tuple{ T{ 5 }, T{ 2 } },
-        std::tuple{ T{ 6 }, T{ 0 } },
-    };
+        { T{ 0 }, T{ 0 } },
+        { T{ 1 }, T{ 1 } },
+        { T{ 2 }, T{ 2 } },
+        { T{ 3 }, T{ 0 } },
+        { T{ 4 }, T{ 1 } },
+        { T{ 5 }, T{ 2 } },
+        { T{ 6 }, T{ 0 } }
+    }));
 
-    const T rhs{ 3 };
+    const T y{ 3 };
 
-    for (int i = 0; const auto& [lhs, expected] : test_values)
-    {
-        CAPTURE(i);
-        REQUIRE(caff::mod_native(lhs, rhs) == expected);
-        REQUIRE(caff::mod_truncated(lhs, rhs) == expected);
-        REQUIRE(caff::mod_floored(lhs, rhs) == expected);
-        REQUIRE(caff::mod_euclidean(lhs, rhs) == expected);
-        REQUIRE(caff::mod_native(lhs, rhs) == caff::mod_truncated(lhs, rhs));
-        ++i;
-    }
+    CHECK(caff::mod_native(x, y) == expected);
+    CHECK(caff::mod_truncated(x, y) == expected);
+    CHECK(caff::mod_floored(x, y) == expected);
+    CHECK(caff::mod_euclidean(x, y) == expected);
+    CHECK(caff::mod_native(x, y) == caff::mod_truncated(x, y));
 }
-TEST_CASE_TEMPLATE_APPLY(mod_functions_using_unsigned_types_test_id,
-    caff::unsigned_standard_integer_types);
 
-namespace
+TEMPLATE_LIST_TEST_CASE("is_even using signed types", "[cmath][is_even]",
+    caff::signed_standard_integer_types)
 {
-    constexpr std::array is_even_test_values =
+    using T = TestType;
+    static_assert(std::is_signed_v<T>);
+
+    auto [x, expected] = GENERATE(table<T,T>(
     {
-        std::tuple{ 0, true },
-        std::tuple{ 1, false },
-        std::tuple{ 2, true },
-        std::tuple{ 3, false },
-        std::tuple{ 4, true },
-    };
+        { T{ 0 }, true },
+        { T{ 1 }, false },
+        { T{ 2 }, true },
+        { T{ 3 }, false },
+        { T{ 4 }, true },
+        { T{ -1 }, false },
+        { T{ -2 }, true },
+        { T{ -3 }, false },
+        { T{ -4 }, true }
+    }));
+
+    CHECK(caff::is_even(x) == expected);
 }
 
-TEST_CASE_TEMPLATE_DEFINE("is_even", TestType, is_even_test_id)
+TEMPLATE_LIST_TEST_CASE("is_even using unsigned types", "[cmath][is_even]",
+    caff::unsigned_standard_integer_types)
 {
-    for (int i = 0; auto const& [test_value, expected] :
-        is_even_test_values)
+    using T = TestType;
+    static_assert(std::is_unsigned_v<T>);
+
+    auto [x, expected] = GENERATE(table<T,T>(
     {
-        CAPTURE(i++);
-        REQUIRE(caff::is_even(test_value) == expected);
+        { T{ 0 }, true },
+        { T{ 1 }, false },
+        { T{ 2 }, true },
+        { T{ 3 }, false },
+        { T{ 4 }, true }
+    }));
 
-        if constexpr (std::is_signed_v<TestType>)
-        {
-            REQUIRE(caff::is_even(-test_value) == expected);
-        }
-    }
+    CHECK(caff::is_even(x) == expected);
 }
-TEST_CASE_TEMPLATE_APPLY(is_even_test_id, caff::standard_integer_types);
 
-TEST_CASE_TEMPLATE_DEFINE("is_odd", TestType, is_odd_test_id)
+TEMPLATE_LIST_TEST_CASE("is_odd using signed types", "[cmath][is_odd]",
+    caff::signed_standard_integer_types)
 {
-    for (int i = 0; auto const& [test_value, even_expected] :
-        is_even_test_values)
-    {
-        const bool odd_expected{ !even_expected };
-        CAPTURE(i++);
-        REQUIRE(caff::is_odd(test_value) == odd_expected);
+    using T = TestType;
+    static_assert(std::is_signed_v<T>);
 
-        if constexpr (std::is_signed_v<TestType>)
-        {
-            REQUIRE(caff::is_odd(-test_value) == odd_expected);
-        }
-    }
+    auto [x, expected] = GENERATE(table<T,T>(
+    {
+        { T{ 0 }, false },
+        { T{ 1 }, true },
+        { T{ 2 }, false },
+        { T{ 3 }, true },
+        { T{ 4 }, false },
+        { T{ -1 }, true },
+        { T{ -2 }, false },
+        { T{ -3 }, true },
+        { T{ -4 }, false }
+    }));
+
+    CHECK(caff::is_odd(x) == expected);
 }
-TEST_CASE_TEMPLATE_APPLY(is_odd_test_id, caff::standard_integer_types);
+
+TEMPLATE_LIST_TEST_CASE("is_odd using unsigned types", "[cmath][is_odd]",
+    caff::unsigned_standard_integer_types)
+{
+    using T = TestType;
+    static_assert(std::is_unsigned_v<T>);
+
+    auto [x, expected] = GENERATE(table<T,T>(
+    {
+        { T{ 0 }, false },
+        { T{ 1 }, true },
+        { T{ 2 }, false },
+        { T{ 3 }, true },
+        { T{ 4 }, false }
+    }));
+
+    CHECK(caff::is_odd(x) == expected);
+}
 
 namespace
 {
@@ -161,37 +182,86 @@ namespace
     // clang-format on
 }
 
-TEST_CASE_TEMPLATE_DEFINE("evenly_divisible", TestType,
-    evenly_divisible_test_id)
+TEMPLATE_LIST_TEST_CASE("evenly_divisible", "[cmath][even_divisible]",
+    caff::standard_integer_types)
 {
     using test_types_t = evenly_divisible_test_types<TestType>;
     using caff::evenly_divisible;
 
     caff::tuple_for_each_type<test_types_t>([]<typename T>
     {
-        using lhs_t = std::tuple_element_t<0,T>;
-        using rhs_t = std::tuple_element_t<1,T>;
+        using x_type = std::tuple_element_t<0,T>;
+        using y_type = std::tuple_element_t<1,T>;
 
-        const rhs_t rhs{ 3 };
-        REQUIRE(evenly_divisible(lhs_t{0}, rhs));
-        REQUIRE_FALSE(evenly_divisible(lhs_t{1}, rhs));
-        REQUIRE_FALSE(evenly_divisible(lhs_t{2}, rhs));
-        REQUIRE(evenly_divisible(lhs_t{3}, rhs));
-        REQUIRE_FALSE(evenly_divisible(lhs_t{4}, rhs));
-        REQUIRE_FALSE(evenly_divisible(lhs_t{5}, rhs));
-        REQUIRE(evenly_divisible(lhs_t{6}, rhs));
+        const y_type rhs{ 3 };
+        CHECK(evenly_divisible(x_type{0}, rhs));
+        CHECK_FALSE(evenly_divisible(x_type{1}, rhs));
+        CHECK_FALSE(evenly_divisible(x_type{2}, rhs));
+        CHECK(evenly_divisible(x_type{3}, rhs));
+        CHECK_FALSE(evenly_divisible(x_type{4}, rhs));
+        CHECK_FALSE(evenly_divisible(x_type{5}, rhs));
+        CHECK(evenly_divisible(x_type{6}, rhs));
 
         if constexpr (std::is_signed_v<TestType>)
         {
-            REQUIRE_FALSE(evenly_divisible(lhs_t{-1}, rhs));
-            REQUIRE_FALSE(evenly_divisible(lhs_t{-2}, rhs));
-            REQUIRE(evenly_divisible(lhs_t{-3}, rhs));
-            REQUIRE_FALSE(evenly_divisible(lhs_t{-4}, rhs));
-            REQUIRE_FALSE(evenly_divisible(lhs_t{-5}, rhs));
-            REQUIRE(evenly_divisible(lhs_t{-6}, rhs));
+            CHECK_FALSE(evenly_divisible(x_type{-1}, rhs));
+            CHECK_FALSE(evenly_divisible(x_type{-2}, rhs));
+            CHECK(evenly_divisible(x_type{-3}, rhs));
+            CHECK_FALSE(evenly_divisible(x_type{-4}, rhs));
+            CHECK_FALSE(evenly_divisible(x_type{-5}, rhs));
+            CHECK(evenly_divisible(x_type{-6}, rhs));
         }
-    });
-    
+    });   
 }
-TEST_CASE_TEMPLATE_APPLY(evenly_divisible_test_id,
-    caff::standard_integer_types);
+
+TEST_CASE("empty")
+{
+    // fix the commented code below?
+    CHECK(false);
+}
+
+#if 0
+// Helper macro to generate test cases for each combination of dividend and divisor types
+#define TEST_EVENLY_DIVISIBLE_FOR_TYPE_COMBINATIONS(dividend_type, divisor_type) \
+    TEMPLATE_TEST_CASE_SIG( \
+        "evenly_divisible - Test each dividend as a standard integer type vs divisor of all standard integer types", \
+        "[evenly_divisible]", \
+        ((typename T, typename U), T, U), \
+        dividend_type, \
+        divisor_type \
+    ) \
+    { \
+        T dividend = static_cast<T>(20); \
+        U divisor_even = static_cast<U>(5); \
+        U divisor_odd = static_cast<U>(3); \
+        U divisor_zero = static_cast<U>(0); \
+        \
+        SECTION("Evenly divisible test") \
+        { \
+            REQUIRE(evenly_divisible(dividend, divisor_even) == true); \
+        } \
+        \
+        SECTION("Not evenly divisible test") \
+        { \
+            REQUIRE(evenly_divisible(dividend, divisor_odd) == false); \
+        } \
+        \
+        SECTION("Division by zero") \
+        { \
+            REQUIRE_THROWS_AS(evenly_divisible(dividend, divisor_zero), std::domain_error); \
+        } \
+    }
+
+// Generate test cases for signed and unsigned combinations
+TEST_EVENLY_DIVISIBLE_FOR_TYPE_COMBINATIONS(signed char, signed char)
+TEST_EVENLY_DIVISIBLE_FOR_TYPE_COMBINATIONS(signed char, unsigned char)
+TEST_EVENLY_DIVISIBLE_FOR_TYPE_COMBINATIONS(short, unsigned char)
+TEST_EVENLY_DIVISIBLE_FOR_TYPE_COMBINATIONS(int, unsigned short)
+TEST_EVENLY_DIVISIBLE_FOR_TYPE_COMBINATIONS(long, unsigned int)
+TEST_EVENLY_DIVISIBLE_FOR_TYPE_COMBINATIONS(long long, unsigned long)
+TEST_EVENLY_DIVISIBLE_FOR_TYPE_COMBINATIONS(unsigned char, signed char)
+TEST_EVENLY_DIVISIBLE_FOR_TYPE_COMBINATIONS(unsigned short, int)
+TEST_EVENLY_DIVISIBLE_FOR_TYPE_COMBINATIONS(unsigned int, long)
+TEST_EVENLY_DIVISIBLE_FOR_TYPE_COMBINATIONS(unsigned long, long long)
+TEST_EVENLY_DIVISIBLE_FOR_TYPE_COMBINATIONS(unsigned long long, unsigned short)
+#endif

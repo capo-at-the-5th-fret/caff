@@ -1,4 +1,4 @@
-#include <doctest/doctest.h>
+#include <catch2/catch_test_macros.hpp>
 #include "caff/source_location.h"
 
 #include <string_view>

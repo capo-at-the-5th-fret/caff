@@ -1,9 +1,11 @@
-#include <doctest/doctest.h>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 #include "caff/type_traits.h"
 
 #include "caff/test/type_list.h"
 
-TEST_CASE_TEMPLATE_DEFINE("always_false", TestType, always_false_test_id)
+TEMPLATE_LIST_TEST_CASE("always_false", "[type_traits]",
+    caff::test::primary_types)
 {
     if constexpr (caff::is_cv_qualifiable_v<TestType>)
     {
@@ -28,21 +30,22 @@ TEST_CASE_TEMPLATE_DEFINE("always_false", TestType, always_false_test_id)
         static_assert(!caff::always_false<TestType, double>::value);
         static_assert(!caff::always_false_v<TestType, double>);
     }
-}
-TEST_CASE_TEMPLATE_APPLY(always_false_test_id, caff::test::primary_types);
 
-TEST_CASE("is_all_of")
+    CHECK(true);
+}
+
+TEST_CASE("is_all_of", "[type_traits]")
 {
     using caff::is_all_of;
     using caff::is_all_of_v;
 
-    SUBCASE("no types")
+    SECTION("no types")
     {
         static_assert(is_all_of<int, std::is_same>::value);
         static_assert(is_all_of_v<int, std::is_same>);
     }
 
-    SUBCASE("single type")
+    SECTION("single type")
     {
         static_assert(is_all_of<int, std::is_same, int>::value);
         static_assert(!is_all_of<int, std::is_same, double>::value);
@@ -51,7 +54,7 @@ TEST_CASE("is_all_of")
         static_assert(!is_all_of_v<int, std::is_same, double>);
     }
 
-    SUBCASE("multiple types")
+    SECTION("multiple types")
     {
         static_assert(is_all_of<int, std::is_same, int, int>::value);
         static_assert(!is_all_of<int, std::is_same, int, double>::value);
@@ -61,20 +64,22 @@ TEST_CASE("is_all_of")
         static_assert(!is_all_of_v<int, std::is_same, int, double>);
         static_assert(!is_all_of_v<int, std::is_same, double, int>);
     }
+
+    CHECK(true);
 }
 
-TEST_CASE("is_any_of")
+TEST_CASE("is_any_of", "[type_traits]")
 {
     using caff::is_any_of;
     using caff::is_any_of_v;
 
-    SUBCASE("no types")
+    SECTION("no types")
     {
         static_assert(!is_any_of<int, std::is_same>::value);
         static_assert(!is_any_of_v<int, std::is_same>);
     }
 
-    SUBCASE("single type")
+    SECTION("single type")
     {
         static_assert(is_any_of<int, std::is_same, int>::value);
         static_assert(!is_any_of<int, std::is_same, double>::value);
@@ -83,7 +88,7 @@ TEST_CASE("is_any_of")
         static_assert(!is_any_of_v<int, std::is_same, double>);
     }
 
-    SUBCASE("multiple types")
+    SECTION("multiple types")
     {
         static_assert(is_any_of<int, std::is_same, int, int>::value);
         static_assert(is_any_of<int, std::is_same, int, double>::value);
@@ -95,20 +100,22 @@ TEST_CASE("is_any_of")
         static_assert(is_any_of_v<int, std::is_same, double, int>);
         static_assert(!is_any_of_v<int, std::is_same, double, short>);
     }
+
+    CHECK(true);
 }
 
-TEST_CASE("is_none_of")
+TEST_CASE("is_none_of", "[type_traits]")
 {
     using caff::is_none_of;
     using caff::is_none_of_v;
 
-    SUBCASE("no types")
+    SECTION("no types")
     {
         static_assert(is_none_of<int, std::is_same>::value);
         static_assert(is_none_of_v<int, std::is_same>);
     }
 
-    SUBCASE("single type")
+    SECTION("single type")
     {
         static_assert(!is_none_of<int, std::is_same, int>::value);
         static_assert(is_none_of<int, std::is_same, double>::value);
@@ -117,7 +124,7 @@ TEST_CASE("is_none_of")
         static_assert(is_none_of_v<int, std::is_same, double>);
     }
 
-    SUBCASE("multiple types")
+    SECTION("multiple types")
     {
         static_assert(!is_none_of<int, std::is_same, int, int>::value);
         static_assert(!is_none_of<int, std::is_same, int, double>::value);
@@ -129,20 +136,22 @@ TEST_CASE("is_none_of")
         static_assert(!is_none_of_v<int, std::is_same, double, int>);
         static_assert(is_none_of_v<int, std::is_same, double, short>);
     }
+
+    CHECK(true);
 }
 
-TEST_CASE("is_all_of_same")
+TEST_CASE("is_all_of_same", "[type_traits]")
 {
     using caff::is_all_of_same;
     using caff::is_all_of_same_v;
 
-    SUBCASE("no types")
+    SECTION("no types")
     {
         static_assert(is_all_of_same<int>::value);
         static_assert(is_all_of_same_v<int>);
     }
 
-    SUBCASE("single type")
+    SECTION("single type")
     {
         static_assert(is_all_of_same<int, int>::value);
         static_assert(!is_all_of_same<int, double>::value);
@@ -151,7 +160,7 @@ TEST_CASE("is_all_of_same")
         static_assert(!is_all_of_same_v<int, double>);
     }
 
-    SUBCASE("multiple types")
+    SECTION("multiple types")
     {
         static_assert(is_all_of_same<int, int, int>::value);
         static_assert(!is_all_of_same<int, int, double>::value);
@@ -161,20 +170,22 @@ TEST_CASE("is_all_of_same")
         static_assert(!is_all_of_same_v<int, int, double>);
         static_assert(!is_all_of_same_v<int, double, int>);
     }
+
+    CHECK(true);
 }
 
-TEST_CASE("is_any_of_same")
+TEST_CASE("is_any_of_same", "[type_traits]")
 {
     using caff::is_any_of_same;
     using caff::is_any_of_same_v;
 
-    SUBCASE("no types")
+    SECTION("no types")
     {
         static_assert(!is_any_of_same<int>::value);
         static_assert(!is_any_of_same_v<int>);
     }
 
-    SUBCASE("single type")
+    SECTION("single type")
     {
         static_assert(is_any_of_same<int, int>::value);
         static_assert(!is_any_of_same<int, double>::value);
@@ -183,7 +194,7 @@ TEST_CASE("is_any_of_same")
         static_assert(!is_any_of_same_v<int, double>);
     }
 
-    SUBCASE("multiple types")
+    SECTION("multiple types")
     {
         static_assert(is_any_of_same<int, int, int>::value);
         static_assert(is_any_of_same<int, int, double>::value);
@@ -195,20 +206,22 @@ TEST_CASE("is_any_of_same")
         static_assert(is_any_of_same_v<int, double, int>);
         static_assert(!is_any_of_same_v<int, double, short>);
     }
+
+    CHECK(true);
 }
 
-TEST_CASE("is_none_of_same")
+TEST_CASE("is_none_of_same", "[type_traits]")
 {
     using caff::is_none_of_same;
     using caff::is_none_of_same_v;
 
-    SUBCASE("no types")
+    SECTION("no types")
     {
         static_assert(is_none_of_same<int>::value);
         static_assert(is_none_of_same_v<int>);
     }
 
-    SUBCASE("single type")
+    SECTION("single type")
     {
         static_assert(!is_none_of_same<int, int>::value);
         static_assert(is_none_of_same<int, double>::value);
@@ -217,7 +230,7 @@ TEST_CASE("is_none_of_same")
         static_assert(is_none_of_same_v<int, double>);
     }
 
-    SUBCASE("multiple types")
+    SECTION("multiple types")
     {
         static_assert(!is_none_of_same<int, int, int>::value);
         static_assert(!is_none_of_same<int, int, double>::value);
@@ -229,9 +242,12 @@ TEST_CASE("is_none_of_same")
         static_assert(!is_none_of_same_v<int, double, int>);
         static_assert(is_none_of_same_v<int, double, short>);
     }
+
+    CHECK(true);
 }
 
-TEST_CASE_TEMPLATE_DEFINE("is_boolean", TestType, is_boolean_test_id)
+TEMPLATE_LIST_TEST_CASE("is_boolean", "[type_traits]",
+    caff::test::primary_types)
 {
     if constexpr (caff::is_cv_qualifiable_v<TestType>)
     {
@@ -253,11 +269,12 @@ TEST_CASE_TEMPLATE_DEFINE("is_boolean", TestType, is_boolean_test_id)
         static_assert(!caff::is_boolean<TestType>::value);
         static_assert(!caff::is_boolean_v<TestType>);
     }
-}
-TEST_CASE_TEMPLATE_APPLY(is_boolean_test_id, caff::test::primary_types);
 
-TEST_CASE_TEMPLATE_DEFINE("is_standard_integer", TestType,
-    is_standard_integer_test_id)
+    CHECK(true);
+}
+
+TEMPLATE_LIST_TEST_CASE("is_standard_integer", "[type_traits]",
+    caff::test::primary_types)
 {
     if constexpr (caff::is_cv_qualifiable_v<TestType>)
     {
@@ -279,8 +296,9 @@ TEST_CASE_TEMPLATE_DEFINE("is_standard_integer", TestType,
         static_assert(!caff::is_standard_integer<TestType>::value);
         static_assert(!caff::is_standard_integer_v<TestType>);
     }
+
+    CHECK(true);
 }
-TEST_CASE_TEMPLATE_APPLY(is_standard_integer_test_id, caff::test::primary_types);
 
 TEST_CASE("is_cv_qualifiable")
 {
@@ -299,6 +317,8 @@ TEST_CASE("is_cv_qualifiable")
             static_assert(std::is_const_v<cv_t> && std::is_volatile_v<cv_t>);
         }
     });
+
+    CHECK(true);
 }
 
 namespace
@@ -340,17 +360,19 @@ namespace
     >;
 }
 
-TEST_CASE_TEMPLATE_DEFINE("is_cv_qualified_set", T,
-    is_cv_qualified_set_test_id)
+TEMPLATE_LIST_TEST_CASE("is_cv_qualified_set", "[type_traits]",
+    caff::test::cv_qualifiable_types)
 {
-    SUBCASE("successes")
+    using T = TestType;
+
+    SECTION("successes")
     {
         using qst = valid_qst<T>;
         static_assert(caff::is_cv_qualified_set<qst>::value);
         static_assert(caff::is_cv_qualified_set_v<qst>);
     }
 
-    SUBCASE("failures")
+    SECTION("failures")
     {
         using testTypes = invalid_qsts<T>;
 
@@ -360,14 +382,16 @@ TEST_CASE_TEMPLATE_DEFINE("is_cv_qualified_set", T,
             static_assert(!caff::is_cv_qualified_set_v<U>);
         });
    }
-}
-TEST_CASE_TEMPLATE_APPLY(is_cv_qualified_set_test_id,
-    caff::test::cv_qualifiable_types);
 
-TEST_CASE_TEMPLATE_DEFINE("cv_qualified_type_set", T,
-    cv_qualified_type_set_test_id)
+   CHECK(true);
+}
+
+TEMPLATE_LIST_TEST_CASE("cv_qualified_type_set", "[type_traits]",
+    caff::test::cv_qualifiable_types)
 {
-    SUBCASE("make using non-qualified type")
+    using T = TestType;
+
+    SECTION("make using non-qualified type")
     {
         using qts_t = caff::cv_qualified_set_t<T>;
         static_assert(std::is_same_v<caff::non_qualified_type<qts_t>, T>);
@@ -378,7 +402,7 @@ TEST_CASE_TEMPLATE_DEFINE("cv_qualified_type_set", T,
         static_assert(std::is_same_v<caff::cv_type<qts_t>, std::add_cv_t<T>>);
     }
 
-    SUBCASE("make using const type")
+    SECTION("make using const type")
     {
         using qts_t = caff::cv_qualified_set_t<std::add_const_t<T>>;
         static_assert(std::is_same_v<caff::non_qualified_type<qts_t>, T>);
@@ -389,7 +413,7 @@ TEST_CASE_TEMPLATE_DEFINE("cv_qualified_type_set", T,
         static_assert(std::is_same_v<caff::cv_type<qts_t>, std::add_cv_t<T>>);
     }
 
-    SUBCASE("make using volatile type")
+    SECTION("make using volatile type")
     {
         using qts_t = caff::cv_qualified_set_t<std::add_volatile_t<T>>;
         static_assert(std::is_same_v<caff::non_qualified_type<qts_t>, T>);
@@ -400,7 +424,7 @@ TEST_CASE_TEMPLATE_DEFINE("cv_qualified_type_set", T,
         static_assert(std::is_same_v<caff::cv_type<qts_t>, std::add_cv_t<T>>);
     }
 
-    SUBCASE("make using const volatile type")
+    SECTION("make using const volatile type")
     {
         using qts_t = caff::cv_qualified_set_t<std::add_cv_t<T>>;
         static_assert(std::is_same_v<caff::non_qualified_type<qts_t>, T>);
@@ -410,7 +434,6 @@ TEST_CASE_TEMPLATE_DEFINE("cv_qualified_type_set", T,
             std::add_volatile_t<T>>);
         static_assert(std::is_same_v<caff::cv_type<qts_t>, std::add_cv_t<T>>);
     }
-}
-TEST_CASE_TEMPLATE_APPLY(cv_qualified_type_set_test_id,
-    caff::test::cv_qualifiable_types);
 
+    CHECK(true);
+}
