@@ -214,12 +214,6 @@ TEMPLATE_LIST_TEST_CASE("evenly_divisible", "[cmath][even_divisible]",
     });   
 }
 
-TEST_CASE("empty")
-{
-    // fix the commented code below?
-    CHECK(false);
-}
-
 #if 0
 // Helper macro to generate test cases for each combination of dividend and divisor types
 #define TEST_EVENLY_DIVISIBLE_FOR_TYPE_COMBINATIONS(dividend_type, divisor_type) \
