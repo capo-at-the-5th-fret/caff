@@ -33,26 +33,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Reference: https://github.com/hendrikmuhs/ccache-action
       - name: Cache (non-Windows)
         if: runner.os != 'Windows'
         uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ${{ runner.os }}-${{ matrix.config.compiler }}-${{ env.BUILD_TYPE }}
 
+      # Reference: https://github.com/Mozilla-Actions/sccache-action
       - name: Cache (Windows)
         if: runner.os == 'Windows'
         uses: mozilla-actions/sccache-action@v0.0.6
 
+      # Reference: https://github.com/aminya/setup-cpp
       - name: Install C++ Tools
         uses: aminya/setup-cpp@v1
         with:
           vcvarsall: ${{ runner.os == 'Windows' && matrix.config.compiler == 'msvc' }}
           ninja: true
 
+      # Reference: https://cmake.org/cmake/help/latest/manual/cmake.1.html
       - name: Configure CMake
         run: cmake -B ./build -G "${{matrix.config.cmake_gen}}" -DCMAKE_CXX_COMPILER="${{matrix.config.cmake_cxx}}" -DCMAKE_CXX_COMPILER_LAUNCHER="${{matrix.config.cmake_cxx_launcher}}"
     
       - name: Build
         run: cmake --build ./build --config ${{env.BUILD_TYPE}}
     
+      # Reference: https://cmake.org/cmake/help/latest/manual/ctest.1.html
       - name: Test
         working-directory: ./build
         run: ctest -C ${{env.BUILD_TYPE}}
