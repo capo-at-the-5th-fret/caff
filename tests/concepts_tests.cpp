@@ -4,23 +4,26 @@
 
 #include "caff/test/type_list.h"
 
-// TODO: Move and rename to cv_qualifiable_set_or_tuple_identity
-template <typename T>
-struct cv_qualifiable_set_or_tuple_identity
+namespace
 {
-    using type = std::tuple<T>;
-};
+    // TODO: Move and rename to cv_qualifiable_set_or_tuple_identity
+    template <typename T>
+    struct cv_qualifiable_set_or_tuple_identity
+    {
+        using type = std::tuple<T>;
+    };
 
-template <typename T>
-requires (caff::is_cv_qualifiable_v<T>)
-struct cv_qualifiable_set_or_tuple_identity<T>
-{
-    using type = caff::cv_qualified_set_t<T>;
-};
+    template <typename T>
+    requires (caff::is_cv_qualifiable_v<T>)
+    struct cv_qualifiable_set_or_tuple_identity<T>
+    {
+        using type = caff::cv_qualified_set_t<T>;
+    };
 
-template <typename T>
-using cv_qualifiable_set_or_tuple_identity_t =
-    typename cv_qualifiable_set_or_tuple_identity<T>::type;
+    template <typename T>
+    using cv_qualifiable_set_or_tuple_identity_t =
+        typename cv_qualifiable_set_or_tuple_identity<T>::type;
+}
 
 TEMPLATE_LIST_TEST_CASE("boolean", "[concepts]", caff::test::primary_types)
 {
