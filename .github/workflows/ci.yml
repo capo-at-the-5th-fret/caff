@@ -1,3 +1,4 @@
+# NOTE: This workflow is in the test_cpp_cache repository with full comments
 name: Continuous Integration
 on:
   push:
@@ -31,21 +32,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      # NOTE: This cache is faster for non-Windows builds than ccache, but it
-      # may not work over time? It doesn't work well for Windows builds
-      # Recommend: use ccache for non-Windows and sccache for Windows (ccache is
-      # also flakey on Windows)
-      #
-      # - name: Cache (non-Windows)
-      #   if: runner.os != 'Windows'
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: |
-      #       ./build
-      #     key: ${{ runner.os }}-${{ matrix.config.compiler }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt', './vcpkg.json') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-${{ matrix.config.compiler }}-${{ env.BUILD_TYPE }}-
 
       - name: Cache (non-Windows)
         if: runner.os != 'Windows'
