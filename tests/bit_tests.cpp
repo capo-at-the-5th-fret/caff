@@ -1,4 +1,4 @@
-#include <doctest/doctest.h>
+#include <catch2/catch_test_macros.hpp>
 #include "caff/bit.h"
 
 namespace
@@ -54,140 +54,140 @@ namespace
     }
 }
 
-TEST_CASE("enum bitmask")
+TEST_CASE("enum bitmask", "[bit]")
 {
     using namespace caff;
     using enum options;
 
     options o{ none };
 
-    SUBCASE("set single bit at a time")
+    SECTION("set single bit at a time")
     {
         set(o, write);
-        REQUIRE(test(o, write));
-        REQUIRE_FALSE(test(o, read));
-        REQUIRE_FALSE(test(o, append));
-        REQUIRE_FALSE(test(o, trunc));
+        CHECK(test(o, write));
+        CHECK_FALSE(test(o, read));
+        CHECK_FALSE(test(o, append));
+        CHECK_FALSE(test(o, trunc));
 
         set(o, append);
-        REQUIRE(test(o, write));
-        REQUIRE_FALSE(test(o, read));
-        REQUIRE(test(o, append));
-        REQUIRE_FALSE(test(o, trunc));
+        CHECK(test(o, write));
+        CHECK_FALSE(test(o, read));
+        CHECK(test(o, append));
+        CHECK_FALSE(test(o, trunc));
     }
 
-    SUBCASE("set multiple bits at a time")
+    SECTION("set multiple bits at a time")
     {
         set(o, write, append);
-        REQUIRE(test(o, write));
-        REQUIRE_FALSE(test(o, read));
-        REQUIRE(test(o, append));
-        REQUIRE_FALSE(test(o, trunc));
+        CHECK(test(o, write));
+        CHECK_FALSE(test(o, read));
+        CHECK(test(o, append));
+        CHECK_FALSE(test(o, trunc));
     }
 
-    SUBCASE("reset single bit at a time")
+    SECTION("reset single bit at a time")
     {
         set(o, write, append);
         reset(o, write);
-        REQUIRE_FALSE(test(o, write));
-        REQUIRE_FALSE(test(o, read));
-        REQUIRE(test(o, append));
-        REQUIRE_FALSE(test(o, trunc));
+        CHECK_FALSE(test(o, write));
+        CHECK_FALSE(test(o, read));
+        CHECK(test(o, append));
+        CHECK_FALSE(test(o, trunc));
 
         reset(o, append);
-        REQUIRE(o == none);
+        CHECK(o == none);
     }
 
-    SUBCASE("reset multiple bits at a time")
+    SECTION("reset multiple bits at a time")
     {
         set(o, write, append);
         reset(o, write, append);
-        REQUIRE(o == none);
+        CHECK(o == none);
     }
 
-    SUBCASE("reset all bits")
+    SECTION("reset all bits")
     {
         set(o, write, append);
         reset(o);
-        REQUIRE(o == none);
+        CHECK(o == none);
     }
 
-    SUBCASE("test single bit at a time")
+    SECTION("test single bit at a time")
     {
         set(o, write, append);
-        REQUIRE(test(o, write));
-        REQUIRE_FALSE(test(o, read));
-        REQUIRE(test(o, append));
-        REQUIRE_FALSE(test(o, trunc));
+        CHECK(test(o, write));
+        CHECK_FALSE(test(o, read));
+        CHECK(test(o, append));
+        CHECK_FALSE(test(o, trunc));
     }
 
-    SUBCASE("test multiple bits at a time")
+    SECTION("test multiple bits at a time")
     {
         set(o, write, append);
-        REQUIRE(test(o, write, append));
-        REQUIRE_FALSE(test(o, write, read));
-        REQUIRE_FALSE(test(o, write, trunc));
-        REQUIRE_FALSE(test(o, read, write));
-        REQUIRE_FALSE(test(o, trunc, write));
-        REQUIRE_FALSE(test(o, append, read));
-        REQUIRE_FALSE(test(o, append, trunc));
-        REQUIRE_FALSE(test(o, read, append));
-        REQUIRE_FALSE(test(o, trunc, append));
-        REQUIRE_FALSE(test(o, read, trunc));
+        CHECK(test(o, write, append));
+        CHECK_FALSE(test(o, write, read));
+        CHECK_FALSE(test(o, write, trunc));
+        CHECK_FALSE(test(o, read, write));
+        CHECK_FALSE(test(o, trunc, write));
+        CHECK_FALSE(test(o, append, read));
+        CHECK_FALSE(test(o, append, trunc));
+        CHECK_FALSE(test(o, read, append));
+        CHECK_FALSE(test(o, trunc, append));
+        CHECK_FALSE(test(o, read, trunc));
     }
 
-    SUBCASE("flip single bit at a time")
+    SECTION("flip single bit at a time")
     {
         flip(o, write);
-        REQUIRE(test(o, write));
-        REQUIRE_FALSE(test(o, read));
-        REQUIRE_FALSE(test(o, append));
-        REQUIRE_FALSE(test(o, trunc));
+        CHECK(test(o, write));
+        CHECK_FALSE(test(o, read));
+        CHECK_FALSE(test(o, append));
+        CHECK_FALSE(test(o, trunc));
 
         flip(o, append);
-        REQUIRE(test(o, write));
-        REQUIRE_FALSE(test(o, read));
-        REQUIRE(test(o, append));
-        REQUIRE_FALSE(test(o, trunc));
+        CHECK(test(o, write));
+        CHECK_FALSE(test(o, read));
+        CHECK(test(o, append));
+        CHECK_FALSE(test(o, trunc));
 
         flip(o, write);
-        REQUIRE_FALSE(test(o, write));
-        REQUIRE_FALSE(test(o, read));
-        REQUIRE(test(o, append));
-        REQUIRE_FALSE(test(o, trunc));
+        CHECK_FALSE(test(o, write));
+        CHECK_FALSE(test(o, read));
+        CHECK(test(o, append));
+        CHECK_FALSE(test(o, trunc));
 
         flip(o, append);
-        REQUIRE(o == none);
+        CHECK(o == none);
     }
 
-    SUBCASE("flip multiple bits at a time")
+    SECTION("flip multiple bits at a time")
     {
         flip(o, write, append);
-        REQUIRE(test(o, write));
-        REQUIRE_FALSE(test(o, read));
-        REQUIRE(test(o, append));
-        REQUIRE_FALSE(test(o, trunc));
+        CHECK(test(o, write));
+        CHECK_FALSE(test(o, read));
+        CHECK(test(o, append));
+        CHECK_FALSE(test(o, trunc));
 
         flip(o, write, append);
-        REQUIRE(o == none);
+        CHECK(o == none);
     }
 
-    SUBCASE("test_xxx")
+    SECTION("test_xxx")
     {
         set(o, write, append);
 
-        REQUIRE(test_all_of(o, write));
-        REQUIRE(test_all_of(o, append));
-        REQUIRE(test_all_of(o, write, append));
-        REQUIRE_FALSE(
+        CHECK(test_all_of(o, write));
+        CHECK(test_all_of(o, append));
+        CHECK(test_all_of(o, write, append));
+        CHECK_FALSE(
             test_all_of(o, write, append, read));
 
-        REQUIRE(test_any_of(o, write));
-        REQUIRE(test_any_of(o, append));
-        REQUIRE_FALSE(test_any_of(o, read));
+        CHECK(test_any_of(o, write));
+        CHECK(test_any_of(o, append));
+        CHECK_FALSE(test_any_of(o, read));
 
-        REQUIRE(test_none_of(o, read));
-        REQUIRE_FALSE(test_none_of(o, write));
-        REQUIRE_FALSE(test_none_of(o, append));
+        CHECK(test_none_of(o, read));
+        CHECK_FALSE(test_none_of(o, write));
+        CHECK_FALSE(test_none_of(o, append));
     }
 }

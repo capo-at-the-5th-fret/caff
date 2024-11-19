@@ -1,4 +1,5 @@
-#include <doctest/doctest.h>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 #include "caff/functional.h"
 #include <utility>
 #include <unordered_set>
@@ -101,8 +102,11 @@ namespace
 
 }
 
-TEST_CASE_TEMPLATE_DEFINE("basic_string_hash", CharT, basic_string_hash_test_id)
+TEMPLATE_LIST_TEST_CASE("basic_string_hash", "[functional]",
+    caff::standard_character_types)
 {
+    using CharT = TestType;
+
     using namespace std::string_literals;
     using namespace std::string_view_literals;
     using test_set = std::unordered_set<
@@ -113,60 +117,58 @@ TEST_CASE_TEMPLATE_DEFINE("basic_string_hash", CharT, basic_string_hash_test_id)
 
     basic_string_hash_fixture<CharT> fixture;
 
-    SUBCASE("empty set")
+    SECTION("empty set")
     {
         test_set ts;
 
-        SUBCASE("const CharT*")
+        SECTION("const CharT*")
         {
             auto pos = ts.find(fixture.c_str);
-            REQUIRE((pos == ts.end()));
+            CHECK((pos == ts.end()));
         }
 
-        SUBCASE("basic_string")
+        SECTION("basic_string")
         {
             auto pos = ts.find(fixture.str);
-            REQUIRE((pos == ts.end()));
+            CHECK((pos == ts.end()));
         }
 
-        SUBCASE("basic_string_view")
+        SECTION("basic_string_view")
         {
             auto pos = ts.find(fixture.sv);
-            REQUIRE((pos == ts.end()));
+            CHECK((pos == ts.end()));
         }
     }
 
-    SUBCASE("populated set")
+    SECTION("populated set")
     {
         test_set ts;
         ts.insert(fixture.c_str);
         ts.insert(fixture.str);
         ts.insert(std::basic_string<CharT>{ fixture.sv });
 
-        SUBCASE("const CharT*")
+        SECTION("const CharT*")
         {
             auto pos = ts.find(fixture.c_str);
             REQUIRE(pos != ts.end());
-            REQUIRE(*pos == fixture.c_str);
+            CHECK(*pos == fixture.c_str);
         }
 
-        SUBCASE("basic_string")
+        SECTION("basic_string")
         {
             auto pos = ts.find(fixture.str);
             REQUIRE(pos != ts.end());
-            REQUIRE(*pos == fixture.str);
+            CHECK(*pos == fixture.str);
         }
 
-        SUBCASE("basic_string_view")
+        SECTION("basic_string_view")
         {
             auto pos = ts.find(fixture.sv);
             REQUIRE(pos != ts.end());
-            REQUIRE(*pos == std::basic_string<CharT>{ fixture.sv });
+            CHECK(*pos == std::basic_string<CharT>{ fixture.sv });
         }
     }
 }
-TEST_CASE_TEMPLATE_APPLY(basic_string_hash_test_id,
-    caff::standard_character_types);
 
 TEST_CASE("basic_string_hash aliases")
 {
@@ -201,23 +203,25 @@ TEST_CASE("basic_string_hash aliases")
         std::hash<std::u32string_view>
     >);
     // clang-format on
+
+    CHECK(true);
 }
 
 TEST_CASE("hash_combine")
 {
     auto hash_value = std::hash<int>{}(12);
 
-    SUBCASE("single value")
+    SECTION("single value")
     {
         caff::hash_combine(hash_value, 2.5);
-        REQUIRE(hash_value == caff::hash(12, 2.5));
+        CHECK(hash_value == caff::hash(12, 2.5));
     }
     
-    SUBCASE("multi-value")
+    SECTION("multi-value")
     {
         caff::hash_combine(hash_value, 2.5);
         caff::hash_combine(hash_value, true);
-        REQUIRE(hash_value == caff::hash(12, 2.5, true));
+        CHECK(hash_value == caff::hash(12, 2.5, true));
     }
 }
 
@@ -226,16 +230,16 @@ TEST_CASE("hash")
     auto hash_value = std::hash<int>{}(12);
 
     // single value should be the same as using std::hash
-    SUBCASE("single value")
+    SECTION("single value")
     {
-        REQUIRE(caff::hash(12) == hash_value);
+        CHECK(caff::hash(12) == hash_value);
     }
 
     // multi-value should be the same as using hash_combine on types
-    SUBCASE("multi-value")
+    SECTION("multi-value")
     {
         caff::hash_combine(hash_value, 2.5);
         caff::hash_combine(hash_value, true);
-        REQUIRE(caff::hash(12, 2.5, true) == hash_value);
+        CHECK(caff::hash(12, 2.5, true) == hash_value);
     }
 }

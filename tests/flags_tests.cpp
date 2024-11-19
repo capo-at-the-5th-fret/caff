@@ -1,484 +1,500 @@
-#include <doctest/doctest.h>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators_range.hpp>
 #include <unordered_set>
 #include <tuple>
 #include <array>
 #include "fixtures/flags_fixture.h"
 
-TEST_SUITE("flags")
+using namespace caff::test::dummy;
+
+TEST_CASE("default constructor", "[flags]")
 {
-    using namespace caff::test::dummy;
+    options o;
+    CHECK(o.to_underlying() == 0);
+}
+
+TEST_CASE("single value constructor", "[flags]")
+{
     using enum option;
 
-    TEST_CASE("default constructor")
+    SECTION("initialize to none")
+    {
+        options o{ none };
+        CHECK(o.to_underlying() == 0);
+    }
+
+    SECTION("initialize to non-none value")
+    {
+        options o{ read };
+        CHECK(o.to_underlying() == std::to_underlying(read));
+    }
+}
+
+TEST_CASE_METHOD(options_fixture, "initializer list constructor", "[flags]")
+{
+    options o{ base_option_list };
+    REQUIRE(o == base);
+}
+
+TEST_CASE_METHOD(options_fixture, "copy constructor", "[flags]")
+{
+    options o{ base };
+    REQUIRE(o == base);
+}
+
+TEST_CASE_METHOD(options_fixture, "assignment operator", "[flags]")
+{
+    SECTION("default")
     {
         options o;
-        REQUIRE(o.to_underlying() == 0);
+        o = base;
+        CHECK(o == base);
     }
 
-    TEST_CASE("single value constructor")
+    SECTION("assign from initializer_list")
     {
-        SUBCASE("initialize to none")
+        options o;
+        o = base_option_list;
+        CHECK(o == base);
+    }
+}
+
+TEST_CASE_METHOD(options_fixture, "comparison operators", "[flags]")
+{
+    const auto& [rhs, expected] = GENERATE_REF(from_range(comparisons));
+
+    CHECK(expected.compare_equal(base, rhs));
+    CHECK(expected.compare_not_equal(base, rhs));
+}
+
+TEST_CASE("set", "[flags]")
+{
+    using enum option;
+
+    options o;
+    o.set(read).set(append);
+    CHECK(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(append)));
+
+    o.set(trunc, true);
+    CHECK(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(append) |
+        std::to_underlying(trunc)));
+    
+    o.set(read, false);
+    CHECK(o.to_underlying() == (std::to_underlying(append) | std::to_underlying(trunc)));
+
+    o.set(append, false);
+    CHECK(o.to_underlying() == std::to_underlying(trunc));
+
+    o.set(trunc, false);
+    CHECK(o.to_underlying() == 0);
+
+    SECTION("chaining")
+    {
+        o.reset();
+        o.set(read).set(append).set(trunc);
+        CHECK(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(append) |
+            std::to_underlying(trunc)));
+    }
+}
+
+TEST_CASE("reset", "[flags]")
+{
+    using enum option;
+
+    options o{ read, write, append };
+
+    SECTION("no parameters")
+    {
+        o.reset();
+        CHECK(o.to_underlying() == 0);
+    }
+
+    SECTION("single parameter")
+    {
+        o.reset(write);
+        CHECK(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(append)));
+
+        o.reset(read);
+        CHECK(o.to_underlying() == std::to_underlying(append));
+
+        o.reset(append);
+        CHECK(o.to_underlying() == 0);
+    }
+
+    SECTION("chaining")
+    {
+        o.reset(read).reset(write).reset(append);
+        CHECK(o.to_underlying() == 0);
+    }
+}
+
+TEST_CASE("flip", "[flags]")
+{
+    using enum option;
+
+    SECTION("no parameters")
+    {
+        constexpr std::array test_values =
         {
-            options o{ none };
-            REQUIRE(o.to_underlying() == 0);
-        }
+            std::tuple{ options{ }, options{ read, write, append, trunc } },
+            std::tuple{ options{ read }, options{ write, append, trunc } },
+            std::tuple{ options{ write }, options{ read, append, trunc } },
+            std::tuple{ options{ append }, options{ read, write, trunc } },
+            std::tuple{ options{ trunc }, options{ read, write, append } },
+            std::tuple{ options{ read, write }, options{ append, trunc } },
+            std::tuple{ options{ read, append }, options{ write, trunc } },
+            std::tuple{ options{ read, trunc }, options{ write, append } },
+            std::tuple{ options{ write, append }, options{ read, trunc } },
+            std::tuple{ options{ write, trunc }, options{ read, append } },
+            std::tuple{ options{ append, trunc }, options{ read, write } },
+            std::tuple{ options{ read, write, append }, options{ trunc } },
+            std::tuple{ options{ read, write, trunc }, options{ append } },
+            std::tuple{ options{ read, append, trunc }, options{ write } },
+            std::tuple{ options{ write, append, trunc }, options{ read } },
+            std::tuple{ options{ read, write, append, trunc }, options{ } }
+        };
 
-        SUBCASE("initialize to non-none value")
-        {
-            options o{ read };
-            REQUIRE(o.to_underlying() == std::to_underlying(read));
-        }
-    }
-
-    TEST_CASE_FIXTURE(options_fixture, "initializer list constructor")
-    {
-        options o{ base_option_list };
-        REQUIRE(o == base);
-    }
-
-    TEST_CASE_FIXTURE(options_fixture, "copy constructor")
-    {
-        options o{ base };
-        REQUIRE(o == base);
-    }
-
-    TEST_CASE_FIXTURE(options_fixture, "assignment operator")
-    {
-        SUBCASE("default")
-        {
-            options o;
-            o = base;
-            REQUIRE(o == base);
-        }
-
-        SUBCASE("assign from initializer_list")
-        {
-            options o;
-            o = base_option_list;
-            REQUIRE(o == base);
-        }
-    }
-
-    TEST_CASE_FIXTURE(options_fixture, "comparison operators")
-    {
-        for (int i = 0; const auto& [rhs, expected] : comparisons)
+        for (int i = 0; const auto& [test_value, expected_result] : test_values)
         {
             CAPTURE(i);
-
-            REQUIRE(expected.compare_equal(base, rhs));
-            REQUIRE(expected.compare_not_equal(base, rhs));
-
+            options o{ test_value };
+            o.flip();
+            CHECK(o == expected_result);
             ++i;
         }
     }
 
-    TEST_CASE("set")
+    SECTION("single parameter")
     {
         options o;
-        o.set(read).set(append);
-        REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(append)));
 
-        o.set(trunc, true);
-        REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(append) |
+        o.flip(read);
+        CHECK(o.to_underlying() == std::to_underlying(read));
+
+        o.flip(write);
+        CHECK(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(write)));
+
+        o.flip(append);
+        CHECK(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(write) |    
+            std::to_underlying(append)));
+
+        o.flip(trunc);
+        CHECK(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(write) |    
+            std::to_underlying(append) | std::to_underlying(trunc)));
+
+        o.flip(read);
+        CHECK(o.to_underlying() == (std::to_underlying(write) | std::to_underlying(append) |
             std::to_underlying(trunc)));
-        
-        o.set(read, false);
-        REQUIRE(o.to_underlying() == (std::to_underlying(append) | std::to_underlying(trunc)));
 
-        o.set(append, false);
-        REQUIRE(o.to_underlying() == std::to_underlying(trunc));
+        o.flip(write);
+        CHECK(o.to_underlying() == (std::to_underlying(append) | std::to_underlying(trunc)));
 
-        o.set(trunc, false);
-        REQUIRE(o.to_underlying() == 0);
+        o.flip(append);
+        CHECK(o.to_underlying() == std::to_underlying(trunc));
 
-        SUBCASE("chaining")
-        {
-            o.reset();
-            o.set(read).set(append).set(trunc);
-            REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(append) |
-                std::to_underlying(trunc)));
-        }
+        o.flip(trunc);
+        CHECK(o.to_underlying() == 0);
     }
 
-    TEST_CASE("reset")
-    {
-        options o{ read, write, append };
-
-        SUBCASE("no parameters")
-        {
-            o.reset();
-            REQUIRE(o.to_underlying() == 0);
-        }
-
-        SUBCASE("single parameter")
-        {
-            o.reset(write);
-            REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(append)));
-
-            o.reset(read);
-            REQUIRE(o.to_underlying() == std::to_underlying(append));
-
-            o.reset(append);
-            REQUIRE(o.to_underlying() == 0);
-        }
-
-        SUBCASE("chaining")
-        {
-            o.reset(read).reset(write).reset(append);
-            REQUIRE(o.to_underlying() == 0);
-        }
-    }
-
-    TEST_CASE("flip")
-    {
-        SUBCASE("no parameters")
-        {
-            constexpr std::array test_values =
-            {
-                std::tuple{ options{ }, options{ read, write, append, trunc } },
-                std::tuple{ options{ read }, options{ write, append, trunc } },
-                std::tuple{ options{ write }, options{ read, append, trunc } },
-                std::tuple{ options{ append }, options{ read, write, trunc } },
-                std::tuple{ options{ trunc }, options{ read, write, append } },
-                std::tuple{ options{ read, write }, options{ append, trunc } },
-                std::tuple{ options{ read, append }, options{ write, trunc } },
-                std::tuple{ options{ read, trunc }, options{ write, append } },
-                std::tuple{ options{ write, append }, options{ read, trunc } },
-                std::tuple{ options{ write, trunc }, options{ read, append } },
-                std::tuple{ options{ append, trunc }, options{ read, write } },
-                std::tuple{ options{ read, write, append }, options{ trunc } },
-                std::tuple{ options{ read, write, trunc }, options{ append } },
-                std::tuple{ options{ read, append, trunc }, options{ write } },
-                std::tuple{ options{ write, append, trunc }, options{ read } },
-                std::tuple{ options{ read, write, append, trunc }, options{ } }
-            };
-
-            for (int i = 0; const auto& [test_value, expected_result] : test_values)
-            {
-                CAPTURE(i);
-                options o{ test_value };
-                o.flip();
-                REQUIRE(o == expected_result);
-                ++i;
-            }
-        }
-
-        SUBCASE("single parameter")
-        {
-            options o;
-
-            o.flip(read);
-            REQUIRE(o.to_underlying() == std::to_underlying(read));
-
-            o.flip(write);
-            REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(write)));
-
-            o.flip(append);
-            REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(write) |    
-                std::to_underlying(append)));
-
-            o.flip(trunc);
-            REQUIRE(o.to_underlying() == (std::to_underlying(read) | std::to_underlying(write) |    
-                std::to_underlying(append) | std::to_underlying(trunc)));
-
-            o.flip(read);
-            REQUIRE(o.to_underlying() == (std::to_underlying(write) | std::to_underlying(append) |
-                std::to_underlying(trunc)));
-
-            o.flip(write);
-            REQUIRE(o.to_underlying() == (std::to_underlying(append) | std::to_underlying(trunc)));
-
-            o.flip(append);
-            REQUIRE(o.to_underlying() == std::to_underlying(trunc));
-
-            o.flip(trunc);
-            REQUIRE(o.to_underlying() == 0);
-        }
-
-        SUBCASE("chaining")
-        {
-            options o;
-            o.flip(read).flip(read);
-            REQUIRE(o.to_underlying() == 0);
-
-            o.flip(read).flip(write).flip(append).flip(trunc);
-            REQUIRE(o.to_underlying() == (std::to_underlying(read) |
-                std::to_underlying(write) | std::to_underlying(append) |
-                std::to_underlying(trunc)));
-        }
-    }
-
-    TEST_CASE_FIXTURE(options_fixture, "test")
+    SECTION("chaining")
     {
         options o;
-        REQUIRE(o.test(none));
-        REQUIRE_FALSE(o.test(read));
-        REQUIRE_FALSE(o.test(write));
-        REQUIRE_FALSE(o.test(append));
-        REQUIRE_FALSE(o.test(trunc));
+        o.flip(read).flip(read);
+        CHECK(o.to_underlying() == 0);
 
-        o.set(read);
-        REQUIRE_FALSE(o.test(none));
-        REQUIRE(o.test(read));
-        REQUIRE_FALSE(o.test(write));
-        REQUIRE_FALSE(o.test(append));
-        REQUIRE_FALSE(o.test(trunc));
-
-        o.set(write);
-        REQUIRE_FALSE(o.test(none));
-        REQUIRE(o.test(read));
-        REQUIRE(o.test(write));
-        REQUIRE_FALSE(o.test(append));
-        REQUIRE_FALSE(o.test(trunc));
-
-        o.set(append);
-        REQUIRE_FALSE(o.test(none));
-        REQUIRE(o.test(read));
-        REQUIRE(o.test(write));
-        REQUIRE(o.test(append));
-        REQUIRE_FALSE(o.test(trunc));
-
-        o.set(trunc);
-        REQUIRE_FALSE(o.test(none));
-        REQUIRE(o.test(read));
-        REQUIRE(o.test(write));
-        REQUIRE(o.test(append));
-        REQUIRE(o.test(trunc));
+        o.flip(read).flip(write).flip(append).flip(trunc);
+        CHECK(o.to_underlying() == (std::to_underlying(read) |
+            std::to_underlying(write) | std::to_underlying(append) |
+            std::to_underlying(trunc)));
     }
+}
 
-    TEST_CASE("all, any, none, count")
+TEST_CASE("test", "[flags]")
+{
+    using enum option;
+
+    options o;
+    CHECK(o.test(none));
+    CHECK_FALSE(o.test(read));
+    CHECK_FALSE(o.test(write));
+    CHECK_FALSE(o.test(append));
+    CHECK_FALSE(o.test(trunc));
+
+    o.set(read);
+    CHECK_FALSE(o.test(none));
+    CHECK(o.test(read));
+    CHECK_FALSE(o.test(write));
+    CHECK_FALSE(o.test(append));
+    CHECK_FALSE(o.test(trunc));
+
+    o.set(write);
+    CHECK_FALSE(o.test(none));
+    CHECK(o.test(read));
+    CHECK(o.test(write));
+    CHECK_FALSE(o.test(append));
+    CHECK_FALSE(o.test(trunc));
+
+    o.set(append);
+    CHECK_FALSE(o.test(none));
+    CHECK(o.test(read));
+    CHECK(o.test(write));
+    CHECK(o.test(append));
+    CHECK_FALSE(o.test(trunc));
+
+    o.set(trunc);
+    CHECK_FALSE(o.test(none));
+    CHECK(o.test(read));
+    CHECK(o.test(write));
+    CHECK(o.test(append));
+    CHECK(o.test(trunc));
+}
+
+TEST_CASE("all, any, none, count", "[flags]")
+{
+    using enum option;
+
+    constexpr std::array test_values =
     {
-        constexpr std::array test_values =
-        {
-            std::tuple{ options{ }, false, false, true, 0 },
-            std::tuple{ options{ read }, false, true, false, 1 },
-            std::tuple{ options{ write }, false, true, false, 1 },
-            std::tuple{ options{ append }, false, true, false, 1 },
-            std::tuple{ options{ trunc }, false, true, false, 1 },
-            std::tuple{ options{ read, write }, false, true, false, 2 },
-            std::tuple{ options{ read, append }, false, true, false, 2 },
-            std::tuple{ options{ read, trunc }, false, true, false, 2 },
-            std::tuple{ options{ write, append }, false, true, false, 2 },
-            std::tuple{ options{ write, trunc }, false, true, false, 2 },
-            std::tuple{ options{ append, trunc }, false, true, false, 2 },
-            std::tuple{ options{ read, write, append }, false, true, false, 3 },
-            std::tuple{ options{ read, write, trunc }, false, true, false, 3 },
-            std::tuple{ options{ read, append, trunc }, false, true, false, 3 },
-            std::tuple{ options{ write, append, trunc }, false, true, false, 3 },
-            std::tuple{ options{ read, write, append, trunc }, true, true, false, 4 }
-        };
+        std::tuple{ options{ }, false, false, true, 0 },
+        std::tuple{ options{ read }, false, true, false, 1 },
+        std::tuple{ options{ write }, false, true, false, 1 },
+        std::tuple{ options{ append }, false, true, false, 1 },
+        std::tuple{ options{ trunc }, false, true, false, 1 },
+        std::tuple{ options{ read, write }, false, true, false, 2 },
+        std::tuple{ options{ read, append }, false, true, false, 2 },
+        std::tuple{ options{ read, trunc }, false, true, false, 2 },
+        std::tuple{ options{ write, append }, false, true, false, 2 },
+        std::tuple{ options{ write, trunc }, false, true, false, 2 },
+        std::tuple{ options{ append, trunc }, false, true, false, 2 },
+        std::tuple{ options{ read, write, append }, false, true, false, 3 },
+        std::tuple{ options{ read, write, trunc }, false, true, false, 3 },
+        std::tuple{ options{ read, append, trunc }, false, true, false, 3 },
+        std::tuple{ options{ write, append, trunc }, false, true, false, 3 },
+        std::tuple{ options{ read, write, append, trunc }, true, true, false, 4 }
+    };
 
-        for (int i = 0; const auto& [o, expected_all, expected_any, expected_none, expected_count] :
-            test_values)
+    for (int i = 0; const auto& [o, expected_all, expected_any, expected_none, expected_count] :
+        test_values)
+    {
+        CAPTURE(i);
+        CHECK(o.all() == expected_all);
+        CHECK(o.any() == expected_any);
+        CHECK(o.none() == expected_none);
+        CHECK(o.count() == expected_count);
+        i++;
+    }
+}
+
+TEST_CASE("bitwise assignment operators", "[flags]")
+{
+    using enum option;
+
+    SECTION("default")
+    {
+        SECTION("AND")
         {
-            CAPTURE(i);
-            REQUIRE(o.all() == expected_all);
-            REQUIRE(o.any() == expected_any);
-            REQUIRE(o.none() == expected_none);
-            REQUIRE(o.count() == expected_count);
-            i++;
+            options o1{ read, write };
+            options o2{ write, append };
+            o1 &= o2;
+            REQUIRE(o1 == options{ write });
+        }
+
+        SECTION("OR")
+        {
+            options o1{ read, write };
+            options o2{ write, append };
+            o1 |= o2;
+            REQUIRE(o1 == options{ read, write, append });
+        }
+
+        SECTION("XOR")
+        {
+            options o1{ read, write };
+            options o2{ write, append };
+            o1 ^= o2;
+            REQUIRE(o1 == options{ read, append });
+        }
+
+        SECTION("NOT")
+        {
+            options o1{ read, write };
+            options o2 = ~o1;
+            REQUIRE(o2 == options{ append, trunc });
         }
     }
 
-    TEST_CASE("bitwise assignment operators")
+    SECTION("enumerator value")
     {
-        SUBCASE("default")
+        SECTION("AND")
         {
-            SUBCASE("AND")
-            {
-                options o1{ read, write };
-                options o2{ write, append };
-                o1 &= o2;
-                REQUIRE(o1 == options{ write });
-            }
+            options o1{ read, write };
+            o1 &= write;
+            REQUIRE(o1 == options{ write });
 
-            SUBCASE("OR")
-            {
-                options o1{ read, write };
-                options o2{ write, append };
-                o1 |= o2;
-                REQUIRE(o1 == options{ read, write, append });
-            }
-
-            SUBCASE("XOR")
-            {
-                options o1{ read, write };
-                options o2{ write, append };
-                o1 ^= o2;
-                REQUIRE(o1 == options{ read, append });
-            }
-
-            SUBCASE("NOT")
-            {
-                options o1{ read, write };
-                options o2 = ~o1;
-                REQUIRE(o2 == options{ append, trunc });
-            }
+            o1 &= append;
+            REQUIRE(o1 == options{ });
         }
 
-        SUBCASE("enumerator value")
+        SECTION("OR")
         {
-            SUBCASE("AND")
-            {
-                options o1{ read, write };
-                o1 &= write;
-                REQUIRE(o1 == options{ write });
+            options o1{ read, write };
+            o1 |= write;
+            REQUIRE(o1 == options{ read, write });
 
-                o1 &= append;
-                REQUIRE(o1 == options{ });
-            }
-
-            SUBCASE("OR")
-            {
-                options o1{ read, write };
-                o1 |= write;
-                REQUIRE(o1 == options{ read, write });
-
-                o1 |= append;
-                REQUIRE(o1 == options{ read, write, append });
-            }
-
-            SUBCASE("XOR")
-            {
-                options o1{ read, write };
-                o1 ^= write;
-                REQUIRE(o1 == options{ read });
-
-                o1 ^= append;
-                REQUIRE(o1 == options{ read, append });
-            }
-        }
-    }
-
-    TEST_CASE("test_all_of")
-    {
-        options o{ read, write, append };
-        REQUIRE(o.test_all_of(read, write));
-        REQUIRE_FALSE(o.test_all_of(read, trunc));
-    }
-
-    TEST_CASE("test_any_of")
-    {
-        options o{ read, write };
-        REQUIRE(o.test_any_of(read, append));
-        REQUIRE_FALSE(o.test_any_of(trunc, append));
-    }
-
-    TEST_CASE("test_none_of")
-    {
-        options o{ read };
-        REQUIRE(o.test_none_of(write, append));
-        REQUIRE_FALSE(o.test_none_of(read, append));
-    }
-
-    TEST_CASE("to_underlying")
-    {
-        options o;
-        REQUIRE(o.to_underlying() == 0);
-
-        o.set(read);
-        REQUIRE(o.to_underlying() == std::to_underlying(read));
-    }
-
-    TEST_CASE("bitwise operators")
-    {
-        SUBCASE("default")
-        {
-            SUBCASE("AND")
-            {
-                options o1{ read, write };
-                options o2{ write, append };
-                options o3 = o1 & o2;
-                REQUIRE(o3 == options{ write });
-            }
-
-            SUBCASE("OR")
-            {
-                options o1{ read, write };
-                options o2{ write, append };
-                options o3 = o1 | o2;
-                REQUIRE(o3 == options{ read, write, append });
-            }
-
-            SUBCASE("XOR")
-            {
-                options o1{ read, write };
-                options o2{ write, append };
-                options o3 = o1 ^ o2;
-                REQUIRE(o3 == options{ read, append });
-            }
+            o1 |= append;
+            REQUIRE(o1 == options{ read, write, append });
         }
 
-        SUBCASE("enumerator value")
+        SECTION("XOR")
         {
-            SUBCASE("AND")
-            {
-                options o1{ read, write };
-                options o2 = o1 & write;
-                REQUIRE(o2 == options{ write });
+            options o1{ read, write };
+            o1 ^= write;
+            REQUIRE(o1 == options{ read });
 
-                o2 = o1 & append;
-                REQUIRE(o2 == options{ });
-            }
+            o1 ^= append;
+            REQUIRE(o1 == options{ read, append });
+        }
+    }
+}
 
-            SUBCASE("OR")
-            {
-                options o1{ read, write };
-                options o2 = o1 | write | append;
-                REQUIRE(o2 == options{ read, write, append });
-            }
+TEST_CASE("test_all_of", "[flags]")
+{
+    using enum option;
 
-            SUBCASE("XOR")
-            {
-                options o1{ read, write };
-                options o2 = o1 ^ write ^ append;
-                REQUIRE(o2 == options{ read, append });
-            }
+    options o{ read, write, append };
+    REQUIRE(o.test_all_of(read, write));
+    REQUIRE_FALSE(o.test_all_of(read, trunc));
+}
+
+TEST_CASE("test_any_of", "[flags]")
+{
+    using enum option;
+
+    options o{ read, write };
+    REQUIRE(o.test_any_of(read, append));
+    REQUIRE_FALSE(o.test_any_of(trunc, append));
+}
+
+TEST_CASE("test_none_of", "[flags]")
+{
+    using enum option;
+
+    options o{ read };
+    REQUIRE(o.test_none_of(write, append));
+    REQUIRE_FALSE(o.test_none_of(read, append));
+}
+
+TEST_CASE("to_underlying", "[flags]")
+{
+    using enum option;
+
+    options o;
+    REQUIRE(o.to_underlying() == 0);
+
+    o.set(read);
+    REQUIRE(o.to_underlying() == std::to_underlying(read));
+}
+
+TEST_CASE("bitwise operators", "[flags]")
+{
+    using enum option;
+
+    SECTION("default")
+    {
+        SECTION("AND")
+        {
+            options o1{ read, write };
+            options o2{ write, append };
+            options o3 = o1 & o2;
+            REQUIRE(o3 == options{ write });
+        }
+
+        SECTION("OR")
+        {
+            options o1{ read, write };
+            options o2{ write, append };
+            options o3 = o1 | o2;
+            REQUIRE(o3 == options{ read, write, append });
+        }
+
+        SECTION("XOR")
+        {
+            options o1{ read, write };
+            options o2{ write, append };
+            options o3 = o1 ^ o2;
+            REQUIRE(o3 == options{ read, append });
         }
     }
 
-    TEST_CASE_FIXTURE(options_fixture, "hash")
+    SECTION("enumerator value")
     {
-        using underlying_type = typename options::underlying_type;
-        using hash_type = std::hash<options>;
-
-        std::hash<options> h;
-
-        options o1{ base };
-        options o2{ diff };
-
-        SUBCASE("return type")
+        SECTION("AND")
         {
-            REQUIRE(std::is_same_v<decltype(hash_type{}(o1)), std::size_t>);
+            options o1{ read, write };
+            options o2 = o1 & write;
+            REQUIRE(o2 == options{ write });
+
+            o2 = o1 & append;
+            REQUIRE(o2 == options{ });
         }
 
-        SUBCASE("value")
+        SECTION("OR")
         {
-            const auto h1 = h(o1);
-            const auto h2 = std::hash<underlying_type>{}(o1.to_underlying());
-            REQUIRE(h1 == h2);
+            options o1{ read, write };
+            options o2 = o1 | write | append;
+            REQUIRE(o2 == options{ read, write, append });
         }
 
-        SUBCASE("usage")
+        SECTION("XOR")
         {
-            std::unordered_set<options> s;
-            s.insert(o1);
-            REQUIRE(s.size() == 1);
-            auto pos1 = s.find(o1);
-            REQUIRE(pos1 != s.end());
-            REQUIRE(*pos1 == o1);
-
-            s.insert(o2);
-            REQUIRE(s.size() == 2);
-            pos1 = s.find(o1);
-            REQUIRE(pos1 != s.end());
-            REQUIRE(*pos1 == o1);
-
-            auto pos2 = s.find(o2);
-            REQUIRE(pos2 != s.end());
-            REQUIRE(*pos2 == o2);
+            options o1{ read, write };
+            options o2 = o1 ^ write ^ append;
+            REQUIRE(o2 == options{ read, append });
         }
     }
+}
+
+TEST_CASE_METHOD(options_fixture, "hash", "[flags]")
+{
+    using underlying_type = typename options::underlying_type;
+    using hash_type = std::hash<options>;
+
+    std::hash<options> h;
+
+    options o1{ base };
+    options o2{ diff };
+
+    SECTION("return type")
+    {
+        CHECK(std::is_same_v<decltype(hash_type{}(o1)), std::size_t>);
+    }
+
+    SECTION("value")
+    {
+        const auto h1 = h(o1);
+        const auto h2 = std::hash<underlying_type>{}(o1.to_underlying());
+        CHECK(h1 == h2);
+    }
+
+    SECTION("usage")
+    {
+        std::unordered_set<options> s;
+        s.insert(o1);
+        REQUIRE(s.size() == 1);
+        auto pos1 = s.find(o1);
+        REQUIRE(pos1 != s.end());
+        CHECK(*pos1 == o1);
+
+        s.insert(o2);
+        REQUIRE(s.size() == 2);
+        pos1 = s.find(o1);
+        REQUIRE(pos1 != s.end());
+        CHECK(*pos1 == o1);
+
+        auto pos2 = s.find(o2);
+        REQUIRE(pos2 != s.end());
+        CHECK(*pos2 == o2);
+    }    
 }
 
 #if 0

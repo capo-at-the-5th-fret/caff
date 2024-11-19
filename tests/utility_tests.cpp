@@ -1,4 +1,5 @@
-#include <doctest/doctest.h>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_template_test_macros.hpp>
 #include "caff/utility.h"
 
 #include <tuple>
@@ -70,15 +71,16 @@ namespace
     };
 }
 
-TEST_CASE_TEMPLATE_DEFINE("in_open_range", TestType, in_open_range_test_id)
+TEMPLATE_LIST_TEST_CASE_METHOD(in_range_fixture, "in_open_range", "[utility]",
+    caff::standard_integer_types)
 {
+    using T = TestType;
+    using fixture = in_range_fixture<T>;
     using caff::in_open_range;
-
-    in_range_fixture<TestType> fixture;
 
     // empty ranges
     {
-        caff::tuple_for_each(fixture.empty_ranges,
+        caff::tuple_for_each(fixture::empty_ranges,
             [](const auto& r)
             {
                 for (auto i = r.first - 1; std::cmp_less_equal(i, r.second + 1);
@@ -89,7 +91,7 @@ TEST_CASE_TEMPLATE_DEFINE("in_open_range", TestType, in_open_range_test_id)
                     {
                         const bool expected = (std::cmp_less(r.first, i) &&
                             std::cmp_less(i, r.second));
-                        REQUIRE(caff::in_open_range(i, r.first, r.second) ==
+                        CHECK(caff::in_open_range(i, r.first, r.second) ==
                             expected);
                     }
                 }
@@ -98,7 +100,7 @@ TEST_CASE_TEMPLATE_DEFINE("in_open_range", TestType, in_open_range_test_id)
 
     // single ranges
     {
-        caff::tuple_for_each(fixture.single_ranges,
+        caff::tuple_for_each(fixture::single_ranges,
             [](const auto& r)
             {
                 for (auto i = r.first - 1; std::cmp_less_equal(i, r.second + 1);
@@ -108,7 +110,7 @@ TEST_CASE_TEMPLATE_DEFINE("in_open_range", TestType, in_open_range_test_id)
 
                     const bool expected = (std::cmp_less(r.first, i) &&
                         std::cmp_less(i, r.second));
-                    REQUIRE(caff::in_open_range(i, r.first, r.second) ==
+                    CHECK(caff::in_open_range(i, r.first, r.second) ==
                         expected);
                 }
             });
@@ -116,7 +118,7 @@ TEST_CASE_TEMPLATE_DEFINE("in_open_range", TestType, in_open_range_test_id)
 
     // multi ranges
     {
-        caff::tuple_for_each(fixture.multi_ranges,
+        caff::tuple_for_each(fixture::multi_ranges,
             [](const auto& r)
             {
                 for (auto i = r.first - 1; std::cmp_less_equal(i, r.second + 1);
@@ -126,24 +128,23 @@ TEST_CASE_TEMPLATE_DEFINE("in_open_range", TestType, in_open_range_test_id)
 
                     const bool expected = (std::cmp_less(r.first, i) &&
                         std::cmp_less(i, r.second));
-                    REQUIRE(caff::in_open_range(i, r.first, r.second) ==
+                    CHECK(caff::in_open_range(i, r.first, r.second) ==
                         expected);
                 }
             });
     }
 }
-TEST_CASE_TEMPLATE_APPLY(in_open_range_test_id, caff::standard_integer_types);
 
-TEST_CASE_TEMPLATE_DEFINE("in_half_open_range", TestType,
-    in_half_open_range_test_id)
+TEMPLATE_LIST_TEST_CASE_METHOD(in_range_fixture, "in_half_open_range",
+    "[utility]", caff::standard_integer_types)
 {
+    using T = TestType;
+    using fixture = in_range_fixture<T>;
     using caff::in_half_open_range;
-
-    in_range_fixture<TestType> fixture;
 
     // empty ranges
     {
-        caff::tuple_for_each(fixture.empty_ranges,
+        caff::tuple_for_each(fixture::empty_ranges,
             [](const auto& r)
             {
                 for (auto i = r.first - 1; std::cmp_less_equal(i, r.second + 1);
@@ -154,7 +155,7 @@ TEST_CASE_TEMPLATE_DEFINE("in_half_open_range", TestType,
                     {
                         const bool expected = (std::cmp_less_equal(r.first, i) &&
                             std::cmp_less(i, r.second));
-                        REQUIRE(caff::in_half_open_range(i, r.first, r.second) ==
+                        CHECK(caff::in_half_open_range(i, r.first, r.second) ==
                             expected);
                     }
                 }
@@ -163,7 +164,7 @@ TEST_CASE_TEMPLATE_DEFINE("in_half_open_range", TestType,
 
     // single ranges
     {
-        caff::tuple_for_each(fixture.single_ranges,
+        caff::tuple_for_each(fixture::single_ranges,
             [](const auto& r)
             {
                 for (auto i = r.first - 1; std::cmp_less_equal(i, r.second + 1);
@@ -173,7 +174,7 @@ TEST_CASE_TEMPLATE_DEFINE("in_half_open_range", TestType,
 
                     const bool expected = (std::cmp_less_equal(r.first, i) &&
                         std::cmp_less(i, r.second));
-                    REQUIRE(caff::in_half_open_range(i, r.first, r.second) ==
+                    CHECK(caff::in_half_open_range(i, r.first, r.second) ==
                         expected);
                 }
             });
@@ -181,7 +182,7 @@ TEST_CASE_TEMPLATE_DEFINE("in_half_open_range", TestType,
 
     // multi ranges
     {
-        caff::tuple_for_each(fixture.multi_ranges,
+        caff::tuple_for_each(fixture::multi_ranges,
             [](const auto& r)
             {
                 for (auto i = r.first - 1; std::cmp_less_equal(i, r.second + 1);
@@ -191,24 +192,23 @@ TEST_CASE_TEMPLATE_DEFINE("in_half_open_range", TestType,
 
                     const bool expected = (std::cmp_less_equal(r.first, i) &&
                         std::cmp_less(i, r.second));
-                    REQUIRE(caff::in_half_open_range(i, r.first, r.second) ==
+                    CHECK(caff::in_half_open_range(i, r.first, r.second) ==
                         expected);
                 }
             });
     }
 }
-TEST_CASE_TEMPLATE_APPLY(in_half_open_range_test_id,
-    caff::standard_integer_types);
 
-TEST_CASE_TEMPLATE_DEFINE("in_closed_range", TestType, in_closed_range_test_id)
+TEMPLATE_LIST_TEST_CASE_METHOD(in_range_fixture, "in_closed_range", "[utility]",
+    caff::standard_integer_types)
 {
+    using T = TestType;
+    using fixture = in_range_fixture<T>;
     using caff::in_closed_range;
-
-    in_range_fixture<TestType> fixture;
 
     // empty ranges
     {
-        caff::tuple_for_each(fixture.empty_ranges,
+        caff::tuple_for_each(fixture::empty_ranges,
             [](const auto& r)
             {
                 for (auto i = r.first - 1; std::cmp_less_equal(i, r.second + 1);
@@ -219,7 +219,7 @@ TEST_CASE_TEMPLATE_DEFINE("in_closed_range", TestType, in_closed_range_test_id)
                     {
                         const bool expected = (std::cmp_less_equal(r.first, i) &&
                             std::cmp_less_equal(i, r.second));
-                        REQUIRE(caff::in_closed_range(i, r.first, r.second) ==
+                        CHECK(caff::in_closed_range(i, r.first, r.second) ==
                             expected);
                     }
                 }
@@ -228,7 +228,7 @@ TEST_CASE_TEMPLATE_DEFINE("in_closed_range", TestType, in_closed_range_test_id)
 
     // single ranges
     {
-        caff::tuple_for_each(fixture.single_ranges,
+        caff::tuple_for_each(fixture::single_ranges,
             [](const auto& r)
             {
                 for (auto i = r.first - 1; std::cmp_less_equal(i, r.second + 1);
@@ -238,7 +238,7 @@ TEST_CASE_TEMPLATE_DEFINE("in_closed_range", TestType, in_closed_range_test_id)
 
                     const bool expected = (std::cmp_less_equal(r.first, i) &&
                         std::cmp_less_equal(i, r.second));
-                    REQUIRE(caff::in_closed_range(i, r.first, r.second) ==
+                    CHECK(caff::in_closed_range(i, r.first, r.second) ==
                         expected);
                 }
             });
@@ -246,7 +246,7 @@ TEST_CASE_TEMPLATE_DEFINE("in_closed_range", TestType, in_closed_range_test_id)
 
     // multi ranges
     {
-        caff::tuple_for_each(fixture.multi_ranges,
+        caff::tuple_for_each(fixture::multi_ranges,
             [](const auto& r)
             {
                 for (auto i = r.first - 1; std::cmp_less_equal(i, r.second + 1);
@@ -256,10 +256,9 @@ TEST_CASE_TEMPLATE_DEFINE("in_closed_range", TestType, in_closed_range_test_id)
 
                     const bool expected = (std::cmp_less_equal(r.first, i) &&
                         std::cmp_less_equal(i, r.second));
-                    REQUIRE(caff::in_closed_range(i, r.first, r.second) ==
+                    CHECK(caff::in_closed_range(i, r.first, r.second) ==
                         expected);
                 }
             });
     }
 }
-TEST_CASE_TEMPLATE_APPLY(in_closed_range_test_id, caff::standard_integer_types);
