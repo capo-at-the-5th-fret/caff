@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <functional>
+#include "caff/format.h"
 
 namespace caff::test
 {
@@ -14,13 +15,46 @@ namespace caff::test
         five
     };
 
+    constexpr std::string_view to_string(dummy_enum e) noexcept
+    {
+        using enum dummy_enum;
+
+        if (e == one)
+        {
+            return "one";
+        }
+        else if (e == two)
+        {
+            return "two";
+        }
+        else if (e == three)
+        {
+            return "three";
+        }
+        else if (e == four)
+        {
+            return "four";
+        }
+        else if (e == five)
+        {
+            return "five";
+        }
+        else
+        {
+            return "unknown";
+        }
+    }
+    
     class dummy_class
     {
     public:
+        using member_type = int;
+
+        auto operator<=>(dummy_class const&) const = default;
+
         void member_function() { }
 
         int member_variable = 0;
-        using member_type = int;
     };
 
     class other_dummy_class
@@ -55,5 +89,25 @@ struct std::hash<caff::test::projection_type>
         caff::test::projection_type const& key) const noexcept
     {
         return std::hash<std::size_t>{}(key.value);
+    }
+};
+
+template <>
+struct fmt::formatter<caff::test::dummy_enum> : formatter<string_view>
+{
+    auto format(caff::test::dummy_enum e, format_context& ctx) const
+        -> format_context::iterator
+    {
+        return formatter<string_view>::format(to_string(e), ctx);
+    }
+};
+
+template <>
+struct fmt::formatter<caff::test::dummy_class> : formatter<int>
+{
+    auto format(caff::test::dummy_class const& dc, format_context& ctx) const
+        -> format_context::iterator
+    {
+        return formatter<int>::format(dc.member_variable, ctx);
     }
 };
