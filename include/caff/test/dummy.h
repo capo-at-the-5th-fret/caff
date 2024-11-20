@@ -44,7 +44,12 @@ namespace caff::test
             return "unknown";
         }
     }
-    
+
+    constexpr auto format_as(dummy_enum e)
+    {
+        return to_string(e);
+    }
+
     class dummy_class
     {
     public:
@@ -57,6 +62,11 @@ namespace caff::test
         int member_variable = 0;
     };
 
+    inline auto format_as(dummy_class const& c)
+    {
+        return c.member_variable;
+    }
+    
     class other_dummy_class
     {
     };
@@ -76,7 +86,7 @@ namespace caff::test
     {
         using value_type = int;
 
-        auto operator<=>(projection_type const&) const = default; // NOLINT(modernize-use-nullptr)
+        auto operator<=>(projection_type const&) const = default;
 
         value_type value{0};
     };
@@ -89,25 +99,5 @@ struct std::hash<caff::test::projection_type>
         caff::test::projection_type const& key) const noexcept
     {
         return std::hash<std::size_t>{}(key.value);
-    }
-};
-
-template <>
-struct fmt::formatter<caff::test::dummy_enum> : formatter<string_view>
-{
-    auto format(caff::test::dummy_enum e, format_context& ctx) const
-        -> format_context::iterator
-    {
-        return formatter<string_view>::format(to_string(e), ctx);
-    }
-};
-
-template <>
-struct fmt::formatter<caff::test::dummy_class> : formatter<int>
-{
-    auto format(caff::test::dummy_class const& dc, format_context& ctx) const
-        -> format_context::iterator
-    {
-        return formatter<int>::format(dc.member_variable, ctx);
     }
 };
