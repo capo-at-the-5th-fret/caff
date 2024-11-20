@@ -9,29 +9,57 @@
 
 namespace caff
 {
-    template <std::copyable T>
-    struct diagnostic_info
+    template <typename T>
+    requires std::is_object_v<T>
+    class diagnostic_info
     {
+    public:
+        using value_type = T;
+
         template <typename U>
-        requires std::constructible_from<T, U>
+        requires std::constructible_from<value_type, U>
         explicit diagnostic_info(std::string_view name, U const& value)
-            : name(name), value(value)
+            : name_(name), value_(value)
         {
         }
 
-        std::string name;
-        T value;
+        explicit diagnostic_info(std::string_view name, const char* value) :
+            name_(name), value_(value)
+        {
+        }
+
+        template <typename U, std::size_t N>
+        explicit diagnostic_info(std::string_view name, U (&a)[N])
+            : name_(name), value_{ std::to_array(a) }
+        {
+        }
+
+        std::string const& name() const
+        {
+            return name_;
+        }
+
+        value_type const& value() const
+        {
+            return value_;
+        }
+
+    private:
+        std::string name_;
+        value_type value_;
     };
 
     template <typename T>
     diagnostic_info(std::string_view, T) -> diagnostic_info<T>;
-    diagnostic_info(std::string_view, char const*)
-        -> diagnostic_info<std::string>;
+    diagnostic_info(std::string_view, const char*) -> diagnostic_info<std::string>;
+    diagnostic_info(std::string_view, std::string_view) -> diagnostic_info<std::string>;
+    template <typename T, std::size_t N>
+    diagnostic_info(std::string_view, T (&a)[N]) -> diagnostic_info<decltype(std::to_array(a))>;
 
     template <typename T>
     std::string to_string(caff::diagnostic_info<T> const& info)
     {
-        return fmt::format("{}: {}", info.name, info.value);
+        return fmt::format("{}: {}", info.name(), info.value());
     }
 
     template <typename T>
