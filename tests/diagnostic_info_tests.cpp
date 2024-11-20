@@ -121,11 +121,32 @@ TEST_CASE("diagnostic_info constructors", "[diagnostic_info]")
 
         SECTION("array")
         {
-            std::array a{ 1, 2, 3 };
-            caff::diagnostic_info info{ "name", a };
-            static_assert(std::is_same_v<decltype(info)::value_type, std::array<int, 3>>);
-            CHECK(info.name() == "name");
-            CHECK(info.value() == std::array<int,3>{ 1, 2, 3 });
+            SECTION("unbounded array")
+            {
+                int a[] = { 1, 2, 3 };
+                caff::diagnostic_info info{ "name", a };
+                static_assert(std::is_same_v<decltype(info)::value_type, std::array<int,3>>);
+                CHECK(info.name() == "name");
+                CHECK(info.value() == std::array<int,3>{ 1, 2, 3 });
+            }
+
+            SECTION("bounded array")
+            {
+                int a[3] = { 1, 2, 3 };
+                caff::diagnostic_info info{ "name", a };
+                static_assert(std::is_same_v<decltype(info)::value_type, std::array<int,3>>);
+                CHECK(info.name() == "name");
+                CHECK(info.value() == std::array<int,3>{ 1, 2, 3 });
+            }
+
+            SECTION("std::array")
+            {
+                std::array a{ 1, 2, 3 };
+                caff::diagnostic_info info{ "name", a };
+                static_assert(std::is_same_v<decltype(info)::value_type, std::array<int, 3>>);
+                CHECK(info.name() == "name");
+                CHECK(info.value() == std::array<int,3>{ 1, 2, 3 });
+            }
         }
 
         SECTION("union")
@@ -143,9 +164,7 @@ TEST_CASE("diagnostic_info constructors", "[diagnostic_info]")
             caff::diagnostic_info info{ "name", d };
             static_assert(std::is_same_v<decltype(info)::value_type, caff::test::dummy_class>);
             CHECK(info.name() == "name");
-
-            CHECK(false);
-            CHECK(info.value().member_variable == 12);
+            CHECK(info.value() == d);
         }
     }
 
