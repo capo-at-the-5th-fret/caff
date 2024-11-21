@@ -45,11 +45,6 @@ namespace caff::test
         }
     }
 
-    constexpr auto format_as(dummy_enum e)
-    {
-        return to_string(e);
-    }
-
     class dummy_class
     {
     public:
@@ -61,12 +56,7 @@ namespace caff::test
 
         int member_variable = 0;
     };
-
-    inline auto format_as(dummy_class const& c)
-    {
-        return c.member_variable;
-    }
-    
+   
     class other_dummy_class
     {
     };
@@ -99,5 +89,36 @@ struct std::hash<caff::test::projection_type>
         caff::test::projection_type const& key) const noexcept
     {
         return std::hash<std::size_t>{}(key.value);
+    }
+};
+
+template <>
+struct fmt::formatter<caff::test::dummy_enum> : fmt::formatter<std::string_view>
+{
+    auto format(caff::test::dummy_enum e,
+        fmt::format_context& ctx) const -> fmt::format_context::iterator
+    {
+        return fmt::formatter<std::string_view>::format(to_string(e), ctx);
+    }
+};
+
+template <>
+struct fmt::formatter<caff::test::dummy_class> : fmt::formatter<std::string>
+{
+    auto format(caff::test::dummy_class const& c,
+        fmt::format_context& ctx) const -> fmt::format_context::iterator
+    {
+        return fmt::format_to(ctx.out(), "member_variable = {}", c.member_variable);
+    }
+};
+
+// NOTE: format_as wouldn't work for this type
+template <>
+struct fmt::formatter<caff::test::dummy_union> : fmt::formatter<std::string>
+{
+    auto format(caff::test::dummy_union const& du,
+        fmt::format_context& ctx) const -> fmt::format_context::iterator
+    {
+        return fmt::format_to(ctx.out(), "i = {}, d = {}", du.i, du.d);
     }
 };
