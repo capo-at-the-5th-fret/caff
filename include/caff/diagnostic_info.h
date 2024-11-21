@@ -10,7 +10,7 @@
 namespace caff
 {
     template <typename T>
-    requires std::is_object_v<T>
+    requires std::copyable<T>
     class diagnostic_info
     {
     public:
@@ -30,7 +30,7 @@ namespace caff
 
         template <typename U, std::size_t N>
         explicit diagnostic_info(std::string_view name, U (&a)[N])
-            : name_(name), value_{ std::to_array(a) }
+            : name_(name), value_(std::to_array(a))
         {
         }
 
@@ -59,7 +59,23 @@ namespace caff
     template <typename T>
     std::string to_string(caff::diagnostic_info<T> const& info)
     {
-        return fmt::format("{}: {}", info.name(), info.value());
+        // format pointers as addresses
+        if constexpr (std::is_pointer_v<T>)
+        {
+            return fmt::format("{}: {}", info.name(),
+                static_cast<void*>(info.value()));
+        }
+        // member pointers are always 1 (that's what iostream does)
+        else if constexpr (std::is_member_pointer_v<T>)
+        {
+            return fmt::format("{}: {}", info.name(), 1);
+        }
+        else
+        {
+            static_assert(fmt::formattable<T>,
+                "T must be formattable by the format library");
+            return fmt::format("{}: {}", info.name(), info.value());
+        }
     }
 
     template <typename T>
@@ -237,7 +253,7 @@ namespace caff
     template <typename S, typename UnaryFunction = caff::string_formatter>
     auto make_set_condition(S const& set, UnaryFunction f = UnaryFunction{})
     {
-        std::string text = "{ ";
+        std::string text = "{";
 
         using std::begin;
         using std::end;
@@ -268,8 +284,6 @@ namespace caff
                     text += "unknown";
                 }
             }
-
-            text += " ";
         }
 
         text += "}";
@@ -277,3 +291,13 @@ namespace caff
         return caff::make_condition_info(text);
     }
 }
+
+template <typename T>
+struct fmt::formatter<caff::diagnostic_info<T>> : fmt::formatter<std::string>
+{
+    auto format(caff::diagnostic_info<T> const& info,
+        fmt::format_context& ctx) const -> fmt::format_context::iterator
+    {
+        return fmt::formatter<std::string>::format(caff::to_string(info), ctx);
+    }
+};

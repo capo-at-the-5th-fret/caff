@@ -90,7 +90,7 @@ TEST_CASE("diagnostic_info constructors", "[diagnostic_info]")
         {
             caff::test::dummy_class d{ 12 };
 
-            SECTION("member variable pointer")
+            SECTION("member object pointer")
             {
                 using mem_var_ptr_t = int caff::test::dummy_class::*;
             
@@ -188,22 +188,46 @@ TEST_CASE("diagnostic_info constructors", "[diagnostic_info]")
 
         SECTION("c-style array -> std::array<T, N>")
         {
-            SECTION("mutable array")
+            SECTION("unbounded array")
             {
-                int value[] = { 1, 2, 3 };
-                caff::diagnostic_info info{ "name", value };
-                static_assert(std::is_same_v<decltype(info)::value_type, std::array<int, 3>>);
-                CHECK(info.name() == "name");
-                CHECK(info.value() == std::array<int,3>{ 1, 2, 3 });
+                SECTION("mutable array")
+                {
+                    int value[] = { 1, 2, 3 };
+                    caff::diagnostic_info info{ "name", value };
+                    static_assert(std::is_same_v<decltype(info)::value_type, std::array<int, 3>>);
+                    CHECK(info.name() == "name");
+                    CHECK(info.value() == std::array<int,3>{ 1, 2, 3 });
+                }
+
+                SECTION("const array")
+                {
+                    const int value[] = { 1, 2, 3 };
+                    caff::diagnostic_info info{ "name", value };
+                    static_assert(std::is_same_v<decltype(info)::value_type, std::array<int, 3>>);
+                    CHECK(info.name() == "name");
+                    CHECK(info.value() == std::array<int,3>{ 1, 2, 3 });
+                }
             }
 
-            SECTION("const array")
+            SECTION("bounded array")
             {
-                const int value[] = { 1, 2, 3 };
-                caff::diagnostic_info info{ "name", value };
-                static_assert(std::is_same_v<decltype(info)::value_type, std::array<int, 3>>);
-                CHECK(info.name() == "name");
-                CHECK(info.value() == std::array<int,3>{ 1, 2, 3 });
+                SECTION("mutable array")
+                {
+                    int value[3] = { 1, 2, 3 };
+                    caff::diagnostic_info info{ "name", value };
+                    static_assert(std::is_same_v<decltype(info)::value_type, std::array<int, 3>>);
+                    CHECK(info.name() == "name");
+                    CHECK(info.value() == std::array<int,3>{ 1, 2, 3 });
+                }
+
+                SECTION("const array")
+                {
+                    const int value[3] = { 1, 2, 3 };
+                    caff::diagnostic_info info{ "name", value };
+                    static_assert(std::is_same_v<decltype(info)::value_type, std::array<int, 3>>);
+                    CHECK(info.name() == "name");
+                    CHECK(info.value() == std::array<int,3>{ 1, 2, 3 });
+                }
             }
         }
     }
@@ -223,8 +247,124 @@ TEST_CASE("diagnostic_info value", "[diagnostic_info]")
 
 TEST_CASE("diagnostic_info to_string", "[diagnostic_info]")
 {
+    using caff::to_string;
+
+    SECTION("integral")
+    {
+        SECTION("bool")
+        {
+            caff::diagnostic_info info{ "name", true };
+            CHECK(to_string(info) == "name: true");
+        }
+
+        SECTION("char")
+        {
+            caff::diagnostic_info info{ "name", 'b' };
+            CHECK(to_string(info) == "name: b");
+        }
+
+        SECTION("short")
+        {
+            caff::diagnostic_info info{ "name", static_cast<short>(12) };
+            CHECK(to_string(info) == "name: 12");
+        }
+
+        SECTION("unsigned long")
+        {
+            caff::diagnostic_info info{ "name", 1000ul };
+            CHECK(to_string(info) == "name: 1000");
+        }
+    }
+
+    SECTION("floating point")
+    {
+        caff::diagnostic_info info{ "name", 12.5 };
+        CHECK(to_string(info) == "name: 12.5");
+    }
+
+    SECTION("enum")
+    {
+        caff::diagnostic_info info{ "name", caff::test::dummy_enum::one };
+        CHECK(to_string(info) == "name: one");
+    }
+
+    SECTION("pointer")
+    {
+        int x = 12;
+        int* p = &x;
+        auto expected = fmt::format("name: {}", static_cast<void*>(p));
+
+        caff::diagnostic_info info{ "name", p };
+        CHECK(to_string(info) == expected);
+    }
+
+    SECTION("member pointer")
+    {
+        SECTION("member object pointer")
+        {
+            caff::diagnostic_info info{ "name",
+                &caff::test::dummy_class::member_variable };
+            CHECK(to_string(info) == "name: 1");
+        }
+
+        SECTION("member function pointer")
+        {
+            caff::diagnostic_info info{ "name",
+                &caff::test::dummy_class::member_function };
+            CHECK(to_string(info) == "name: 1");
+        }
+    }
+
+    SECTION("nullptr_t")
+    {
+        caff::diagnostic_info info{ "name", nullptr };
+        CHECK(to_string(info) == "name: 0x0");
+    }
+
+    SECTION("array")
+    {
+        SECTION("unbounded array")
+        {
+            int a[] = { 1, 2, 3 };
+            caff::diagnostic_info info{ "name", a };
+            CHECK(to_string(info) == "name: [1, 2, 3]");
+        }
+
+        SECTION("bounded array")
+        {
+            int a[3] = { 1, 2, 3 };
+            caff::diagnostic_info info{ "name", a };
+            CHECK(to_string(info) == "name: [1, 2, 3]");
+        }
+
+        SECTION("std::array")
+        {
+            std::array a{ 1, 2, 3 };
+            caff::diagnostic_info info{ "name", a };
+            CHECK(to_string(info) == "name: [1, 2, 3]");
+        }
+    }
+
+    SECTION("union")
+    {
+        caff::test::dummy_union u{ 12 };
+        caff::diagnostic_info info{ "name", u };
+        CHECK(to_string(info) == "name: i = 12, d = 6e-323");
+    }
+
+    SECTION("class")
+    {
+        caff::test::dummy_class d{ 12 };
+        caff::diagnostic_info info{ "name", d };
+        CHECK(to_string(info) == "name: member_variable = 12");
+    }
+}
+
+TEST_CASE("diagnostic_info formatter", "[diagnostic_info]")
+{
     caff::diagnostic_info<int> diagnostic_info{ "name", 12 };
-    CHECK(to_string(diagnostic_info) == "name: 12");
+    auto s = fmt::format("{}", diagnostic_info);
+    CHECK(s == "name: 12");
 }
 
 TEST_CASE("make_diagnostic_info", "[diagnostic_info]")
@@ -426,20 +566,37 @@ TEST_CASE("make_range_info", "[diagnostic_info]")
 
     CAPTURE(rangeType, expectedText);
 
-    SECTION("variable range")
-    {
-        const auto diagnostic_info = caff::make_range_info(0, 4, rangeType);
+    const auto diagnostic_info = caff::make_range_info(0, 4, rangeType);
 
+    CHECK(diagnostic_info.name() == "condition");
+    CHECK(diagnostic_info.value() == expectedText);
+}
+
+TEST_CASE("make_sized_range_info", "[diagnostic_info]")
+{
+    constexpr std::array a = { 1, 2, 3, 4 };
+
+    SECTION("default range type")
+    {
+        const auto diagnostic_info = caff::make_sized_range_info(a);
         CHECK(diagnostic_info.name() == "condition");
-        CHECK(diagnostic_info.value() == expectedText);
+        CHECK(diagnostic_info.value() == ">= 0 && < 4");
     }
 
-    SECTION("sized range")
+    SECTION("specified range type")
     {
-        const std::vector<int> testArray = { 1, 2, 3, 4 };
+        const auto [rangeType, expectedText] = GENERATE(
+            table<caff::range_type, std::string_view>(
+        {
+            { caff::range_type::closed, ">= 0 && <= 4" },
+            { caff::range_type::left_open, "> 0 && <= 4" },
+            { caff::range_type::right_open, ">= 0 && < 4" },
+            { caff::range_type::open, "> 0 && < 4" }
+        }));
 
-        const auto diagnostic_info = caff::make_sized_range_info(testArray,
-            rangeType);
+        CAPTURE(rangeType, expectedText);
+
+        const auto diagnostic_info = caff::make_sized_range_info(a, rangeType);
         CHECK(diagnostic_info.name() == "condition");
         CHECK(diagnostic_info.value() == expectedText);
     }
@@ -468,21 +625,21 @@ TEST_CASE("make_set_condition", "[diagnostic_info]")
         std::vector<int> v;
         const auto diagnostic_info = caff::make_set_condition(v);
         CHECK(diagnostic_info.name() == "condition");
-        CHECK(diagnostic_info.value() == "{ }");
+        CHECK(diagnostic_info.value() == "{}");
     }
 
     {
         std::vector<int> v{ 21 };
         const auto diagnostic_info = caff::make_set_condition(v);
         CHECK(diagnostic_info.name() == "condition");
-        CHECK(diagnostic_info.value() == "{ 21 }");
+        CHECK(diagnostic_info.value() == "{21}");
     }
 
     {
         std::vector<int> v{ 1, 2, 4, 3 };
         const auto diagnostic_info = caff::make_set_condition(v);
         CHECK(diagnostic_info.name() == "condition");
-        CHECK(diagnostic_info.value() == "{ 1, 2, 4, 3 }");
+        CHECK(diagnostic_info.value() == "{1, 2, 4, 3}");
     }
 
     // custom string formatter
@@ -491,21 +648,21 @@ TEST_CASE("make_set_condition", "[diagnostic_info]")
         std::vector<int> v;
         const auto diagnostic_info = caff::make_set_condition(v, custom);
         CHECK(diagnostic_info.name() == "condition");
-        CHECK(diagnostic_info.value() == "{ }");
+        CHECK(diagnostic_info.value() == "{}");
     }
 
     {
         std::vector<int> v{ 21 };
         const auto diagnostic_info = caff::make_set_condition(v, custom);
         CHECK(diagnostic_info.name() == "condition");
-        CHECK(diagnostic_info.value() == "{ [21] }");
+        CHECK(diagnostic_info.value() == "{[21]}");
     }
 
     {
         std::vector<int> v{ 1, 2, 4, 3 };
         const auto diagnostic_info = caff::make_set_condition(v, custom);
         CHECK(diagnostic_info.name() == "condition");
-        CHECK(diagnostic_info.value() == "{ [1], [2], [4], [3] }");
+        CHECK(diagnostic_info.value() == "{[1], [2], [4], [3]}");
     }
 }
 
