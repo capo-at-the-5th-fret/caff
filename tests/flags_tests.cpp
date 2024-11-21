@@ -497,6 +497,7 @@ TEST_CASE_METHOD(options_fixture, "hash", "[flags]")
     }    
 }
 
+// doctest code
 #if 0
 TEST_CASE("flags")
 {
