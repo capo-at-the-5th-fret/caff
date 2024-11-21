@@ -411,7 +411,7 @@ TEST_CASE("format_diagnostic_info", "[diagnostic_info]")
 
 TEST_CASE("make_location_info", "[diagnostic_info]")
 {
-    const auto location = caff::source_location::current();
+    const auto location = std::source_location::current();
     const auto expected_value = fmt::format("{}({})",
         location.file_name(),
         location.line());

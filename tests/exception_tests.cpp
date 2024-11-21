@@ -47,7 +47,7 @@ TEST_CASE("caff_exception")
         caff::exception ex{ "message" };
         REQUIRE_FALSE(ex.location().has_value());
 
-        const caff::source_location location;
+        const std::source_location location;
         ex << location;
         const auto ex_location = ex.location();
         REQUIRE(ex_location.has_value());
@@ -113,7 +113,7 @@ TEST_CASE("caff_exception")
             }
         }
 
-        constexpr caff::source_location location;
+        constexpr std::source_location location;
         const auto location_text = fmt::format("location: {}",
             caff::make_location_info(location).value());
 
@@ -227,7 +227,7 @@ TEST_CASE("caff_exception")
     SECTION("operator<< - source_location")
     {
         caff::exception ex{ "message" };
-        const caff::source_location location;
+        const std::source_location location;
         ex << location;
         REQUIRE(ex.message() == std::string_view{ "message" });
         REQUIRE(ex.diagnostics_text().empty());

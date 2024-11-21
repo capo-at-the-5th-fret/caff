@@ -3,8 +3,8 @@
 #include <string>
 #include <concepts>
 #include <ranges>
+#include <source_location>
 #include "caff/format.h"
-#include "caff/source_location.h"
 #include "caff/variable.h"
 
 namespace caff
@@ -103,7 +103,7 @@ namespace caff
         return caff::diagnostic_info{name, text};
     }
 
-    inline auto make_location_info(caff::source_location const& location)
+    inline auto make_location_info(std::source_location const& location)
     {
         return caff::format_diagnostic_info(
             "location", "{}({})", location.file_name(), location.line());

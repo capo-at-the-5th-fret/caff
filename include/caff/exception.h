@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <optional>
 #include <concepts>
-#include "caff/source_location.h"
+#include <source_location>
 #include "caff/diagnostic_info.h"
 
 namespace caff
@@ -27,7 +27,7 @@ namespace caff
             return diagnostics_text_;
         }
 
-        std::optional<caff::source_location> const& location() const
+        std::optional<std::source_location> const& location() const
         {
             return location_;
         }
@@ -114,7 +114,7 @@ namespace caff
     private:
         mutable std::string message_;
         mutable std::string diagnostics_text_;
-        mutable std::optional<caff::source_location> location_;
+        mutable std::optional<std::source_location> location_;
         mutable std::string what_;
 
         template <std::derived_from<caff::exception> ExceptionType, typename T>
@@ -123,7 +123,7 @@ namespace caff
 
         template <std::derived_from<caff::exception> ExceptionType>
         friend ExceptionType const& operator<<(
-            ExceptionType const& e, caff::source_location const& location);
+            ExceptionType const& e, std::source_location const& location);
     };
 
     template <std::derived_from<caff::exception> ExceptionType, typename T>
@@ -157,7 +157,7 @@ namespace caff
 
     template <std::derived_from<caff::exception> ExceptionType>
     ExceptionType const& operator<<(ExceptionType const& e,
-                                    caff::source_location const& location)
+                                    std::source_location const& location)
     {
         e.location_ = location;
         return e;
@@ -165,8 +165,8 @@ namespace caff
 
     template <std::derived_from<caff::exception> ExceptionType>
     [[noreturn]] void throw_ex(ExceptionType const& e,
-                               caff::source_location const& location =
-                                   caff::source_location::current())
+                               std::source_location const& location =
+                                   std::source_location::current())
     {
         e << location;
         throw e;
