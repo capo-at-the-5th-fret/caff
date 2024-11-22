@@ -141,8 +141,8 @@ jobs:
       #     restore-keys: |
       #       ${{ runner.os }}-vcpkg-${{ env.BUILD_TYPE }}-
 
-      # - name: Install Ninja
-      #   run: sudo apt-get install -y ninja-build
+      - name: Install Ninja
+        run: sudo apt-get install -y ninja-build
 
       # # Reference: https://github.com/aminya/setup-cpp
       # - name: Install vcpkg
