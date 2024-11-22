@@ -20,7 +20,7 @@ env:
   SCCACHE_GHA_ENABLED: "true"
 
 jobs:
-  Test:
+  build-and-test:
     name: ${{ matrix.config.os }} ${{ matrix.config.compiler }}
     runs-on: ${{ matrix.config.os }}
     strategy:
@@ -72,3 +72,51 @@ jobs:
       - name: Test
         working-directory: ./build
         run: ctest -C ${{env.BUILD_TYPE}}
+
+  # Taken from doctest github
+  coverage:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install C++ Tools
+        run: sudo apt-get install -y ninja-build lcov
+
+      - name: Configure CMake
+        run: cmake -B ./build -G "Ninja Multi-Config" -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
+
+      - name: Build
+        run: cmake --build ./build --config Release
+
+      - name: Test
+        run: ctest --test-dir ./build --no-tests=error
+
+      - name: LCOV
+        run: |
+          mkdir coverage
+          lcov -c -d ./build/ -o coverage/lcov.info --include "*include/caff*"
+
+      - name: Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          fail_ci_if_error: true
+
+  # Taken from doctest github
+  clang-tidy:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install C++ Tools
+        run: sudo apt-get install -y ninja-build
+
+      - name: Configure CMake
+        run: cmake -B build -S . -G "Ninja Multi-Config" -D CMAKE_CXX_COMPILER=/usr/lib/llvm-18/bin/clang++ -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_CXX_CLANG_TIDY="clang-tidy-18;-warnings-as-errors=*"
+
+      - name: Build
+        run: cmake --build build --config Release
