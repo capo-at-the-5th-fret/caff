@@ -1,10 +1,19 @@
 # NOTE: This workflow is in the test_cpp_cache repository with full comments
 name: Continuous Integration
+
 on:
   push:
-    branches: [ "main", "fix*" ]
+    branches:
+      - main
+      - develop
+      - 'feature/*'
+      - 'bugfix/*'
+      - 'release/*'
+      - 'hotfix/*'
   pull_request:
-    branches: [ "main", "fix*" ]
+    branches:
+      - main
+      - develop
 
 env:
   BUILD_TYPE: Release
