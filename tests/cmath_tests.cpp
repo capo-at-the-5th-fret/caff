@@ -190,6 +190,8 @@ TEMPLATE_LIST_TEST_CASE("evenly_divisible", "[cmath][even_divisible]",
     using test_types_t = evenly_divisible_test_types<TestType>;
     using caff::evenly_divisible;
 
+    int unused_variable = 12;
+    
     // NOLINTBEGIN
     caff::tuple_for_each_type<test_types_t>([]<typename T>
     {
