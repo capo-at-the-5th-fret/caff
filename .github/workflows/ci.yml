@@ -80,8 +80,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/vcpkg
+            ~/.cache/vcpkg/archives
+          key: ${{ runner.os }}-vcpkg-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt', './vcpkg.json') }}
+          restore-keys: |
+            ${{ runner.os }}-vcpkg-${{ env.BUILD_TYPE }}-
+
       - name: Install C++ Tools
         run: sudo apt-get install -y ninja-build lcov
+
+      # Reference: https://github.com/aminya/setup-cpp
+      - name: Install vcpkg
+        uses: aminya/setup-cpp@v1
+        with:
+          vcpkg: true
+
+      - name: Install vcpkg dependencies
+        run: vcpkg install fmt catch2
 
       - name: Configure CMake
         run: cmake -B ./build -G "Ninja Multi-Config" -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
