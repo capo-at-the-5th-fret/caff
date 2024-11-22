@@ -91,7 +91,7 @@ TEMPLATE_LIST_TEST_CASE("is_even using signed types", "[cmath][is_even]",
     using T = TestType;
     static_assert(std::is_signed_v<T>);
 
-    auto [x, expected] = GENERATE(table<T,T>(
+    auto [x, expected] = GENERATE(table<T,bool>(
     {
         { T{ 0 }, true },
         { T{ 1 }, false },
@@ -113,7 +113,7 @@ TEMPLATE_LIST_TEST_CASE("is_even using unsigned types", "[cmath][is_even]",
     using T = TestType;
     static_assert(std::is_unsigned_v<T>);
 
-    auto [x, expected] = GENERATE(table<T,T>(
+    auto [x, expected] = GENERATE(table<T,bool>(
     {
         { T{ 0 }, true },
         { T{ 1 }, false },
@@ -131,7 +131,7 @@ TEMPLATE_LIST_TEST_CASE("is_odd using signed types", "[cmath][is_odd]",
     using T = TestType;
     static_assert(std::is_signed_v<T>);
 
-    auto [x, expected] = GENERATE(table<T,T>(
+    auto [x, expected] = GENERATE(table<T,bool>(
     {
         { T{ 0 }, false },
         { T{ 1 }, true },
@@ -153,7 +153,7 @@ TEMPLATE_LIST_TEST_CASE("is_odd using unsigned types", "[cmath][is_odd]",
     using T = TestType;
     static_assert(std::is_unsigned_v<T>);
 
-    auto [x, expected] = GENERATE(table<T,T>(
+    auto [x, expected] = GENERATE(table<T,bool>(
     {
         { T{ 0 }, false },
         { T{ 1 }, true },
