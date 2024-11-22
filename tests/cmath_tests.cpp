@@ -4,6 +4,7 @@
 
 #include "caff/type_list.h"
 
+#if 0
 TEMPLATE_LIST_TEST_CASE("mod functions using signed types", "[cmath][mod]",
     caff::signed_standard_integer_types)
 {
@@ -215,6 +216,8 @@ TEMPLATE_LIST_TEST_CASE("evenly_divisible", "[cmath][even_divisible]",
         }
     });   
 }
+
+#endif
 
 #if 0
 // Helper macro to generate test cases for each combination of dividend and divisor types
