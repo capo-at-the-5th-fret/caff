@@ -31,8 +31,8 @@ jobs:
           - { os: "ubuntu-24.04", compiler: "gcc", cmake_gen: "Ninja Multi-Config", cmake_cxx: "/usr/bin/g++-14", cmake_cxx_launcher: "ccache" }
           - { os: "ubuntu-24.04", compiler: "llvm", cmake_gen: Ninja Multi-Config, cmake_cxx: "/usr/lib/llvm-18/bin/clang++", cmake_cxx_launcher: "ccache" }
           # project won't compile using g++ on macos-15; can use macos-14 instead
-          #- { os: "macos-15", compiler: "gcc", cmake_gen: "Ninja Multi-Config", cmake_cxx: "g++-14", cmake_cxx_launcher: "ccache" }
-          - { os: "macos-14", compiler: "gcc", cmake_gen: "Ninja Multi-Config", cmake_cxx: "g++-14", cmake_cxx_launcher: "ccache" }
+          - { os: "macos-15", compiler: "gcc", cmake_gen: "Ninja Multi-Config", cmake_cxx: "g++-14", cmake_cxx_launcher: "ccache" }
+          #- { os: "macos-14", compiler: "gcc", cmake_gen: "Ninja Multi-Config", cmake_cxx: "g++-14", cmake_cxx_launcher: "ccache" }
           - { os: "macos-15", compiler: "llvm", cmake_gen: "Ninja Multi-Config", cmake_cxx: "$(brew --prefix llvm@18)/bin/clang++", cmake_cxx_launcher: "ccache" }
           - { os: windows-2022, compiler: "msvc", cmake_gen: "Ninja Multi-Config", cmake_cxx: "cl", cmake_cxx_launcher: "sccache" }
           - { os: windows-2022, compiler: "llvm", cmake_gen: "Ninja Multi-Config", cmake_cxx: "clang++", cmake_cxx_launcher: "sccache" }
@@ -80,27 +80,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/vcpkg
-            ~/.cache/vcpkg/archives
-          key: ${{ runner.os }}-vcpkg-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt', './vcpkg.json') }}
-          restore-keys: |
-            ${{ runner.os }}-vcpkg-${{ env.BUILD_TYPE }}-
+      # - name: Cache
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #       ~/vcpkg
+      #       ~/.cache/vcpkg/archives
+      #     key: ${{ runner.os }}-vcpkg-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt', './vcpkg.json') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-vcpkg-${{ env.BUILD_TYPE }}-
 
       - name: Install C++ Tools
         run: sudo apt-get install -y ninja-build lcov
 
-      # Reference: https://github.com/aminya/setup-cpp
-      - name: Install vcpkg
-        uses: aminya/setup-cpp@v1
-        with:
-          vcpkg: true
+      # # Reference: https://github.com/aminya/setup-cpp
+      # - name: Install vcpkg
+      #   uses: aminya/setup-cpp@v1
+      #   with:
+      #     vcpkg: true
 
-      - name: Install vcpkg dependencies
-        run: vcpkg install fmt catch2
+      # - name: Install vcpkg dependencies
+      #   run: vcpkg install fmt catch2
 
       - name: Configure CMake
         run: cmake -B ./build -G "Ninja Multi-Config" -D CMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage"
