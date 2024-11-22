@@ -118,9 +118,9 @@ jobs:
           path: |
             ~/vcpkg
             ~/.cache/vcpkg/archives
-          key: ${{ runner.os }}-${{ matrix.compiler }}-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt', './vcpkg.json') }}
+          key: ${{ runner.os }}-vcpkg-${{ env.BUILD_TYPE }}-${{ hashFiles('**/CMakeLists.txt', './vcpkg.json') }}
           restore-keys: |
-            ${{ runner.os }}-${{ env.BUILD_TYPE }}-
+            ${{ runner.os }}-vcpkg-${{ env.BUILD_TYPE }}-
 
       - name: Install Ninja
         run: sudo apt-get install -y ninja-build
