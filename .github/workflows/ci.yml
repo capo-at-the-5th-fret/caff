@@ -122,21 +122,20 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.BUILD_TYPE }}-
 
-      #- name: Install C++ Tools
-       # run: sudo apt-get install -y ninja-build
+      - name: Install Ninja
+        run: sudo apt-get install -y ninja-build
 
       # Reference: https://github.com/aminya/setup-cpp
-      - name: Install C++ Tools
+      - name: Install vcpkg
         uses: aminya/setup-cpp@v1
         with:
           vcpkg: true
-          ninja: true
 
       - name: Install vcpkg dependencies
         run: vcpkg install fmt catch2
 
       - name: Configure CMake
-        run: cmake -B build -S . -G "Ninja Multi-Config" -D CMAKE_CXX_COMPILER=/usr/lib/llvm-18/bin/clang++ -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_CXX_CLANG_TIDY="clang-tidy-18;-warnings-as-errors=*" -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+        run: cmake -B build -S . -G "Ninja Multi-Config" -D CMAKE_CXX_COMPILER=/usr/lib/llvm-18/bin/clang++ -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_CXX_CLANG_TIDY="clang-tidy-18;-warnings-as-errors=*" -DCMAKE_TOOLCHAIN_FILE=~/vcpkg/scripts/buildsystems/vcpkg.cmake
 
       - name: Build
         run: cmake --build build --config Release
