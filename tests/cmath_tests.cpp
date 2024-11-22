@@ -165,7 +165,6 @@ TEMPLATE_LIST_TEST_CASE("is_odd using unsigned types", "[cmath][is_odd]",
     CHECK(caff::is_odd(x) == expected);
 }
 
-#if 0
 namespace
 {
     // clang-format off
@@ -216,7 +215,6 @@ TEMPLATE_LIST_TEST_CASE("evenly_divisible", "[cmath][even_divisible]",
         }
     });   
 }
-#endif
 
 #if 0
 // Helper macro to generate test cases for each combination of dividend and divisor types
