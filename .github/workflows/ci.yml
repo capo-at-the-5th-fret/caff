@@ -153,7 +153,6 @@ jobs:
       - name: Install vcpkg dependencies
         run: vcpkg install fmt catch2
 
-        --header-filter='^(/caff/include/)'
       - name: Configure CMake
         run: cmake -B build -S . -G "Ninja Multi-Config" -D CMAKE_CXX_COMPILER=/usr/lib/llvm-18/bin/clang++ -D CMAKE_EXPORT_COMPILE_COMMANDS=ON -D CMAKE_CXX_CLANG_TIDY="clang-tidy-18;-warnings-as-errors=*;-header-filter=^(/home/runner/work/caff/caff/include/)" -DCMAKE_TOOLCHAIN_FILE=~/vcpkg/scripts/buildsystems/vcpkg.cmake
 
