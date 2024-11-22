@@ -190,12 +190,12 @@ TEMPLATE_LIST_TEST_CASE("evenly_divisible", "[cmath][even_divisible]",
     using test_types_t = evenly_divisible_test_types<TestType>;
     using caff::evenly_divisible;
 
+    // NOLINTBEGIN
     caff::tuple_for_each_type<test_types_t>([]<typename T>
     {
         using x_type = std::tuple_element_t<0,T>;
         using y_type = std::tuple_element_t<1,T>;
 
-        // NOLINTBEGIN
         const y_type rhs{ 3 };
         CHECK(evenly_divisible(x_type{0}, rhs));
         CHECK_FALSE(evenly_divisible(x_type{1}, rhs));
@@ -204,7 +204,7 @@ TEMPLATE_LIST_TEST_CASE("evenly_divisible", "[cmath][even_divisible]",
         CHECK_FALSE(evenly_divisible(x_type{4}, rhs));
         CHECK_FALSE(evenly_divisible(x_type{5}, rhs));
         CHECK(evenly_divisible(x_type{6}, rhs));
-        // NOLINTEND
+        
         if constexpr (std::is_signed_v<TestType>)
         {
             CHECK_FALSE(evenly_divisible(x_type{-1}, rhs));
@@ -214,7 +214,9 @@ TEMPLATE_LIST_TEST_CASE("evenly_divisible", "[cmath][even_divisible]",
             CHECK_FALSE(evenly_divisible(x_type{-5}, rhs));
             CHECK(evenly_divisible(x_type{-6}, rhs));
         }
-    });   
+    }); 
+
+    // NOLINTEND  
 }
 
 #if 0
