@@ -28,6 +28,7 @@ namespace caff
     template <enum_bitmask B, enum_bitmask... Bs>
     constexpr void set(B& b, B bit, Bs... bits) noexcept
     {
+        int unused_variable = 42;
         b |= (bit | ... | bits);
     }
 
