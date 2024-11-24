@@ -12,6 +12,7 @@ on:
       - 'hotfix/*'
     paths-ignore:
       - 'docs/**'
+      - 'LICENSE'
       - 'LICENSE.txt'
       - 'README.md'
   pull_request:
@@ -20,6 +21,7 @@ on:
       - develop
     paths-ignore:
       - 'docs/**'
+      - 'LICENSE'
       - 'LICENSE.txt'
       - 'README.md'
 
