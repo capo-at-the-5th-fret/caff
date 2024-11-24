@@ -39,8 +39,8 @@ jobs:
           - { os: "ubuntu-24.04", compiler: "gcc", cmake_gen: "Ninja Multi-Config", cmake_cxx: "/usr/bin/g++-14", cmake_cxx_launcher: "ccache" }
           - { os: "ubuntu-24.04", compiler: "llvm", cmake_gen: Ninja Multi-Config, cmake_cxx: "/usr/lib/llvm-18/bin/clang++", cmake_cxx_launcher: "ccache" }
           # project won't compile using g++ on macos-15; can use macos-14 instead
-          - { os: "macos-15", compiler: "gcc", cmake_gen: "Ninja Multi-Config", cmake_cxx: "g++-14", cmake_cxx_launcher: "ccache" }
-          #- { os: "macos-14", compiler: "gcc", cmake_gen: "Ninja Multi-Config", cmake_cxx: "g++-14", cmake_cxx_launcher: "ccache" }
+          #- { os: "macos-15", compiler: "gcc", cmake_gen: "Ninja Multi-Config", cmake_cxx: "g++-14", cmake_cxx_launcher: "ccache" }
+          - { os: "macos-14", compiler: "gcc", cmake_gen: "Ninja Multi-Config", cmake_cxx: "g++-14", cmake_cxx_launcher: "ccache" }
           - { os: "macos-15", compiler: "llvm", cmake_gen: "Ninja Multi-Config", cmake_cxx: "$(brew --prefix llvm@18)/bin/clang++", cmake_cxx_launcher: "ccache" }
           - { os: windows-2022, compiler: "msvc", cmake_gen: "Ninja Multi-Config", cmake_cxx: "cl", cmake_cxx_launcher: "sccache" }
           - { os: windows-2022, compiler: "llvm", cmake_gen: "Ninja Multi-Config", cmake_cxx: "clang++", cmake_cxx_launcher: "sccache" }
