@@ -437,7 +437,9 @@ TEMPLATE_TEST_CASE("tuple_for_each", "[tuple]", tuple_test_type, pair_test_type,
             ++element;
         });
 
-        REQUIRE(t == fixture.modified_expected);
+        const bool ok = (t == fixture.modified_expected);
+        REQUIRE(ok);
+        //REQUIRE(t == fixture.modified_expected);
     }
 
     SECTION("verify const correctness")
