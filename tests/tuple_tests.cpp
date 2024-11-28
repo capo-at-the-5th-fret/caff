@@ -439,6 +439,7 @@ TEMPLATE_TEST_CASE("tuple_for_each", "[tuple]", tuple_test_type, pair_test_type,
 
         const bool ok = (t == fixture.modified_expected);
         REQUIRE(ok);
+        // NOTE: This was failing on ubunutu + llvm
         //REQUIRE(t == fixture.modified_expected);
     }
 
@@ -486,7 +487,8 @@ TEMPLATE_TEST_CASE("tuple_enumerate", "[tuple]", tuple_test_type, pair_test_type
 
         const bool ok = (t == fixture.modified_expected);
         REQUIRE(ok);
-        //REQUIRE(t == fixture.modified_expected );
+        // NOTE: This was failing on ubunutu + llvm
+        //REQUIRE(t == fixture.modified_expected);
     }
 
     SECTION("verify const correctness")
